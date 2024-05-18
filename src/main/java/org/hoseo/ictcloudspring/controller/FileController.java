@@ -7,11 +7,19 @@ import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
 import org.hoseo.ictcloudspring.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +36,12 @@ public class FileController {
     }
 
     @GetMapping("/file/upload")
-    public ModelAndView enterUpload(HttpServletRequest request) {
-        System.out.println("FileController user session check");
-        ModelAndView mav = new ModelAndView();
-
+    public Object enterUpload(HttpServletRequest request) {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        if (user == null) mav.setViewName("redirect:../user/account");
-        else {
+        if (user == null) {
+            return "redirect:../user/account";
+        } else {
             int p = Integer.parseInt(request.getParameter("p") == null || request.getParameter("p").isEmpty() ? "0" : request.getParameter("p"));
             int userID = user.getUserID();
             String storagePath;
@@ -48,34 +54,34 @@ public class FileController {
                 storagePath = fileService.getStoragePath(userID, p);
                 parentFolderID = fileService.getParentFolderId(p);
             }
-            String storagePathJS = storagePath.replace("\\", "\\\\");
 
+            String storagePathJS = storagePath.replace("\\", "\\\\");
             List<File> fileList = fileService.getFilesByUserIdAndFolderId(userID, p);
             List<Folder> subFolderList = fileService.getSubFoldersByFolderId(p);
 
-            mav.addObject("fileList", fileList);
-            mav.addObject("subFolderList", subFolderList);
-            mav.addObject("userID", userID);
-            mav.addObject("storagePath", storagePath);
-            mav.addObject("p", p);
-            mav.addObject("storagePathJS", storagePathJS);
-            mav.addObject("removeUserIdPath", storagePath.replace(userID + java.io.File.separator, ""));
-            mav.addObject("parentFolderID", parentFolderID);
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put("fileList", fileList);
+            responseMap.put("subFolderList", subFolderList);
+            responseMap.put("userID", userID);
+            responseMap.put("storagePath", storagePath);
+            responseMap.put("p", p);
+            responseMap.put("parentFolderID", parentFolderID);
+            responseMap.put("removeUserIdPath", storagePath.replace(userID + java.io.File.separator, ""));
+            responseMap.put("storagePathJS", storagePathJS);
 
-            System.out.println("==============================");
-            System.out.println(userID);
-            System.out.println(p);
-            System.out.println(storagePath);
-            System.out.println(storagePathJS);
-            System.out.println(fileList);
-            System.out.println(subFolderList);
-            System.out.println(storagePath.replace(userID + java.io.File.separator, ""));
-            System.out.println(parentFolderID);
+            // AJAX 요청인 경우 JSON 형태로 데이터를 반환합니다.
+            if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+                System.out.println("return response");
+                return ResponseEntity.ok(responseMap);
+            }
 
+            // 아닌 경우 기존 방식대로 ModelAndView 객체를 반환합니다.
+            ModelAndView mav = new ModelAndView();
+            mav.addAllObjects(responseMap);
             mav.setViewName("file/upload");
+            System.out.println("return mav");
+            return mav;
         }
-
-        return mav;
     }
 
 
@@ -115,5 +121,30 @@ public class FileController {
         }
 
         return response;
+    }
+
+    @GetMapping("/file/download")
+    public ResponseEntity<byte[]> downloadFile(
+            @RequestParam("userID") int userID,
+            @RequestParam("fileID") int fileID,
+            @RequestParam("filename") String filename) {
+        System.out.println("File Controller download file");
+        System.out.println(fileID + ", " + userID + ", " + filename);
+
+        byte[] fileContent = new byte[0];
+        try {
+            fileContent = fileService.getFile(userID, fileID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String mimeType = "application/octet-stream";
+        String encodedFileName = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
+        String contentDisposition = "attachment; filename*=UTF-8''" + encodedFileName;
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(mimeType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                .body(fileContent);
     }
 }

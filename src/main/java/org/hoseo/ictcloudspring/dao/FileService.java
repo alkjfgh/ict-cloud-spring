@@ -4,11 +4,15 @@ import org.hoseo.ictcloudspring.connection.DBConnectionPool;
 import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.transform.Result;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -290,5 +294,35 @@ public class FileService {
         }
 
         return parentFolderID;
+    }
+
+    public byte[] getFile(int userID, int fileID) throws IOException {
+        // TODO user 검증 여기서? 생각해봐야함
+        String query = "SELECT storagePath, filename FROM Files WHERE fileID = ?";
+        String storagePath = "";
+        String filename = "";
+
+        try(PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, fileID);
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if(rs.next()){
+                    storagePath = rs.getString(1);
+                    filename = rs.getString(2);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                storagePath = rs.getString(1);
+            } catch (SQLException ex) {
+                e.printStackTrace();
+            }
+        }
+
+        // 예제 경로. 실제 경로로 변경하세요.
+        String realFilePath = uploadFolderPath + SEPARATOR + storagePath + SEPARATOR + filename;
+        Path path = Paths.get(realFilePath);
+        return Files.readAllBytes(path);
     }
 }

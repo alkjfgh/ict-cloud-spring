@@ -31,6 +31,18 @@
         cursor: pointer;
         background-color: aquamarine;
       }
+
+      .download-btn{
+        background-color: aqua;
+        height: 100%;
+        width: 100%;
+        color: darkgray;
+      }
+
+      .download-btn:hover{
+        cursor: pointer;
+        background-color: violet;
+      }
     }
   }
 }

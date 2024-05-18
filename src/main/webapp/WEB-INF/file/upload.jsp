@@ -21,6 +21,8 @@
     <div class="body1">
         <div class="show">
             <div class="path">now path: ${storagePath}</div>
+            removeUserIdPath: ${removeUserIdPath}
+            parentFolderID: ${parentFolderID}
             <div class="file-list-container">
                 <table class="file-list-table">
                     <tr>
@@ -29,8 +31,6 @@
                         <th>LastModifiedDate</th>
                         <th>download</th>
                     </tr>
-                    removeUserIdPath: ${removeUserIdPath}
-                    parentFolderID: ${parentFolderID}
                     <c:if test="${removeUserIdPath ne 'root'}">
                         <tr>
                             <td colspan="4" class="folder-area" onclick="enterFolder(${parentFolderID})">...</td>
@@ -46,7 +46,7 @@
                             <td>${file.filename}</td>
                             <td>${file.uploadDate}</td>
                             <td>${file.lastModifiedDate}</td>
-                            <td><button onclick="console.log(${file.fileID})">download</button></td>
+                            <td><div class="download-btn" onclick="downLoadFile(${userID}, ${file.fileID}, '${file.filename}')">download</div></td>
                         </tr>
                     </c:forEach>
                 </table>
