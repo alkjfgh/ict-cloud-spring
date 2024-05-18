@@ -1,0 +1,36 @@
+.file-list-container {
+  width: 90%;
+  margin: 0 auto;
+  text-align: center;
+
+  .file-list-table {
+    width: 95%;
+    margin: 2.5%;
+    border-collapse: collapse;
+
+    tr {
+      height: 3em;
+
+      th {
+      }
+
+      td {
+        text-align: center;
+      }
+
+      td:nth-of-type(1) {
+        text-align: left;
+      }
+
+      th, td {
+        border: 2px solid antiquewhite;
+        padding: 0.6em;
+      }
+
+      .folder-area:hover {
+        cursor: pointer;
+        background-color: aquamarine;
+      }
+    }
+  }
+}
