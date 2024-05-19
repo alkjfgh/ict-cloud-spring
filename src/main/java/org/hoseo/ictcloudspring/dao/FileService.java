@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.xml.transform.Result;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -325,5 +327,28 @@ public class FileService {
         String realFilePath = uploadFolderPath + SEPARATOR + storagePath + SEPARATOR + filename;
         Path path = Paths.get(realFilePath);
         return Files.readAllBytes(path);
+    }
+
+    public InputStream getFileStream(int userID, int fileID) throws IOException {
+        String query = "SELECT storagePath, filename FROM Files WHERE fileID = ?";
+        String storagePath = "";
+        String filename = "";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, fileID);
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    storagePath = rs.getString(1);
+                    filename = rs.getString(2);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new IOException("Database error while retrieving file path", e);
+        }
+
+        // Example path; replace with actual file path logic
+        String realFilePath = uploadFolderPath + SEPARATOR + storagePath + SEPARATOR + filename;
+        return new FileInputStream(new java.io.File(realFilePath));
     }
 }

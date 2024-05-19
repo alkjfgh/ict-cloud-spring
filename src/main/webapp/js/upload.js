@@ -36,6 +36,69 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+const showModal = (modalId) => {
+    const modal = new bootstrap.Modal(document.getElementById(modalId));
+    modal.show();
+};
+
+const hideModal = (modalId) => {
+    const modal = new bootstrap.Modal(document.getElementById(modalId));
+    modal.hide();
+};
+
+const formatSize = (size) => {
+    if (size === 'N/A') {
+        return size;
+    }
+    if (size >= 1024 * 1024 * 1024) {
+        return (size / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+    }
+    if (size >= 1024 * 1024) {
+        return (size / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+    if (size >= 1024) {
+        return (size / 1024).toFixed(2) + ' KB';
+    }
+    return size.toFixed(2) + ' bytes';
+};
+
+const updateProgress = (progressBarId, downloadDetailsId, startTime, loaded, total) => {
+    const progressBar = document.getElementById(progressBarId);
+    const downloadDetails = document.getElementById(downloadDetailsId);
+
+    const percentCompleted = total ? Math.round((loaded * 100) / total) : 0;
+    const elapsedTime = (new Date().getTime() - startTime) / 1000; // seconds
+    const speed = formatSize(loaded / elapsedTime); // Bytes/s
+    const totalSize = total ? formatSize(total) : 'N/A';
+    const loadedSize = formatSize(loaded);
+    const remainingSize = total ? formatSize(total - loaded) : 'N/A';
+
+    // 예상 남은 시간 계산
+    const remainingTime = total ? ((total - loaded) / (loaded / elapsedTime)) : 0;
+    const remainingHours = Math.floor(remainingTime / 3600);
+    const remainingMinutes = Math.floor((remainingTime % 3600) / 60);
+    const remainingSeconds = Math.floor(remainingTime % 60);
+
+    // 소요된 시간 계산
+    const elapsedHours = Math.floor(elapsedTime / 3600);
+    const elapsedMinutes = Math.floor((elapsedTime % 3600) / 60);
+    const elapsedSeconds = Math.floor(elapsedTime % 60);
+
+    progressBar.style.width = percentCompleted + '%';
+    progressBar.setAttribute('aria-valuenow', percentCompleted);
+    progressBar.innerText = percentCompleted + '%';
+
+    downloadDetails.innerText = `
+        Speed: ${speed} /s
+        Loaded: ${loadedSize} / ${totalSize}
+        Remaining: ${remainingSize}
+        Elapsed Time: ${elapsedHours}h ${elapsedMinutes}m ${elapsedSeconds}s
+        Estimated Remaining Time: ${remainingHours}h ${remainingMinutes}m ${remainingSeconds}s
+    `;
+};
+
+
+
 const fileUploadHandler = async (event, formData = null) => {
     event.preventDefault(); // 폼의 기본 제출 동작 방지
 
@@ -46,40 +109,20 @@ const fileUploadHandler = async (event, formData = null) => {
     }
     const file = formData.get('file');
 
-    const modal = new bootstrap.Modal(document.getElementById('uploadModal'));
-    const progressBar = document.getElementById('progressBar');
-    const uploadDetails = document.getElementById('uploadDetails');
+    const modalId = 'uploadModal';
+    const progressBarId = 'progressBar';
+    const uploadDetailsId = 'uploadDetails';
+    showModal(modalId);
 
     let startTime = new Date().getTime();
 
-    const updateProgress = (loaded, total) => {
-        const percentCompleted = Math.round((loaded * 100) / total);
-        const elapsedTime = (new Date().getTime() - startTime) / 1000; // seconds
-        const uploadSpeed = (loaded / elapsedTime) / 1024; // KB/s
-        const totalSize = (total / 1024).toFixed(2); // KB
-        const loadedSize = (loaded / 1024).toFixed(2); // KB
-        const remainingSize = ((total - loaded) / 1024).toFixed(2); // KB
-
-        progressBar.style.width = percentCompleted + '%';
-        progressBar.setAttribute('aria-valuenow', percentCompleted);
-        progressBar.innerText = percentCompleted + '%';
-
-        uploadDetails.innerText = `
-                    Upload Speed: ${uploadSpeed.toFixed(2)} KB/s
-                    Uploaded: ${loadedSize} KB / ${totalSize} KB
-                    Remaining: ${remainingSize} KB
-                `;
-    };
-
     try {
-        modal.show();
-
         const response = await axios.post('/file/upload', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             },
             onUploadProgress: (progressEvent) => {
-                updateProgress(progressEvent.loaded, progressEvent.total);
+                updateProgress(progressBarId, uploadDetailsId, startTime, progressEvent.loaded, progressEvent.total);
             }
         });
 
@@ -95,49 +138,28 @@ const fileUploadHandler = async (event, formData = null) => {
         console.error("Error:", error);
         alert("An error occurred during the file upload");
     } finally {
-        // modal.hide();
+        // hideModal(modalId);
     }
 };
 
-const downLoadFile = async (userID, fileID, filename) => {
+
+const downLoadFile = async (userID, fileID, filename, fileSize) => {
     console.log('download file');
 
-    const modal = new bootstrap.Modal(document.getElementById('downloadModal'));
-    const progressBar = document.getElementById('downloadProgressBar');
-    const downloadDetails = document.getElementById('downloadDetails');
-
-    const url = `/file/download?userID=${encodeURIComponent(userID)}&fileID=${encodeURIComponent(fileID)}&filename=${encodeURIComponent(filename)}`;
+    const modalId = 'downloadModal';
+    const progressBarId = 'downloadProgressBar';
+    const downloadDetailsId = 'downloadDetails';
+    showModal(modalId);
 
     let startTime = new Date().getTime();
 
-    const updateProgress = (loaded, total) => {
-        const percentCompleted = Math.round((loaded * 100) / total);
-        const elapsedTime = (new Date().getTime() - startTime) / 1000; // seconds
-        const downloadSpeed = (loaded / elapsedTime) / 1024; // KB/s
-        const totalSize = (total / 1024).toFixed(2); // KB
-        const loadedSize = (loaded / 1024).toFixed(2); // KB
-        const remainingSize = ((total - loaded) / 1024).toFixed(2); // KB
-
-        progressBar.style.width = percentCompleted + '%';
-        progressBar.setAttribute('aria-valuenow', percentCompleted);
-        progressBar.innerText = percentCompleted + '%';
-
-        downloadDetails.innerText = `
-                    Download Speed: ${downloadSpeed.toFixed(2)} KB/s
-                    Downloaded: ${loadedSize} KB / ${totalSize} KB
-                    Remaining: ${remainingSize} KB
-                `;
-    };
-
     try {
-        modal.show();
-
         const response = await axios({
-            url,
+            url: `/file/download?userID=${encodeURIComponent(userID)}&fileID=${encodeURIComponent(fileID)}&filename=${encodeURIComponent(filename)}`,
             method: 'GET',
             responseType: 'blob',
             onDownloadProgress: (progressEvent) => {
-                updateProgress(progressEvent.loaded, progressEvent.total);
+                updateProgress(progressBarId, downloadDetailsId, startTime, progressEvent.loaded, fileSize /*progressEvent.total*/);
             }
         });
 
@@ -158,9 +180,9 @@ const downLoadFile = async (userID, fileID, filename) => {
         console.error('Error:', error);
         alert('파일을 다운로드하는 중 오류가 발생했습니다.');
     } finally {
-        // modal.hide();
+        // hideModal(modalId);
     }
-}
+};
 
 const addFolderHandler = async (userID, folderID, storagePath) => {
     await fetch("/file/addFolder", {
@@ -277,7 +299,7 @@ const updateFileList = (fileList, userID) => {
         fileInner4.innerHTML = file.fileSize;
 
         // downloadBtn.onclick = downLoadFile(userID, file.fileID, file.filename);
-        downloadBtn.onclick = () => downLoadFile(userID, file.fileID, file.filename);
+        downloadBtn.onclick = () => downLoadFile(userID, file.fileID, file.filename, file.fileSize);
         downloadBtn.innerHTML = 'download';
         downloadBtn.className = 'download-btn';
 
