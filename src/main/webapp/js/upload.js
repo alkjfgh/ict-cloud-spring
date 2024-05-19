@@ -1,6 +1,70 @@
 $(document).ready(() => {
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    const dragDropArea = document.getElementsByClassName('drag-drop-area')[0];
+
+    dragDropArea.addEventListener('dragover', function (e) {
+        e.preventDefault(); // 기본 이벤트 방지
+        e.stopPropagation(); // 이벤트 전파 방지
+        e.dataTransfer.dropEffect = 'copy'; // 드래그 중 아이콘 변경
+    });
+
+    dragDropArea.addEventListener('drop', function (e) {
+        e.preventDefault(); // 기본 이벤트 방지
+        e.stopPropagation(); // 이벤트 전파 방지
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('file', files[i]); // 파일 추가
+            }
+
+            // userID, storagePath, folderID 추가
+            const userID = document.querySelector('input[name="userID"]').value;
+            const storagePath = document.querySelector('input[name="storagePath"]').value;
+            const folderID = document.querySelector('input[name="folderID"]').value;
+
+            formData.append('userID', userID);
+            formData.append('storagePath', storagePath);
+            formData.append('folderID', folderID);
+
+            fileUploadHandler(new Event('submit', {cancelable: true, bubbles: true}), formData).then(r => {});
+        }
+    });
+});
+
+const fileUploadHandler = async (event, formData = null) => {
+    event.preventDefault(); // 폼의 기본 제출 동작 방지
+
+    // formData가 직접 전달되지 않은 경우, 폼에서 FormData 객체를 생성
+    if (!formData) {
+        const form = event.target;
+        formData = new FormData(form);
+    }
+
+    try {
+        const response = await fetch("/file/upload", {
+            method: "POST",
+            body: formData, // FormData 객체를 직접 전달
+        });
+
+        if (response.status === 200) {
+            // 성공적으로 업로드 완료 시 처리
+            alert("File uploaded successfully");
+            await enterFolder(formData.get("folderID"));
+        } else {
+            // 업로드 실패 시 처리
+            alert("File upload failed");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("An error occurred during the file upload");
+    }
+};
+
+
 const addFolderHandler = async (userID, folderID, storagePath) => {
     await fetch("/file/addFolder", {
         method: "POST",
@@ -14,7 +78,7 @@ const addFolderHandler = async (userID, folderID, storagePath) => {
             addFolderName: $("#addFolderName").val()
         }),
     }).then((response) => {
-        if (response.status === 200) location.reload();
+        if (response.status === 200) enterFolder(folderID);
         else alert("add folder failed");
     });
 }
@@ -28,12 +92,23 @@ const enterFolder = async (p) => {
             'X-Requested-With': 'XMLHttpRequest'
         }
     });
+
     if (response.ok) {
         const data = await response.json();
         console.log(data);
 
-        // const fileListElement = document.getElementById(".file-list-table");
-        // const fileListElement = $('.file-list-table');
+        const testView = document.getElementsByClassName('test-view')[0];
+        testView.innerHTML = '<div class="path">now path: ' + data.storagePath + '</div>\n' +
+            '                removeUserIdPath: ' + data.removeUserIdPath + '\n' +
+            '                parentFolderID: ' + data.parentFolderID + '';
+
+        const addFile = document.getElementsByClassName('add_file')[0];
+        addFile.children.item(2).value = data.storagePath;
+        addFile.children.item(3).value = data.p;
+
+        const addFolder = document.getElementById('addFolder');
+        addFolder.onclick = () => addFolderHandler(data.userID, data.p, data.storagePathJS);
+
         const fileListElement = document.getElementsByClassName('file-list-table')[0];
         fileListElement.innerHTML = '<tr>\n' +
             '                        <th>filename</th>\n' +

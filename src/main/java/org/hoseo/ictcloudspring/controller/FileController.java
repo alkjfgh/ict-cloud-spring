@@ -91,6 +91,7 @@ public class FileController {
                              @RequestParam("storagePath") String storagePath,
                              @RequestParam("folderID") int folderID) {
         System.out.println("FileController file upload post request");
+        // TODO 같은 이름의 파일 들어왔을 때 처리 생각해야함.
 
         int uploadFileSuccesses = fileService.uploadFile(file, userID, storagePath, folderID);
 
