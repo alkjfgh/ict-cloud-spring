@@ -30,7 +30,8 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append('storagePath', storagePath);
             formData.append('folderID', folderID);
 
-            fileUploadHandler(new Event('submit', {cancelable: true, bubbles: true}), formData).then(r => {});
+            fileUploadHandler(new Event('submit', {cancelable: true, bubbles: true}), formData).then(r => {
+            });
         }
     });
 });
@@ -43,16 +44,48 @@ const fileUploadHandler = async (event, formData = null) => {
         const form = event.target;
         formData = new FormData(form);
     }
+    const file = formData.get('file');
+
+    const modal = new bootstrap.Modal(document.getElementById('uploadModal'));
+    const progressBar = document.getElementById('progressBar');
+    const uploadDetails = document.getElementById('uploadDetails');
+
+    let startTime = new Date().getTime();
+
+    const updateProgress = (loaded, total) => {
+        const percentCompleted = Math.round((loaded * 100) / total);
+        const elapsedTime = (new Date().getTime() - startTime) / 1000; // seconds
+        const uploadSpeed = (loaded / elapsedTime) / 1024; // KB/s
+        const totalSize = (total / 1024).toFixed(2); // KB
+        const loadedSize = (loaded / 1024).toFixed(2); // KB
+        const remainingSize = ((total - loaded) / 1024).toFixed(2); // KB
+
+        progressBar.style.width = percentCompleted + '%';
+        progressBar.setAttribute('aria-valuenow', percentCompleted);
+        progressBar.innerText = percentCompleted + '%';
+
+        uploadDetails.innerText = `
+                    Upload Speed: ${uploadSpeed.toFixed(2)} KB/s
+                    Uploaded: ${loadedSize} KB / ${totalSize} KB
+                    Remaining: ${remainingSize} KB
+                `;
+    };
 
     try {
-        const response = await fetch("/file/upload", {
-            method: "POST",
-            body: formData, // FormData 객체를 직접 전달
+        modal.show();
+
+        const response = await axios.post('/file/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            onUploadProgress: (progressEvent) => {
+                updateProgress(progressEvent.loaded, progressEvent.total);
+            }
         });
 
         if (response.status === 200) {
             // 성공적으로 업로드 완료 시 처리
-            alert("File uploaded successfully");
+            // alert("File uploaded successfully");
             await enterFolder(formData.get("folderID"));
         } else {
             // 업로드 실패 시 처리
@@ -61,6 +94,8 @@ const fileUploadHandler = async (event, formData = null) => {
     } catch (error) {
         console.error("Error:", error);
         alert("An error occurred during the file upload");
+    } finally {
+        modal.hide();
     }
 };
 

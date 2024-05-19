@@ -9,6 +9,7 @@ import org.hoseo.ictcloudspring.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -86,16 +87,20 @@ public class FileController {
 
 
     @PostMapping("/file/upload")
-    public String fileUpload(@RequestParam("file") MultipartFile file,
-                             @RequestParam("userID") String userID,
-                             @RequestParam("storagePath") String storagePath,
-                             @RequestParam("folderID") int folderID) {
+    public ResponseEntity<String> fileUpload(@RequestParam("file") MultipartFile file,
+                                             @RequestParam("userID") String userID,
+                                             @RequestParam("storagePath") String storagePath,
+                                             @RequestParam("folderID") int folderID) {
         System.out.println("FileController file upload post request");
         // TODO 같은 이름의 파일 들어왔을 때 처리 생각해야함.
 
         int uploadFileSuccesses = fileService.uploadFile(file, userID, storagePath, folderID);
 
-        return "redirect:upload?p=" + folderID;
+        if (uploadFileSuccesses == 1) {
+            return ResponseEntity.ok("File uploaded successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed");
+        }
     }
 
     @ResponseBody
