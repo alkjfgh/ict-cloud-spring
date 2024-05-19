@@ -7,7 +7,7 @@
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="<c:url value="/css/upload.scss?ver=1"/>">
+    <link rel="stylesheet" href="<c:url value="/css/upload.css?ver=1"/>">
 </head>
 <body>
 <div>
@@ -32,7 +32,8 @@
             </div>
         </div>
         <div class="enter">
-            <form id="uploadForm" action="upload" method="post" enctype="multipart/form-data" onsubmit="return fileUploadHandler(event)">
+            <form id="uploadForm" action="upload" method="post" enctype="multipart/form-data"
+                  onsubmit="return fileUploadHandler(event)">
                 <div class="add"> <%--파일, 디렉토리 추가--%>
                     <div class="add_file">
                         <input type="file" name="file" required/>
@@ -61,23 +62,23 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div id="fileDetails">
+                        <!-- File details will be dynamically inserted here -->
+                    </div>
                     <div class="progress mb-3">
                         <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;"
                              aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <div>
-                        <p id="fileDetails"></p>
-                    </div>
+                    <button type="button" class="btn btn-primary d-none" id="downloadBtn" onclick="">Download</button>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
-<script src="<c:url value="/js/upload.js?ver=1"/>"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="<c:url value="/js/upload.js?ver=1"/>"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const initialFolderID = ${p}; // 초기 폴더 ID를 설정
         enterFolder(initialFolderID);
     });

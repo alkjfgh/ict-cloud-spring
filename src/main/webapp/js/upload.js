@@ -106,6 +106,8 @@ const fileUploadHandler = async (event, formData = null) => {
 
     const progressBarId = 'progressBar';
     const fileDetailsId = 'fileDetails';
+    const downloadBtn = document.getElementById('downloadBtn');
+    downloadBtn.classList.add('d-none');
     showModal();
 
     let startTime = new Date().getTime();
@@ -132,7 +134,7 @@ const fileUploadHandler = async (event, formData = null) => {
         console.error("Error:", error);
         alert("An error occurred during the file upload");
     } finally {
-        // hideModal();
+        hideModal();
     }
 };
 
@@ -141,6 +143,8 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
 
     const progressBarId = 'progressBar';
     const fileDetailsId = 'fileDetails';
+    const downloadBtn = document.getElementById('downloadBtn');
+    downloadBtn.classList.add('d-none');
     showModal();
 
     let startTime = new Date().getTime();
@@ -156,7 +160,7 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
         });
 
         if (response.status === 200) {
-            const blob = new Blob([response.data], { type: 'application/octet-stream' });
+            const blob = new Blob([response.data], {type: 'application/octet-stream'});
             const downloadUrl = window.URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = downloadUrl;
@@ -172,7 +176,7 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
         console.error('Error:', error);
         alert('파일을 다운로드하는 중 오류가 발생했습니다.');
     } finally {
-        // hideModal();
+        hideModal();
     }
 };
 
@@ -214,6 +218,7 @@ const enterFolder = async (p) => {
             '                parentFolderID: ' + data.parentFolderID + '';
 
         const addFile = document.getElementsByClassName('add_file')[0];
+        addFile.children.item(1).value = data.userID;
         addFile.children.item(2).value = data.storagePath;
         addFile.children.item(3).value = data.p;
 
@@ -226,7 +231,7 @@ const enterFolder = async (p) => {
             '                        <th>UploadDate</th>\n' +
             '                        <th>LastModifiedDate</th>\n' +
             '                        <th>filesize</th>\n' +
-            '                        <th>download</th>\n' +
+            '                        <th>filetype</th>\n' +
             '                    </tr>';
 
         if (data.removeUserIdPath !== 'root') {
@@ -282,19 +287,14 @@ const updateFileList = (fileList, userID) => {
         let fileInner3 = document.createElement("td");
         let fileInner4 = document.createElement("td");
         let fileInner5 = document.createElement("td");
-        let downloadBtn = document.createElement("div");
+
+        fileElement.className = "file-area";
 
         fileInner1.innerHTML = file.filename;
         fileInner2.innerHTML = file.uploadDate;
         fileInner3.innerHTML = file.lastModifiedDate;
         fileInner4.innerHTML = file.fileSize;
-
-        // downloadBtn.onclick = downLoadFile(userID, file.fileID, file.filename);
-        downloadBtn.onclick = () => fileDownloadHandler(userID, file.fileID, file.filename, file.fileSize);
-        downloadBtn.innerHTML = 'download';
-        downloadBtn.className = 'download-btn';
-
-        fileInner5.appendChild(downloadBtn);
+        fileInner5.innerHTML = file.fileType;
 
         fileElement.appendChild(fileInner1);
         fileElement.appendChild(fileInner2);
@@ -302,8 +302,24 @@ const updateFileList = (fileList, userID) => {
         fileElement.appendChild(fileInner4);
         fileElement.appendChild(fileInner5);
 
+        fileElement.onclick = () => showFileDetails(userID, file.fileID, file.filename, file.fileSize, fileType);
+
         tmpList.push(fileElement);
     });
 
     return tmpList;
+}
+
+const showFileDetails = (userID, fileID, filename, fileSize, fileType) => {
+    const fileDetails = document.getElementById('fileDetails');
+    fileDetails.innerHTML = `
+        <p>Filename: ${filename}</p>
+        <p>File Size: ${formatSize(fileSize)}</p>
+    `;
+
+    const downloadBtn = document.getElementById('downloadBtn');
+    downloadBtn.classList.remove('d-none');
+    downloadBtn.onclick = () => fileDownloadHandler(userID, fileID, filename, fileSize);
+
+    showModal();
 }

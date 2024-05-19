@@ -3,7 +3,7 @@
   margin: 0 auto;
   text-align: center;
 
-  .drag-drop-area{
+  .drag-drop-area {
     border: 2px dashed black;
   }
 
@@ -12,10 +12,16 @@
     margin: 2.5%;
     border-collapse: collapse;
 
+    .file-area:hover {
+      cursor: pointer;
+      background-color: blueviolet;
+    }
+
     tr {
       height: 3em;
 
       th {
+
       }
 
       td {
@@ -34,18 +40,6 @@
       .folder-area:hover {
         cursor: pointer;
         background-color: aquamarine;
-      }
-
-      .download-btn{
-        background-color: aqua;
-        height: 100%;
-        width: 100%;
-        color: darkgray;
-      }
-
-      .download-btn:hover{
-        cursor: pointer;
-        background-color: violet;
       }
     }
   }
