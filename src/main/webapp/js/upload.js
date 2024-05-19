@@ -97,8 +97,6 @@ const updateProgress = (progressBarId, downloadDetailsId, startTime, loaded, tot
     `;
 };
 
-
-
 const fileUploadHandler = async (event, formData = null) => {
     event.preventDefault(); // 폼의 기본 제출 동작 방지
 
@@ -142,8 +140,7 @@ const fileUploadHandler = async (event, formData = null) => {
     }
 };
 
-
-const downLoadFile = async (userID, fileID, filename, fileSize) => {
+const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
     console.log('download file');
 
     const modalId = 'downloadModal';
@@ -299,7 +296,7 @@ const updateFileList = (fileList, userID) => {
         fileInner4.innerHTML = file.fileSize;
 
         // downloadBtn.onclick = downLoadFile(userID, file.fileID, file.filename);
-        downloadBtn.onclick = () => downLoadFile(userID, file.fileID, file.filename, file.fileSize);
+        downloadBtn.onclick = () => fileDownloadHandler(userID, file.fileID, file.filename, file.fileSize);
         downloadBtn.innerHTML = 'download';
         downloadBtn.className = 'download-btn';
 

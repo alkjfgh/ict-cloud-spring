@@ -56,7 +56,7 @@
                             <td>${file.fileSize}</td>
                             <td>
                                 <div class="download-btn"
-                                     onclick="downLoadFile(${userID}, ${file.fileID}, '${file.filename}', ${file.fileSize})">download
+                                     onclick="fileDownloadHandler(${userID}, ${file.fileID}, '${file.filename}', ${file.fileSize})">download
                                 </div>
                             </td>
                         </tr>
