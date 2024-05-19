@@ -34,16 +34,17 @@
                         <th>filename</th>
                         <th>UploadDate</th>
                         <th>LastModifiedDate</th>
+                        <th>filesize</th>
                         <th>download</th>
                     </tr>
                     <c:if test="${removeUserIdPath ne 'root'}">
                         <tr>
-                            <td colspan="4" class="folder-area" onclick="enterFolder(${parentFolderID})">...</td>
+                            <td colspan="5" class="folder-area" onclick="enterFolder(${parentFolderID})">...</td>
                         </tr>
                     </c:if>
                     <c:forEach var="folder" items="${subFolderList}">
                         <tr>
-                            <td colspan="4" class="folder-area"
+                            <td colspan="5" class="folder-area"
                                 onclick="enterFolder(${folder.folderID})">${folder.folderName}</td>
                         </tr>
                     </c:forEach>
@@ -52,6 +53,7 @@
                             <td>${file.filename}</td>
                             <td>${file.uploadDate}</td>
                             <td>${file.lastModifiedDate}</td>
+                            <td>${file.fileSize}</td>
                             <td>
                                 <div class="download-btn"
                                      onclick="downLoadFile(${userID}, ${file.fileID}, '${file.filename}')">download
@@ -101,6 +103,25 @@
                     </div>
                     <div>
                         <p id="uploadDetails"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="downloadModalLabel">Downloading...</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="progress mb-3">
+                        <div id="downloadProgressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div>
+                        <p id="downloadDetails"></p>
                     </div>
                 </div>
             </div>
