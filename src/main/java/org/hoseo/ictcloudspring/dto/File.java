@@ -8,11 +8,8 @@ public class File {
     private Integer folderID; // NULL 가능성이 있으므로 Integer 사용
     private String filename;
     private long fileSize;
-    private String storagePath;
-    private java.sql.Timestamp uploadDate;
-    private java.sql.Timestamp lastModifiedDate;
+    private String fileType;
 
-    @Override
     public String toString() {
         return "File{" +
                 "fileID=" + fileID +
@@ -20,11 +17,26 @@ public class File {
                 ", folderID=" + folderID +
                 ", filename='" + filename + '\'' +
                 ", fileSize=" + fileSize +
+                ", fileType='" + fileType + '\'' +
                 ", storagePath='" + storagePath + '\'' +
                 ", uploadDate=" + uploadDate +
                 ", lastModifiedDate=" + lastModifiedDate +
                 '}';
     }
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    @Override
+
+
+    private String storagePath;
+    private java.sql.Timestamp uploadDate;
+    private java.sql.Timestamp lastModifiedDate;
 
     public int getFileID() {
         return fileID;
