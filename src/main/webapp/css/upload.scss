@@ -1,5 +1,5 @@
 .file-list-container {
-  width: 90%;
+  width: 100%;
   margin: 0 auto;
   text-align: center;
 
@@ -8,8 +8,8 @@
   }
 
   .file-list-table {
-    width: 95%;
-    margin: 2.5%;
+    width: 100%;
+    //margin: 2.5%;
     border-collapse: collapse;
 
     .file-area:hover {
@@ -18,7 +18,7 @@
     }
 
     tr {
-      height: 3em;
+      height: 4em;
 
       th {
 
@@ -41,6 +41,45 @@
         cursor: pointer;
         background-color: aquamarine;
       }
+
+      .folder-area::before {
+        content: '\f07b'; /* Font Awesome folder icon */
+        font-family: 'Font Awesome 5 Free', serif;
+        font-weight: 900;
+        padding-right: 0.5em;
+      }
+    }
+
+    .file-area td:nth-of-type(1)::before {
+      content: '\f15b'; /* Font Awesome file icon */
+      font-family: 'Font Awesome 5 Free', serif;
+      font-weight: 900;
+      padding-right: 0.5em;
+    }
+
+    /* Example for specific file types */
+    .file-area.pdf td:nth-of-type(1)::before {
+      content: '\f1c1'; /* Font Awesome file-pdf icon */
+    }
+
+    .file-area.doc td:nth-of-type(1)::before {
+      content: '\f1c2'; /* Font Awesome file-word icon */
+    }
+
+    .file-area.xls td:nth-of-type(1)::before {
+      content: '\f1c3'; /* Font Awesome file-excel icon */
+    }
+
+    .file-area.img td:nth-of-type(1)::before {
+      content: '\f1c5'; /* Font Awesome file-image icon */
+    }
+
+    .file-area.zip td:nth-of-type(1)::before {
+      content: '\f1c6'; /* Font Awesome file-image icon */
+    }
+
+    .file-area.video td:nth-of-type(1)::before {
+      content: '\f1c8'; /* Font Awesome file-video icon */
     }
   }
 }

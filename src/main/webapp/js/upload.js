@@ -288,7 +288,9 @@ const updateFileList = (fileList, userID) => {
         let fileInner4 = document.createElement("td");
         let fileInner5 = document.createElement("td");
 
-        fileElement.className = "file-area";
+        let fileTypeClass = getFileTypeClass(file.fileType);
+
+        fileElement.className = `file-area ${fileTypeClass}`;
 
         fileInner1.innerHTML = file.filename;
         fileInner2.innerHTML = file.uploadDate;
@@ -308,6 +310,33 @@ const updateFileList = (fileList, userID) => {
     });
 
     return tmpList;
+}
+
+const getFileTypeClass = (fileType) => {
+    switch(fileType) {
+        case 'pdf':
+            return 'pdf';
+        case 'doc':
+        case 'docx':
+            return 'doc';
+        case 'xls':
+        case 'xlsx':
+            return 'xls';
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+            return 'img';
+        case 'mp4':
+        case 'avi':
+            return 'video';
+        case 'zip':
+        case 'rar':
+        case 'tar':
+        case 'gz':
+            return 'zip';
+        default:
+            return '';
+    }
 }
 
 const showFileDetails = (userID, fileID, filename, fileSize, fileType) => {
