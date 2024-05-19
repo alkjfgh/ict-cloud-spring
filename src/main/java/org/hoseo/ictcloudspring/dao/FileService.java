@@ -4,18 +4,12 @@ import org.hoseo.ictcloudspring.connection.DBConnectionPool;
 import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.xml.transform.Result;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +33,7 @@ public class FileService {
         }
     }
 
-    public int uploadFile(MultipartFile file, String userID, String storagePath, int folderID) {
+    public int uploadFile(MultipartFile file, String userID, String storagePath, int folderID, String extension) {
         if (file.isEmpty()) {
             System.out.println("파일이 비어있습니다.");
             return 0;
@@ -53,6 +47,7 @@ public class FileService {
         newFile.setFolderID(folderID);
         newFile.setFilename(fileName);
         newFile.setFileSize(file.getSize());
+        newFile.setFileType(extension);
         newFile.setUploadDate(new Timestamp(System.currentTimeMillis()));
 
         boolean writeSuccesses = fileWrite(uploadFolderPath + SEPARATOR + storagePath + SEPARATOR + fileName, file);
@@ -60,8 +55,8 @@ public class FileService {
         if (writeSuccesses) {
             PreparedStatement psmt = null;
             try {
-                String query = "INSERT INTO Files(UserID, FolderID, Filename, FileSize, StoragePath, UploadDate, LastModifiedDate) " +
-                        "VALUES (?, ?, ?, ?, ?, SYSDATE(), SYSDATE());";
+                String query = "INSERT INTO Files(UserID, FolderID, Filename, FileSize, StoragePath, UploadDate, LastModifiedDate, fileType) " +
+                        "VALUES (?, ?, ?, ?, ?, SYSDATE(), SYSDATE(), ?);";
                 System.out.println(query);
                 System.out.println(newFile);
 
@@ -72,6 +67,7 @@ public class FileService {
                 psmt.setString(3, newFile.getFilename());
                 psmt.setLong(4, newFile.getFileSize());
                 psmt.setString(5, newFile.getStoragePath());
+                psmt.setString(6, newFile.getFileType());
 
                 boolean executed = psmt.execute();
                 if (executed) {
@@ -175,6 +171,7 @@ public class FileService {
                     file.setFilename(rs.getString("Filename"));
                     file.setFileSize(rs.getLong("FileSize"));
                     file.setStoragePath(rs.getString("StoragePath"));
+                    file.setFileType(rs.getString("fileType"));
                     file.setUploadDate(rs.getTimestamp("UploadDate"));
                     file.setLastModifiedDate(rs.getTimestamp("LastModifiedDate"));
 
@@ -299,37 +296,8 @@ public class FileService {
         return parentFolderID;
     }
 
-    public byte[] getFile(int userID, int fileID) throws IOException {
-        // TODO user 검증 여기서? 생각해봐야함
-        String query = "SELECT storagePath, filename FROM Files WHERE fileID = ?";
-        String storagePath = "";
-        String filename = "";
-
-        try(PreparedStatement psmt = con.prepareStatement(query)) {
-            psmt.setInt(1, fileID);
-
-            try (ResultSet rs = psmt.executeQuery()) {
-                if(rs.next()){
-                    storagePath = rs.getString(1);
-                    filename = rs.getString(2);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            try {
-                storagePath = rs.getString(1);
-            } catch (SQLException ex) {
-                e.printStackTrace();
-            }
-        }
-
-        // 예제 경로. 실제 경로로 변경하세요.
-        String realFilePath = uploadFolderPath + SEPARATOR + storagePath + SEPARATOR + filename;
-        Path path = Paths.get(realFilePath);
-        return Files.readAllBytes(path);
-    }
-
     public InputStream getFileStream(int userID, int fileID) throws IOException {
+        // TODO user 검증 여기서? 생각해봐야함
         String query = "SELECT storagePath, filename FROM Files WHERE fileID = ?";
         String storagePath = "";
         String filename = "";

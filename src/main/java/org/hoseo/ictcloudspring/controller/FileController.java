@@ -2,6 +2,7 @@ package org.hoseo.ictcloudspring.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.io.FilenameUtils;
 import org.hoseo.ictcloudspring.dao.FileService;
 import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
@@ -97,7 +98,7 @@ public class FileController {
         System.out.println("FileController file upload post request");
         // TODO 같은 이름의 파일 들어왔을 때 처리 생각해야함.
 
-        int uploadFileSuccesses = fileService.uploadFile(file, userID, storagePath, folderID);
+        int uploadFileSuccesses = fileService.uploadFile(file, userID, storagePath, folderID, FilenameUtils.getExtension(file.getOriginalFilename()));
 
         if (uploadFileSuccesses == 1) {
             return ResponseEntity.ok("File uploaded successfully");

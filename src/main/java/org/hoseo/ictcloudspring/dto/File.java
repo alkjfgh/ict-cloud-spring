@@ -10,6 +10,7 @@ public class File {
     private long fileSize;
     private String fileType;
 
+    @Override
     public String toString() {
         return "File{" +
                 "fileID=" + fileID +
@@ -30,9 +31,6 @@ public class File {
     public void setFileType(String fileType) {
         this.fileType = fileType;
     }
-
-    @Override
-
 
     private String storagePath;
     private java.sql.Timestamp uploadDate;
