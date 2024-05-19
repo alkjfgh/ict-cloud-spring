@@ -1,6 +1,3 @@
-$(document).ready(() => {
-});
-
 document.addEventListener("DOMContentLoaded", function () {
     const dragDropArea = document.getElementsByClassName('drag-drop-area')[0];
 
@@ -36,13 +33,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-const showModal = (modalId) => {
-    const modal = new bootstrap.Modal(document.getElementById(modalId));
+const showModal = () => {
+    const modal = new bootstrap.Modal(document.getElementById('fileModal'));
     modal.show();
 };
 
-const hideModal = (modalId) => {
-    const modal = new bootstrap.Modal(document.getElementById(modalId));
+const hideModal = () => {
+    const modal = new bootstrap.Modal(document.getElementById('fileModal'));
     modal.hide();
 };
 
@@ -62,9 +59,9 @@ const formatSize = (size) => {
     return size.toFixed(2) + ' bytes';
 };
 
-const updateProgress = (progressBarId, downloadDetailsId, startTime, loaded, total) => {
+const updateProgress = (progressBarId, fileDetailsId, startTime, loaded, total) => {
     const progressBar = document.getElementById(progressBarId);
-    const downloadDetails = document.getElementById(downloadDetailsId);
+    const fileDetails = document.getElementById(fileDetailsId);
 
     const percentCompleted = total ? Math.round((loaded * 100) / total) : 0;
     const elapsedTime = (new Date().getTime() - startTime) / 1000; // seconds
@@ -88,7 +85,7 @@ const updateProgress = (progressBarId, downloadDetailsId, startTime, loaded, tot
     progressBar.setAttribute('aria-valuenow', percentCompleted);
     progressBar.innerText = percentCompleted + '%';
 
-    downloadDetails.innerText = `
+    fileDetails.innerText = `
         Speed: ${speed} /s
         Loaded: ${loadedSize} / ${totalSize}
         Remaining: ${remainingSize}
@@ -107,10 +104,9 @@ const fileUploadHandler = async (event, formData = null) => {
     }
     const file = formData.get('file');
 
-    const modalId = 'uploadModal';
     const progressBarId = 'progressBar';
-    const uploadDetailsId = 'uploadDetails';
-    showModal(modalId);
+    const fileDetailsId = 'fileDetails';
+    showModal();
 
     let startTime = new Date().getTime();
 
@@ -120,7 +116,7 @@ const fileUploadHandler = async (event, formData = null) => {
                 'Content-Type': 'multipart/form-data'
             },
             onUploadProgress: (progressEvent) => {
-                updateProgress(progressBarId, uploadDetailsId, startTime, progressEvent.loaded, progressEvent.total);
+                updateProgress(progressBarId, fileDetailsId, startTime, progressEvent.loaded, progressEvent.total);
             }
         });
 
@@ -136,17 +132,16 @@ const fileUploadHandler = async (event, formData = null) => {
         console.error("Error:", error);
         alert("An error occurred during the file upload");
     } finally {
-        // hideModal(modalId);
+        // hideModal();
     }
 };
 
 const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
     console.log('download file');
 
-    const modalId = 'downloadModal';
-    const progressBarId = 'downloadProgressBar';
-    const downloadDetailsId = 'downloadDetails';
-    showModal(modalId);
+    const progressBarId = 'progressBar';
+    const fileDetailsId = 'fileDetails';
+    showModal();
 
     let startTime = new Date().getTime();
 
@@ -156,7 +151,7 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
             method: 'GET',
             responseType: 'blob',
             onDownloadProgress: (progressEvent) => {
-                updateProgress(progressBarId, downloadDetailsId, startTime, progressEvent.loaded, fileSize /*progressEvent.total*/);
+                updateProgress(progressBarId, fileDetailsId, startTime, progressEvent.loaded, fileSize /*progressEvent.total*/);
             }
         });
 
@@ -177,7 +172,7 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
         console.error('Error:', error);
         alert('파일을 다운로드하는 중 오류가 발생했습니다.');
     } finally {
-        // hideModal(modalId);
+        // hideModal();
     }
 };
 
@@ -275,7 +270,6 @@ const updateFolderList = (folderList) => {
 
     return tmpList;
 }
-
 
 const updateFileList = (fileList, userID) => {
     console.log(fileList);
