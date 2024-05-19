@@ -302,7 +302,7 @@ const updateFileList = (fileList, userID) => {
         fileElement.appendChild(fileInner4);
         fileElement.appendChild(fileInner5);
 
-        fileElement.onclick = () => showFileDetails(userID, file.fileID, file.filename, file.fileSize, fileType);
+        fileElement.onclick = () => showFileDetails(userID, file.fileID, file.filename, file.fileSize, file.fileType);
 
         tmpList.push(fileElement);
     });
@@ -321,5 +321,36 @@ const showFileDetails = (userID, fileID, filename, fileSize, fileType) => {
     downloadBtn.classList.remove('d-none');
     downloadBtn.onclick = () => fileDownloadHandler(userID, fileID, filename, fileSize);
 
+    // 파일 유형이 비디오인 경우 Plyr을 사용하여 비디오 플레이어 표시
+    if (isVideoFile(fileType)) {
+        showVideo(`
+        https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4
+        `);
+    }
+
     showModal();
 }
+
+// 파일 유형이 비디오인지 확인하는 함수
+const isVideoFile = (fileType) => {
+    // 비디오 파일 확장자 목록
+    const videoExtensions = ['mp4', 'avi', 'mkv', 'mov', 'wmv'];
+
+    // 비디오 파일 확장자 목록에 포함되어 있는지 확인
+    return videoExtensions.includes(fileType);
+}
+
+const showVideo = (videoSource) => {
+    // Video.js로 비디오 플레이어 설정
+    const player = videojs('video-container', {
+        controls: true,
+        autoplay: true,
+        sources: [{
+            src: videoSource,
+            type: 'video/mp4',
+        }],
+    });
+
+    // 비디오 플레이어 재생
+    player.play();
+};
