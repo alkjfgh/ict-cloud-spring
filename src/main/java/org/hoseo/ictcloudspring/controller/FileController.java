@@ -132,31 +132,6 @@ public class FileController {
         return response;
     }
 
-//    @GetMapping("/file/download")
-//    public ResponseEntity<byte[]> downloadFile(
-//            @RequestParam("userID") int userID,
-//            @RequestParam("fileID") int fileID,
-//            @RequestParam("filename") String filename) {
-//        System.out.println("File Controller download file");
-//        System.out.println(fileID + ", " + userID + ", " + filename);
-//
-//        byte[] fileContent = new byte[0];
-//        try {
-//            fileContent = fileService.getFile(userID, fileID);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        String mimeType = "application/octet-stream";
-//        String encodedFileName = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
-//        String contentDisposition = "attachment; filename*=UTF-8''" + encodedFileName;
-//
-//        return ResponseEntity.ok()
-//                .contentType(MediaType.parseMediaType(mimeType))
-//                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-//                .body(fileContent);
-//    }
-
     @GetMapping("/file/download")
     public ResponseEntity<StreamingResponseBody> downloadFile(
             @RequestParam("userID") int userID,
