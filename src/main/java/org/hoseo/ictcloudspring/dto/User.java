@@ -9,6 +9,8 @@ public class User {
     private String password;
     private java.sql.Timestamp registrationDate;
 
+    private int level;
+
     @Override
     public String toString() {
         return "User{" +
@@ -17,7 +19,16 @@ public class User {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", registrationDate=" + registrationDate +
+                ", level=" + level +
                 '}';
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public int getUserID() { return userID; }
