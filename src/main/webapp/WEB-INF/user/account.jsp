@@ -43,7 +43,6 @@
         <div class="signup-text">
             <h3>회원가입</h3>
         </div>
-        <%--            TODO 정규식 검사 해야함--%>
 
         <div class="signup-name">
             <lable for="signup-name">이름 :</lable>
@@ -61,7 +60,6 @@
         </div>
 
         <%--            비밀번호 확인 기능 추가--%>
-        <%--            todo 비밀번호 확인 기능--%>
         <div class="signup-pwd-check">
             <lable for="signup-confirm-pwd">비밀번호 확인 :</lable>
             <input type="password" id="input-signup-pwd-check" placeholder="비밀번호 확인">

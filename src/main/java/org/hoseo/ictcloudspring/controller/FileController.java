@@ -165,4 +165,29 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                 .body(responseBody);
     }
+
+    @GetMapping("/file/stream")
+    public ResponseEntity<StreamingResponseBody> streamVideo(
+            @RequestParam("userID") int userID,
+            @RequestParam("fileID") int fileID) {
+        System.out.println("File Controller stream video");
+
+        StreamingResponseBody responseBody = outputStream -> {
+            try {
+                InputStream inputStream = fileService.getFileStream(userID, fileID);
+                byte[] buffer = new byte[1024 * 1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        };
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf("video/mp4")) // 비디오 파일 형식에 맞게 조정
+                .body(responseBody);
+    }
 }

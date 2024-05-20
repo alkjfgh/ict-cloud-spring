@@ -6,14 +6,16 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js"
             integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <link href="https://vjs.zencdn.net/7.15.4/video-js.css" rel="stylesheet">
-    <script src="https://vjs.zencdn.net/7.15.4/video.js"></script>
+    <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
+
+    <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<c:url value="/css/upload.css?ver=1"/>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
 <div>
+<%-- TODO 파일, 폴더 삭제추가 해야함 --%>
     <div class="head1">
         <div class="logo">
         </div>
@@ -65,8 +67,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div id="video-container" class="video-js vjs-default-skin"
-                         style="width: 400px; height: 300px;"></div>
+                    <div id="videoContainer" class="d-none">
+                        <video id="videoPlayer" class="video-js vjs-default-skin" controls preload="auto">
+                            <source id="videoSource" src="" type="video/mp4">
+                        </video>
+                    </div>
                     <div id="fileDetails">
                         <!-- File details will be dynamically inserted here -->
                     </div>

@@ -319,4 +319,8 @@ public class FileService {
         String realFilePath = uploadFolderPath + SEPARATOR + storagePath + SEPARATOR + filename;
         return new FileInputStream(new java.io.File(realFilePath));
     }
+
+    public boolean isVideoFile(String fileType) {
+        return fileType.equalsIgnoreCase("mp4") || fileType.equalsIgnoreCase("avi");
+    }
 }

@@ -43,6 +43,21 @@ const hideModal = () => {
     modal.hide();
 };
 
+const resetModal = () => {
+    const progressBar = document.getElementById('progressBar');
+    const fileDetails = document.getElementById('fileDetails');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    progressBar.style.width = '0%';
+    progressBar.setAttribute('aria-valuenow', 0);
+    progressBar.innerText = '0%';
+
+    fileDetails.innerText = '';
+
+    downloadBtn.classList.add('d-none');
+    downloadBtn.onclick = null;
+};
+
 const formatSize = (size) => {
     if (size === 'N/A') {
         return size;
@@ -58,6 +73,28 @@ const formatSize = (size) => {
     }
     return size.toFixed(2) + ' bytes';
 };
+
+const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+
+    date.setHours(date.getHours() + 9);
+
+// 한국 표준 시간대 (KST)로 변환하여 포맷
+    const options = {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    };
+
+    const formatter = new Intl.DateTimeFormat('ko-KR', options);
+    const formattedDate = formatter.format(date);
+
+    return formattedDate;
+}
 
 const updateProgress = (progressBarId, fileDetailsId, startTime, loaded, total) => {
     const progressBar = document.getElementById(progressBarId);
@@ -134,7 +171,8 @@ const fileUploadHandler = async (event, formData = null) => {
         console.error("Error:", error);
         alert("An error occurred during the file upload");
     } finally {
-        hideModal();
+        // resetModal();
+        // hideModal();
     }
 };
 
@@ -176,7 +214,8 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
         console.error('Error:', error);
         alert('파일을 다운로드하는 중 오류가 발생했습니다.');
     } finally {
-        hideModal();
+        // resetModal();
+        // hideModal();
     }
 };
 
@@ -293,9 +332,9 @@ const updateFileList = (fileList, userID) => {
         fileElement.className = `file-area ${fileTypeClass}`;
 
         fileInner1.innerHTML = file.filename;
-        fileInner2.innerHTML = file.uploadDate;
-        fileInner3.innerHTML = file.lastModifiedDate;
-        fileInner4.innerHTML = file.fileSize;
+        fileInner2.innerHTML = formatDate(file.uploadDate);
+        fileInner3.innerHTML = formatDate(file.lastModifiedDate);
+        fileInner4.innerHTML = formatSize(file.fileSize);
         fileInner5.innerHTML = file.fileType;
 
         fileElement.appendChild(fileInner1);
@@ -339,7 +378,7 @@ const getFileTypeClass = (fileType) => {
     }
 }
 
-const showFileDetails = (userID, fileID, filename, fileSize, fileType) => {
+const showFileDetails = async (userID, fileID, filename, fileSize, fileType) => {
     const fileDetails = document.getElementById('fileDetails');
     fileDetails.innerHTML = `
         <p>Filename: ${filename}</p>
@@ -350,36 +389,77 @@ const showFileDetails = (userID, fileID, filename, fileSize, fileType) => {
     downloadBtn.classList.remove('d-none');
     downloadBtn.onclick = () => fileDownloadHandler(userID, fileID, filename, fileSize);
 
-    // 파일 유형이 비디오인 경우 Plyr을 사용하여 비디오 플레이어 표시
+    resetVideoPlayer();
+
     if (isVideoFile(fileType)) {
-        showVideo(`
-        https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4
-        `);
+        const videoUrl = `/file/stream?userID=${encodeURIComponent(userID)}&fileID=${encodeURIComponent(fileID)}`;
+        // const videoUrl = `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4`;
+        showVideo(videoUrl);
     }
 
     showModal();
 }
 
-// 파일 유형이 비디오인지 확인하는 함수
 const isVideoFile = (fileType) => {
-    // 비디오 파일 확장자 목록
     const videoExtensions = ['mp4', 'avi', 'mkv', 'mov', 'wmv'];
-
-    // 비디오 파일 확장자 목록에 포함되어 있는지 확인
     return videoExtensions.includes(fileType);
 }
 
-const showVideo = (videoSource) => {
-    // Video.js로 비디오 플레이어 설정
-    const player = videojs('video-container', {
-        controls: true,
-        autoplay: true,
-        sources: [{
-            src: videoSource,
-            type: 'video/mp4',
-        }],
-    });
+const showVideo = (videoSourceUrl) => {
+    const videoContainer = document.getElementById('videoContainer');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const videoSourceElement = document.getElementById('videoSource');
 
-    // 비디오 플레이어 재생
-    player.play();
+    console.log(!videoContainer)
+    console.log(!videoPlayer)
+    console.log(!videoSourceElement)
+
+    // Check if the elements are found
+    if (!videoContainer || !videoPlayer || !videoSourceElement) {
+        console.error('Video container, player, or source element not found.');
+        return;
+    }
+
+    videoSourceElement.src = videoSourceUrl;
+    videoPlayer.load();
+
+    videoContainer.classList.remove('d-none');
+
+    videojs(videoPlayer, {
+        controls: true,
+        autoplay: false,
+        preload: 'auto'
+    });
 };
+
+const resetVideoPlayer = () => {
+    const videoContainer = document.getElementById('videoContainer');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const videoSourceElement = document.getElementById('videoSource');
+
+    // 기존 Video.js 인스턴스 제거
+    if (videoPlayer) {
+        videojs(videoPlayer).dispose();
+    }
+
+    // videoSourceElement src 속성 초기화
+    // if (videoSourceElement) {
+    //     videoSourceElement.src = '';
+    // }
+
+    // videoContainer를 숨김
+    if (videoContainer) {
+        videoContainer.innerHTML = '\n' +
+            '                    <video id="videoPlayer" class="video-js vjs-default-skin" controls preload="auto" width="100%" height="264">\n' +
+            '                        <source id="videoSource" src="" type="video/mp4">\n' +
+            '                    </video>';
+        videoContainer.classList.add('d-none');
+    }
+
+    // videoPlayer 요소를 다시 초기화
+    // if (videoPlayer) {
+    //     videoPlayer.innerHTML = '<source id="videoSource" src="" type="video/mp4">';
+    // }
+};
+
+document.getElementById('fileModal').addEventListener('hidden.bs.modal', resetModal);
