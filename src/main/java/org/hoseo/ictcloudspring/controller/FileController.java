@@ -211,4 +211,6 @@ public class FileController {
                 .contentType(MediaType.valueOf("video/mp4")) // 비디오 파일 형식에 맞게 조정
                 .body(responseBody);
     }
+
+    // TODO 사람마다 저장용량 설정 해야함. 다운로드 속도 정할지 고민
 }
