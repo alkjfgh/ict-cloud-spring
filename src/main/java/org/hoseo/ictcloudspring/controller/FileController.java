@@ -141,18 +141,39 @@ public class FileController {
         System.out.println("File Controller download file");
         System.out.println(fileID + ", " + userID + ", " + filename);
 
-        // Use a streaming response body
         StreamingResponseBody responseBody = outputStream -> {
+            InputStream inputStream = null;
             try {
-                InputStream inputStream = fileService.getFileStream(userID, fileID);
-                byte[] buffer = new byte[1024];
+                inputStream = fileService.getFileStream(userID, fileID);
+                byte[] buffer = new byte[1024 * 1024];
                 int bytesRead;
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
+                    try {
+                        outputStream.write(buffer, 0, bytesRead);
+                        outputStream.flush();
+                    } catch (IOException e) {
+                        if (e.getCause() instanceof org.apache.catalina.connector.ClientAbortException) {
+                            System.out.println("클라이언트가 다운로드를 중단했습니다: " + e.getMessage());
+                            break;
+                        } else {
+                            throw e;
+                        }
+                    }
                 }
-                inputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                if (e instanceof org.apache.catalina.connector.ClientAbortException) {
+                    System.out.println("클라이언트가 다운로드를 중단했습니다: " + e.getMessage());
+                } else {
+                    e.printStackTrace();
+                }
+            } finally {
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         };
 

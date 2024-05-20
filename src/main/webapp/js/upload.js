@@ -192,6 +192,7 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
             url: `/file/download?userID=${encodeURIComponent(userID)}&fileID=${encodeURIComponent(fileID)}&filename=${encodeURIComponent(filename)}`,
             method: 'GET',
             responseType: 'blob',
+            timeout: 600000, // 10 minutes
             onDownloadProgress: (progressEvent) => {
                 updateProgress(progressBarId, fileDetailsId, startTime, progressEvent.loaded, fileSize /*progressEvent.total*/);
             }
@@ -462,4 +463,12 @@ const resetVideoPlayer = () => {
     // }
 };
 
-document.getElementById('fileModal').addEventListener('hidden.bs.modal', resetModal);
+document.getElementById('fileModal').addEventListener('hidden.bs.modal', function () {
+    const modalBackdrop = document.querySelector('.modal-backdrop');
+    if (modalBackdrop) {
+        modalBackdrop.parentNode.removeChild(modalBackdrop);
+    }
+    resetModal();
+});
+
+//TODO 파일 다운로드 및 업로드 중에 모달창 안꺼지게. 끈다면 작업이 중단 되도록 하게.
