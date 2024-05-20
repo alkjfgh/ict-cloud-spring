@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="utf-8" %>
 <html lang="en">
 <head>
@@ -7,8 +8,8 @@
     <%--    <link rel="stylesheet" href="account.less?ver=1">--%>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link href='https://fonts.googleapis.com/css?family=Nunito:600,700&display=swap' rel='stylesheet'>
-    <link rel="stylesheet" href="../../css/account.css?ver=1">
-    <script src="../../js/account.js?ver=1"></script>
+    <link rel="stylesheet" href="<c:url value="/css/account.css?ver=1"/>">
+    <script src="<c:url value="/js/account.js?ver=1"/>"></script>
 </head>
 <body>
 <div class="login-page">

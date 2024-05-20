@@ -2,8 +2,6 @@
 const submitForm = (event) => {
     event.preventDefault(); // 기본 폼 제출 동작을 막습니다.
 
-    alert("logIn-form");
-
     $.ajax({
         url: '/user/signIn',
         type: 'POST',

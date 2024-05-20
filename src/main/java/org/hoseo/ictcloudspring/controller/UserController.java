@@ -31,6 +31,13 @@ public class UserController {
         return "redirect:user/account";
     }
 
+    @RequestMapping("/user/info")
+    public String userInfo() {
+        System.out.println("UserController info");
+
+        return "user/userInfo";
+    }
+
     @GetMapping("/user/account")
     public String isSignInSession(HttpServletRequest request) {
         System.out.println("UserController user session check");
