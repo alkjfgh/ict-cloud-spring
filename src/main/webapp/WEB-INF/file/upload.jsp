@@ -18,6 +18,7 @@
 <%-- TODO 파일, 폴더 삭제추가 해야함 --%>
     <div class="head1">
         <div class="logo">
+
         </div>
         <div class="history"> <%--기록 페이지로 이동--%>
             <a href=""></a>
@@ -41,7 +42,7 @@
                   onsubmit="return fileUploadHandler(event)">
                 <div class="add"> <%--파일, 디렉토리 추가--%>
                     <div class="add_file">
-                        <input type="file" name="file" required/>
+                        <input type="file" name="file" id="file" required/> <%-- 버튼속성 --%>
                         <input type="text" name="userID" value="" id="userID" readonly>
                         <input type="text" name="storagePath" value="" id="storagePath" readonly>
                         <input type="number" name="folderID" value="" id="folderID" hidden readonly>
