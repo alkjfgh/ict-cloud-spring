@@ -11,6 +11,12 @@ body {
     align-items: center;
     height: 100vh;
 }
+.modal-title{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
 .row{
     margin-bottom: 5em;
 }
@@ -92,4 +98,5 @@ input[type=password]{
 .input-signup-pwd-check{
     width: 280px;
     height: 40px;
+    padding-left: 10px;
 }
