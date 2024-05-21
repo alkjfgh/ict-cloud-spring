@@ -6,6 +6,8 @@ import org.hoseo.ictcloudspring.dao.UserService;
 import org.hoseo.ictcloudspring.dto.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -73,25 +75,64 @@ public class UserController {
 
 
     @PostMapping("/user/signUp")
-    public ModelAndView signUp(@ModelAttribute User user) {
+    public ResponseEntity<String> signUp(@RequestBody User user) {
         System.out.println("SignIn Controller signUp");
         System.out.println("User: " + user);
-
-        ModelAndView mav = new ModelAndView();
 
         int isSignUp = userService.insertUser(user); // userService를 통해 사용자 등록 로직을 처리합니다.
 
         if (isSignUp == 1) {
-            mav.addObject("message", "회원가입 성공" + user);
-            mav.addObject("extraMessage", "기본 root 파일을 생성합니다.");
-            mav.setViewName("redirect:user/account"); // 회원가입 성공 시 보여줄 뷰의 이름
+            return ResponseEntity.ok("success");
+
+//            mav.addObject("message", "회원가입 성공" + user);
+//            mav.addObject("extraMessage", "기본 root 파일을 생성합니다.");
+//            mav.setViewName("redirect:user/account"); // 회원가입 성공 시 보여줄 뷰의 이름
         } else {
-            mav.addObject("message", "회원가입 실패" + user);
-            mav.setViewName("redirect:failurePage"); // 회원가입 실패 시 보여줄 뷰의 이름
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed");
+        }
+    }
+
+    @GetMapping("/user/generateToken")
+    public ResponseEntity<Map<String, String>> generateToken(@RequestParam("email") String email) {
+        System.out.println("SignIn Controller generateToken");
+        String token = userService.generatedToken(email);
+        Map<String, String> responseMap = new HashMap<>();
+
+        if (token == null) responseMap.put("successes", "error");
+        else {
+            responseMap.put("successes", "successes");
+            responseMap.put("token", token);
         }
 
-        return mav;
+        return ResponseEntity.ok(responseMap);
+    }
 
-        // TODO 페이지 이동 처리 해야함 signin 처럼 js에서
+    @GetMapping("/user/getToken")
+    public ResponseEntity<Map<String, String>> getToken(@RequestParam("email") String email) {
+        System.out.println("SignIn Controller getToken");
+        String token = userService.getToken(email);
+        Map<String, String> responseMap = new HashMap<>();
+
+        if (token == null) responseMap.put("successes", "error");
+        else {
+            responseMap.put("successes", "successes");
+            responseMap.put("token", token);
+        }
+
+        return ResponseEntity.ok(responseMap);
+    }
+
+    @GetMapping("/user/deleteToken")
+    public ResponseEntity<Map<String, String>> deleteToken(@RequestParam("email") String email) {
+        System.out.println("SignIn Controller deleteToken");
+        int excuted = userService.deleteToken(email);
+        Map<String, String> responseMap = new HashMap<>();
+
+        if (excuted == 0) responseMap.put("successes", "error");
+        else {
+            responseMap.put("successes", "successes");
+        }
+
+        return ResponseEntity.ok(responseMap);
     }
 }

@@ -1,6 +1,8 @@
 package org.hoseo.ictcloudspring.dao;
 
+import org.hibernate.annotations.processing.SQL;
 import org.hoseo.ictcloudspring.connection.DBConnectionPool;
+import org.hoseo.ictcloudspring.dto.Token;
 import org.hoseo.ictcloudspring.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ public class UserService {
         int isSignUp = 0;
         ResultSet rs = null;
 
-        try{
+        try {
             String query = "INSERT INTO Users(name, email, password, registrationDate)" +
                     " VALUES(?, ?, ?, SYSDATE())"; // 회원가입한 유저 정보를 테이블에 저장 하는 쿼리
             System.out.println(query);
@@ -58,7 +60,7 @@ public class UserService {
             System.out.println("insert user: " + e.getMessage());
         } finally {
             try {
-                if (psmt!=null) psmt.close();
+                if (psmt != null) psmt.close();
                 if (rs != null) rs.close();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
@@ -68,12 +70,14 @@ public class UserService {
         return isSignUp;
     }
 
-    /** userId에 맞는 공간에 root 폴더를 생성하는 메소드 **/
+    /**
+     * userId에 맞는 공간에 root 폴더를 생성하는 메소드
+     **/
     private int initFolder(int userId) {
         PreparedStatement psmt = null;
         int isInitFolder = 0;
 
-        try{
+        try {
             String query = "INSERT INTO Folders (FolderName, UserID, storagePath) VALUES (?, ?, ?)";
             System.out.println(query);
             psmt = con.prepareStatement(query);
@@ -83,11 +87,11 @@ public class UserService {
             psmt.setString(3, userId + File.separator + "root"); //root 폴더 생성
 
             isInitFolder = psmt.executeUpdate();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println("initFolder: " + e.getMessage());
-        }  finally {
+        } finally {
             try {
-                if (psmt!=null) psmt.close();
+                if (psmt != null) psmt.close();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
@@ -121,7 +125,7 @@ public class UserService {
         } finally {
             // 자원을 해제합니다.
             try {
-                if (psmt!=null) psmt.close();
+                if (psmt != null) psmt.close();
                 if (rs != null) rs.close();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
@@ -129,5 +133,59 @@ public class UserService {
         }
 
         return loggedIn;
+    }
+
+    public String generatedToken(String email) {
+        System.out.println("generated token: " + email);
+        String query = "INSERT INTO Token values(?,?)";
+        Token token = new Token(email);
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, token.getEmail());
+            psmt.setString(2, token.getToken());
+
+            int excuted = psmt.executeUpdate();
+            if (excuted == 0) throw new SQLException("Token");
+            return token.getToken();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public String getToken(String email) {
+        System.out.println("get token: " + email);
+        String query = "SELECT token FROm Token WHERE email = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, email);
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("token");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public int deleteToken(String email) {
+        System.out.println("delete token: " + email);
+        int excuted = 0;
+        String query = "DELETE FROM Token WHERE email = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, email);
+
+            excuted = psmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return excuted;
     }
 }
