@@ -25,10 +25,17 @@ public class UserController {
     }
 
     @RequestMapping("/user")
-    public String userHome(){
+    public String userHome() {
         System.out.println("UserController Home");
 
         return "redirect:user/account";
+    }
+
+    @RequestMapping("/user/info")
+    public String userInfo() {
+        System.out.println("UserController info");
+
+        return "user/userInfo";
     }
 
     @GetMapping("/user/account")
@@ -55,6 +62,7 @@ public class UserController {
 
             response.put("status", "success");
             response.put("message", "로그인 성공");
+            response.put("level", user.getLevel());
         } else {
             response.put("status", "fail");
             response.put("message", "로그인 실패");
@@ -83,5 +91,7 @@ public class UserController {
         }
 
         return mav;
+
+        // TODO 페이지 이동 처리 해야함 signin 처럼 js에서
     }
 }

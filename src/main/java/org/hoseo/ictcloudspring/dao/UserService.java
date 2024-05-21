@@ -114,6 +114,7 @@ public class UserService {
             if (rs.next()) {
                 loggedIn = true;
                 user.setUserID(rs.getInt("userID"));
+                user.setLevel(rs.getInt("level"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
