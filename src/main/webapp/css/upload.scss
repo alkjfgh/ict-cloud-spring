@@ -12,7 +12,7 @@ body{
     border-radius: 8px;
     margin: 10px 10px 0 10px;
     padding: 5px;
-    background-color: rgba(40, 40, 40, 1);
+    background-color: rgb(40, 40, 40, 1);
     float: left;
     width: 70%;
     height: 95%;
@@ -76,9 +76,11 @@ body{
   text-align: center;
 
   .drag-drop-area {
-    border: 2px dashed black;
+    border: 20px dashed black;
     min-height: 500px;
+
   }
+
 
   .file-list-table {
     width: 100%;

@@ -1,15 +1,36 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // const fileElement = document.getElementById('file');
     const dragDropArea = document.getElementsByClassName('drag-drop-area')[0];
+
+    // fileElement.addEventListener('dragover', (event) => {
+    //     event.preventDefault();
+    //     fileElement.style.backgroundColor = 'red';
+    // });
+    //
+    // fileElement.addEventListener('dragleave', (event) => {
+    //     fileElement.style.backgroundColor = '';
+    // });
+    //
+    // fileElement.addEventListener('drop', (event) => {
+    //     event.preventDefault();
+    //     fileElement.style.backgroundColor = ''; // You can change this to another color if needed
+    // });
 
     dragDropArea.addEventListener('dragover', function (e) {
         e.preventDefault(); // 기본 이벤트 방지
         e.stopPropagation(); // 이벤트 전파 방지
         e.dataTransfer.dropEffect = 'copy'; // 드래그 중 아이콘 변경
+        dragDropArea.style.backgroundColor = 'rgb(72, 74, 83)'
+    });
+
+    dragDropArea.addEventListener('dragleave', (event) => {
+        dragDropArea.style.backgroundColor = '';
     });
 
     dragDropArea.addEventListener('drop', function (e) {
         e.preventDefault(); // 기본 이벤트 방지
         e.stopPropagation(); // 이벤트 전파 방지
+        dragDropArea.style.backgroundColor = '';
 
         const files = e.dataTransfer.files;
         if (files.length > 0) {
@@ -32,6 +53,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+// document.addEventListener('mousedown',function (){ //오른쪽 클릭 이벤트
+//     const file-list-container = ()
+//    if()
+// });
 
 const showModal = () => {
     const modal = new bootstrap.Modal(document.getElementById('fileModal'));
