@@ -93,6 +93,7 @@
         const initialFolderID = ${p}; // 초기 폴더 ID를 설정
         enterFolder(initialFolderID);
     });
+
 </script>
 </body>
 </html>

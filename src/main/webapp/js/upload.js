@@ -267,7 +267,7 @@ const enterFolder = async (p) => {
 
         const fileListElement = document.getElementsByClassName('file-list-table')[0];
         fileListElement.innerHTML = '<tr>\n' +
-            '                        <th>filename</th>\n' +
+            '                        <th>filename<span class="drag">-Dragable area</span></th>\n' +
             '                        <th>UploadDate</th>\n' +
             '                        <th>LastModifiedDate</th>\n' +
             '                        <th>filesize</th>\n' +
@@ -332,7 +332,7 @@ const updateFileList = (fileList, userID) => {
 
         fileElement.className = `file-area ${fileTypeClass}`;
 
-        fileInner1.innerHTML = file.filename;
+        fileInner1.innerHTML = file.filename + '<span class="drag">-Dragable area </span>';
         fileInner2.innerHTML = formatDate(file.uploadDate);
         fileInner3.innerHTML = formatDate(file.lastModifiedDate);
         fileInner4.innerHTML = formatSize(file.fileSize);
