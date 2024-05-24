@@ -210,7 +210,7 @@ public class FileController {
     }
 
     @GetMapping("/file/storageSize")
-    public ResponseEntity<long[]> fileUpload(@RequestParam("userID") String userID) {
+    public ResponseEntity<long[]> fileUpload(@RequestParam("userID") int userID) {
         System.out.println("FileController storageSize get request");
 
         long[] sizes = fileService.getStorageSize(userID);
@@ -290,5 +290,6 @@ public class FileController {
 
         return response;
     }
+
     // TODO 다운로드 속도 정할지 고민
 }

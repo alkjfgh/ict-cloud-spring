@@ -3,6 +3,7 @@ package org.hoseo.ictcloudspring.dao;
 import org.hoseo.ictcloudspring.connection.DBConnectionPool;
 import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
+import org.hoseo.ictcloudspring.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,7 +52,7 @@ public class FileService {
         newFile.setFileType(extension);
         newFile.setUploadDate(new Timestamp(System.currentTimeMillis()));
 
-        boolean csr = checkStorageRemain(userID, newFile.getFileSize());
+        boolean csr = checkStorageRemain(Integer.parseInt(userID), newFile.getFileSize());
         if (!csr) return 0;
 
         boolean writeSuccesses = fileWrite(uploadFolderPath + SEPARATOR + storagePath + SEPARATOR + fileName, file);
@@ -98,7 +99,7 @@ public class FileService {
         return 1;
     }
 
-    public boolean checkStorageRemain(String userID, long fileSize) {
+    public boolean checkStorageRemain(int userID, long fileSize) {
         long[] sizes = getStorageSize(userID);
         return sizes[0] >= sizes[1] + fileSize;
     }
@@ -108,14 +109,14 @@ public class FileService {
      * @return long[] sizes = {storageMaxSize, totalSize}
      * null is something wrong happened
      */
-    public long[] getStorageSize(String userID) {
+    public long[] getStorageSize(int userID) {
         System.out.println("File Service Get Storage Size: " + userID);
         long[] sizes = new long[2];
 
         String query = "SELECT storageMaxSize FROM Users WHERE userID = ?";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
-            psmt.setInt(1, Integer.parseInt(userID));
+            psmt.setInt(1, userID);
 
             try (ResultSet rs = psmt.executeQuery()) {
                 if (rs.next()) sizes[0] = rs.getLong(1);
@@ -127,24 +128,29 @@ public class FileService {
         }
 
         System.out.println(Arrays.toString(sizes));
-        query = "SELECT COALESCE(SUM(fileSize), 0) AS totalFileSize\n" +
-                "FROM Files\n" +
+
+        sizes[1] = calculateTotalFileSize(userID);
+
+        return sizes;
+    }
+
+    public long calculateTotalFileSize(int userID) {
+        String query = "SELECT COALESCE(SUM(fileSize), 0) AS totalFileSize " +
+                "FROM Files " +
                 "WHERE userID = ?";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
             System.out.println(query);
-            psmt.setInt(1, Integer.parseInt(userID));
+            psmt.setInt(1, userID);
 
             try (ResultSet rs = psmt.executeQuery()) {
-                if (rs.next()) sizes[1] = rs.getLong(1);
+                if (rs.next()) return rs.getLong(1);
                 else throw new SQLException("Storage total Size is not available");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
+            return 0;
         }
-
-        return sizes;
     }
 
     private boolean fileWrite(String path, MultipartFile file) {
@@ -476,5 +482,51 @@ public class FileService {
         }
 
         return executed;
+    }
+
+    public long calculateFolderSize(java.io.File folder) {
+        long length = 0;
+        java.io.File[] files = folder.listFiles();
+
+        if (files != null) {
+            for (java.io.File file : files) {
+                if (file.isFile()) {
+                    length += file.length();
+                } else {
+                    length += calculateFolderSize(file);
+                }
+            }
+        }
+
+        return length;
+    }
+
+    public List<User> getUserStorageSizeList() {
+        List<User> userStorageSizeList = new ArrayList<>();
+
+        String query = "SELECT * FROM Users";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            try(ResultSet rs = psmt.executeQuery()){
+                while(rs.next()){
+                    User user = new User();
+
+                    user.setUserID(rs.getInt("userID"));
+                    user.setLevel(rs.getInt("level"));
+                    user.setEmail(rs.getString("email"));
+                    user.setStorageMaxSize(rs.getLong("storageMaxSize"));
+                    user.setName(rs.getString("name"));
+                    user.setPassword(rs.getString("password"));
+                    user.setRegistrationDate(rs.getTimestamp("registrationDate"));
+                    user.setTotalSize(calculateTotalFileSize(user.getUserID()));
+
+                    userStorageSizeList.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userStorageSizeList;
     }
 }
