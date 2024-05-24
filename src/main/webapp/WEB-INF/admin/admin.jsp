@@ -69,16 +69,6 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>홍길동</td>
-                        <td>hong@example.com</td>
-                        <td>2024-01-01</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm">편집</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </td>
-                    </tr>
                     <!-- 추가 사용자 데이터 -->
                     </tbody>
                 </table>

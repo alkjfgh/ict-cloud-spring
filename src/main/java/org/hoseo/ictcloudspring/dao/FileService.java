@@ -385,7 +385,7 @@ public class FileService {
 
     public int initFileAndFolder(int userID) {
         System.out.println("File Service Get Storage Size: " + userID);
-        int excuted = 0;
+        int excuted;
 
         String query = "DELETE FROM Files WHERE userID = ?";
 
@@ -422,7 +422,7 @@ public class FileService {
             return 0;
         }
 
-        return excuted;
+        return 1;
     }
 
     public int deleteFile(int userID, int fileID) {

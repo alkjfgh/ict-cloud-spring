@@ -9,7 +9,8 @@ const signInSubmit = (event) => {
         data: $('.login-form').serialize(), // 폼 데이터를 직렬화합니다.
         success: function (response) {
             if (response.status === 'success') {
-                window.location.href = '../file/upload'; // 로그인 성공 시 페이지 이동
+                if(response.level == 2) window.location.href = '../admin';
+                else window.location.href = '../file/upload'; // 로그인 성공 시 페이지 이동
             } else {
                 alert(response.message); // 로그인 실패 시 메시지 표시
             }
