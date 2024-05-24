@@ -1,30 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // const fileElement = document.getElementById('file');
     const dragDropArea = document.getElementsByClassName('drag-drop-area')[0];
 
-    // fileElement.addEventListener('dragover', (event) => {
-    //     event.preventDefault();
-    //     fileElement.style.backgroundColor = 'red';
-    // });
-    //
-    // fileElement.addEventListener('dragleave', (event) => {
-    //     fileElement.style.backgroundColor = '';
-    // });
-    //
-    // fileElement.addEventListener('drop', (event) => {
-    //     event.preventDefault();
-    //     fileElement.style.backgroundColor = ''; // You can change this to another color if needed
-    // });
 
     dragDropArea.addEventListener('dragover', function (e) {
         e.preventDefault(); // 기본 이벤트 방지
         e.stopPropagation(); // 이벤트 전파 방지
         e.dataTransfer.dropEffect = 'copy'; // 드래그 중 아이콘 변경
-        dragDropArea.style.backgroundColor = 'rgb(72, 74, 83)'
+        dragDropArea.style.backgroundColor = 'rgb(72, 74, 83)' //드래그 오버했을때 색 변경
     });
 
     dragDropArea.addEventListener('dragleave', (event) => {
-        dragDropArea.style.backgroundColor = '';
+        dragDropArea.style.backgroundColor = ''; //드래그 오버 벗어나면 색 초기화
     });
 
     dragDropArea.addEventListener('drop', function (e) {
@@ -54,10 +40,28 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// document.addEventListener('mousedown',function (){ //오른쪽 클릭 이벤트
-//     const file-list-container = ()
-//    if()
-// });
+// ---------------------------------------------------------------------------------------------------
+window.onload = function(){
+    document.addEventListener('DOMContentLoaded',function (){
+        // const initialFolderID = ${p};
+        // enterFolder(initialFolderID);
+
+        document.addEventListener('contextmenu',function (event){ //오른쪽 클릭 이벤트
+            event.preventDefault();
+            var x = event.clientX; //클릭 좌표 가져옴
+            var y = event.clientY;
+
+            var clicked = document.getElementById('clicked');
+
+            clicked.style.left = x+'px'; //클릭시에 div가 마우스 위치로 이동
+            clicked.style.top = y+'px';
+            clicked.style.display = 'block';
+
+        });
+    });
+}
+
+
 
 const showModal = () => {
     const modal = new bootstrap.Modal(document.getElementById('fileModal'));
@@ -293,7 +297,7 @@ const enterFolder = async (p) => {
 
         const fileListElement = document.getElementsByClassName('file-list-table')[0];
         fileListElement.innerHTML = '<tr>\n' +
-            '                        <th>filename<span class="drag">-Dragable area</span></th>\n' +
+            '                        <th>filename</th>\n' +
             '                        <th>UploadDate</th>\n' +
             '                        <th>LastModifiedDate</th>\n' +
             '                        <th>filesize</th>\n' +
@@ -358,7 +362,7 @@ const updateFileList = (fileList, userID) => {
 
         fileElement.className = `file-area ${fileTypeClass}`;
 
-        fileInner1.innerHTML = file.filename + '<span class="drag">-Dragable area </span>';
+        fileInner1.innerHTML = file.filename;
         fileInner2.innerHTML = formatDate(file.uploadDate);
         fileInner3.innerHTML = formatDate(file.lastModifiedDate);
         fileInner4.innerHTML = formatSize(file.fileSize);

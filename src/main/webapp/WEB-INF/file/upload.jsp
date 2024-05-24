@@ -26,6 +26,10 @@
         </div>
     </div>
 
+    <div id="clicked"> <!--우클릭 시-->
+        asdfasdfs
+    </div>
+
     <div class="body1">
         <div class="show">
             <div class="test-view">
