@@ -209,5 +209,86 @@ public class FileController {
                 .body(responseBody);
     }
 
-    // TODO 사람마다 저장용량 설정 해야함. 다운로드 속도 정할지 고민
+    @GetMapping("/file/storageSize")
+    public ResponseEntity<long[]> fileUpload(@RequestParam("userID") String userID) {
+        System.out.println("FileController storageSize get request");
+
+        long[] sizes = fileService.getStorageSize(userID);
+
+        if (sizes != null) {
+            System.out.println("storageMaxSize: " + sizes[0] + " totalSize: " + sizes[1]);
+            return ResponseEntity.ok(sizes);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @ResponseBody
+    @PostMapping("/file/initAll")
+    public Map<String, Object> initFileAndFolder(@RequestBody Map<String, Object> requestData) {
+        System.out.println("FileController init File and Folder post request");
+
+        Map<String, Object> response = new HashMap<>();
+
+        int userID = Integer.parseInt(String.valueOf(requestData.get("userID")));
+
+        int initSuccesses = fileService.initFileAndFolder(userID);
+
+        if (initSuccesses == 1) {
+            response.put("status", "success");
+            response.put("message", "init File and Folder 성공");
+        } else {
+            response.put("status", "fail");
+            response.put("message", "init File and Folder 실패");
+        }
+
+        return response;
+    }
+
+    @ResponseBody
+    @PostMapping("/file/deleteFile")
+    public Map<String, Object> deleteFile(@RequestBody Map<String, Object> requestData) {
+        System.out.println("FileController delete file post request");
+
+        Map<String, Object> response = new HashMap<>();
+
+        int userID = Integer.parseInt(String.valueOf(requestData.get("userID")));
+        int fileID = Integer.parseInt(String.valueOf(requestData.get("fileID")));
+
+        int deleteFileSuccesses = fileService.deleteFile(userID, fileID);
+
+        if (deleteFileSuccesses == 1) {
+            response.put("status", "success");
+            response.put("message", "delete File 성공");
+        } else {
+            response.put("status", "fail");
+            response.put("message", "delete File 실패");
+        }
+
+        return response;
+    }
+
+    @ResponseBody
+    @PostMapping("/file/deleteFolder")
+    public Map<String, Object> deleteFolder(@RequestBody Map<String, Object> requestData) {
+        System.out.println("FileController delete Folder post request");
+
+        Map<String, Object> response = new HashMap<>();
+
+        int userID = Integer.parseInt(String.valueOf(requestData.get("userID")));
+        int folderID = Integer.parseInt(String.valueOf(requestData.get("folderID")));
+
+        int deleteFolderSuccesses = fileService.deleteFolder(userID, folderID);
+
+        if (deleteFolderSuccesses == 1) {
+            response.put("status", "success");
+            response.put("message", "delete Folder 성공");
+        } else {
+            response.put("status", "fail");
+            response.put("message", "delete Folder 실패");
+        }
+
+        return response;
+    }
+    // TODO 다운로드 속도 정할지 고민
 }

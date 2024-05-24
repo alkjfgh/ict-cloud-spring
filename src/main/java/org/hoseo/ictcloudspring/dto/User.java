@@ -8,7 +8,6 @@ public class User {
     private String email;
     private String password;
     private java.sql.Timestamp registrationDate;
-
     private int level;
 
     @Override
@@ -20,8 +19,19 @@ public class User {
                 ", password='" + password + '\'' +
                 ", registrationDate=" + registrationDate +
                 ", level=" + level +
+                ", storageMaxSize=" + storageMaxSize +
                 '}';
     }
+
+    public long getStorageMaxSize() {
+        return storageMaxSize;
+    }
+
+    public void setStorageMaxSize(long storageMaxSize) {
+        this.storageMaxSize = storageMaxSize;
+    }
+
+    private long storageMaxSize;
 
     public int getLevel() {
         return level;

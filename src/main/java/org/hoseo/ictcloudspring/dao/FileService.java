@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -49,6 +50,9 @@ public class FileService {
         newFile.setFileSize(file.getSize());
         newFile.setFileType(extension);
         newFile.setUploadDate(new Timestamp(System.currentTimeMillis()));
+
+        boolean csr = checkStorageRemain(userID, newFile.getFileSize());
+        if (!csr) return 0;
 
         boolean writeSuccesses = fileWrite(uploadFolderPath + SEPARATOR + storagePath + SEPARATOR + fileName, file);
 
@@ -92,6 +96,55 @@ public class FileService {
         }
 
         return 1;
+    }
+
+    public boolean checkStorageRemain(String userID, long fileSize) {
+        long[] sizes = getStorageSize(userID);
+        return sizes[0] >= sizes[1] + fileSize;
+    }
+
+    /***
+     * @param userID
+     * @return long[] sizes = {storageMaxSize, totalSize}
+     * null is something wrong happened
+     */
+    public long[] getStorageSize(String userID) {
+        System.out.println("File Service Get Storage Size: " + userID);
+        long[] sizes = new long[2];
+
+        String query = "SELECT storageMaxSize FROM Users WHERE userID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, Integer.parseInt(userID));
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) sizes[0] = rs.getLong(1);
+                else throw new SQLException("Storage Max Size is not available");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        System.out.println(Arrays.toString(sizes));
+        query = "SELECT COALESCE(SUM(fileSize), 0) AS totalFileSize\n" +
+                "FROM Files\n" +
+                "WHERE userID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            System.out.println(query);
+            psmt.setInt(1, Integer.parseInt(userID));
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) sizes[1] = rs.getLong(1);
+                else throw new SQLException("Storage total Size is not available");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return sizes;
     }
 
     private boolean fileWrite(String path, MultipartFile file) {
@@ -322,5 +375,106 @@ public class FileService {
 
     public boolean isVideoFile(String fileType) {
         return fileType.equalsIgnoreCase("mp4") || fileType.equalsIgnoreCase("avi");
+    }
+
+    public int initFileAndFolder(int userID) {
+        System.out.println("File Service Get Storage Size: " + userID);
+        int excuted = 0;
+
+        String query = "DELETE FROM Files WHERE userID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, userID);
+
+            excuted = psmt.executeUpdate();
+//            if(excuted == 0) throw new SQLException("Can't init Files: " + userID);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        query = "WITH RECURSIVE FolderHierarchy AS (\n" +
+                "    SELECT FolderID, ParentFolderID\n" +
+                "    FROM Folders\n" +
+                "    WHERE UserID = ?\n" +
+                "    UNION ALL\n" +
+                "    SELECT f.FolderID, f.ParentFolderID\n" +
+                "    FROM Folders f\n" +
+                "             INNER JOIN FolderHierarchy fh ON f.ParentFolderID = fh.FolderID\n" +
+                ")\n" +
+                "DELETE FROM Folders\n" +
+                "WHERE FolderID IN (SELECT FolderID FROM FolderHierarchy)\n" +
+                "  AND ParentFolderID IS NOT NULL";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, userID);
+
+            excuted = psmt.executeUpdate();
+//            if(excuted == 0) throw new SQLException("Can't init Folders: " + userID);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        return excuted;
+    }
+
+    public int deleteFile(int userID, int fileID) {
+        System.out.println("File Service delete file: " + userID + ", " + fileID);
+        int excuted = 0;
+
+        String query = "DELETE FROM Files WHERE userID = ? AND fileID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, userID);
+            psmt.setInt(2, fileID);
+
+            excuted = psmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        return excuted;
+    }
+
+    public int deleteFolder(int userID, int folderID) {
+        System.out.println("File Service delete folder: " + userID + ", " + folderID);
+        int executed = 0;
+
+        // 폴더 내에 하위 폴더가 있는지 확인
+        String queryCheckSubfolders = "SELECT COUNT(*) FROM Folders WHERE ParentFolderID = ?";
+        int subfolderCount = 0;
+        try (PreparedStatement psmt = con.prepareStatement(queryCheckSubfolders)) {
+            psmt.setInt(1, folderID);
+            ResultSet rs = psmt.executeQuery();
+            if (rs.next()) {
+                subfolderCount = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        // 하위 폴더가 없고, 폴더 내 파일이 있는 경우 파일 삭제 로직 수행
+        if (subfolderCount == 0) {
+            // 폴더 내 파일 삭제 (deleteFile 메소드 호출 가정)
+            deleteFile(userID, folderID); // 이 부분은 deleteFile 메소드의 정확한 시그니처에 맞게 수정해야 합니다.
+
+            // 폴더 삭제 쿼리
+            String queryDeleteFolder = "DELETE FROM Folders WHERE FolderID = ? AND UserID = ?";
+            try (PreparedStatement psmt = con.prepareStatement(queryDeleteFolder)) {
+                psmt.setInt(1, folderID);
+                psmt.setInt(2, userID);
+                executed = psmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return 0;
+            }
+        } else {
+            System.out.println("Folder contains subfolders and cannot be deleted.");
+        }
+
+        return executed;
     }
 }
