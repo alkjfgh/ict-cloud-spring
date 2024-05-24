@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+<jsp:include page="../sidebar.jsp"/>
 <div>
 <%-- TODO 파일, 폴더 삭제추가 해야함 --%>
     <div class="head1">
@@ -23,6 +24,10 @@
         <div class="history"> <%--기록 페이지로 이동--%>
             <a href=""></a>
         </div>
+    </div>
+
+    <div id="clicked"> <!--우클릭 시-->
+        asdfasdfs
     </div>
 
     <div class="body1">

@@ -12,21 +12,20 @@ body{
     border-radius: 8px;
     margin: 10px 10px 0 10px;
     padding: 5px;
-    background-color: rgba(40, 40, 40, 1);
+    background-color: rgb(40, 40, 40, 1);
     float: left;
-    width: 70%;
+    width: 60%;
     height: 95%;
 
   }
 
   .enter {
-    position: relative;
+    display: inline-block;
     border-radius: 8px;
     margin-top: 10px;
     padding: 5px;
     background-color: rgba(40, 40, 40, 1);
-    float: right;
-    width: 28.5%;
+    width: 24%;
     height: 95%;
 
 
@@ -61,6 +60,15 @@ body{
   color: black;
 }
 
+#clicked{
+  display: none;
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background-color: white;
+  color: black;
+}
+
 .drag{
   font: initial;
   color: #505050;
@@ -76,9 +84,11 @@ body{
   text-align: center;
 
   .drag-drop-area {
-    border: 2px dashed black;
+    border: 20px dashed black;
     min-height: 500px;
+
   }
+
 
   .file-list-table {
     width: 100%;
