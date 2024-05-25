@@ -5,17 +5,17 @@ document.addEventListener("DOMContentLoaded", function () {
     dragDropArea.addEventListener('dragover', function (e) {
         e.preventDefault(); // 기본 이벤트 방지
         e.stopPropagation(); // 이벤트 전파 방지
-        e.dataTransfer.dropEffect = 'copy'; // 드래그 중 아이콘 변경
-        dragDropArea.style.backgroundColor = 'rgb(72, 74, 83)' //드래그 오버했을때 색 변경
+        e.dataTransfer.dropEffect = 'copy';
+        dragDropArea.style.backgroundColor = 'rgb(72, 74, 83)'
     });
 
     dragDropArea.addEventListener('dragleave', (event) => {
-        dragDropArea.style.backgroundColor = ''; //드래그 오버 벗어나면 색 초기화
+        dragDropArea.style.backgroundColor = '';
     });
 
     dragDropArea.addEventListener('drop', function (e) {
-        e.preventDefault(); // 기본 이벤트 방지
-        e.stopPropagation(); // 이벤트 전파 방지
+        e.preventDefault();
+        e.stopPropagation();
         dragDropArea.style.backgroundColor = '';
 
         const files = e.dataTransfer.files;
@@ -41,26 +41,28 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ---------------------------------------------------------------------------------------------------
-window.onload = function(){
-    document.addEventListener('DOMContentLoaded',function (){
-        // const initialFolderID = ${p};
-        // enterFolder(initialFolderID);
+document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다운로드, 삭제기능 창 뜨기
+    const clickdiv = document.getElementById('clicked');
+    const tar = document.getElementsByClassName('file-area');
 
-        document.addEventListener('contextmenu',function (event){ //오른쪽 클릭 이벤트
-            event.preventDefault();
-            var x = event.clientX; //클릭 좌표 가져옴
-            var y = event.clientY;
+    document.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
 
-            var clicked = document.getElementById('clicked');
+        const clickX = event.clientX;
+        const clickY = event.clientY;
 
-            clicked.style.left = x+'px'; //클릭시에 div가 마우스 위치로 이동
-            clicked.style.top = y+'px';
-            clicked.style.display = 'block';
+        clickdiv.style.left = `${clickX}px`;
+        clickdiv.style.top = `${clickY}px`;
 
-        });
+        // clickdiv.style.display = 'none';
+        clickdiv.style.display = 'block';
+        if (event.target === tar){
+            clickdiv.style.display = 'none';
+            alert("ddd");
+            // formData
+        }
     });
-}
-
+});
 
 
 const showModal = () => {

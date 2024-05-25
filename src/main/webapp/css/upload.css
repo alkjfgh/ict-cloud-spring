@@ -63,6 +63,7 @@ body {
   height: 200px;
   background-color: white;
   color: black;
+  z-index: 9999;
 }
 
 .drag {
@@ -89,7 +90,7 @@ body {
 }
 .file-list-container .file-list-table .file-area:hover {
   cursor: pointer;
-  background-color: blueviolet;
+  background-color: gray;
 }
 .file-list-container .file-list-table tr {
   height: 4em;
@@ -106,7 +107,7 @@ body {
 }
 .file-list-container .file-list-table tr .folder-area:hover {
   cursor: pointer;
-  background-color: aquamarine;
+  background-color: gray;
 }
 .file-list-container .file-list-table tr .folder-area::before {
   content: "\f07b"; /* Font Awesome folder icon */
