@@ -106,7 +106,7 @@ public class UserService {
         boolean loggedIn = false;
 
         try {
-            String query = "SELECT * FROM Users WHERE email=? AND password=?";
+            String query = "SELECT * FROM Users WHERE email = ? AND password = ?";
             psmt = con.prepareStatement(query);
 
             psmt.setString(1, user.getEmail());
@@ -187,5 +187,27 @@ public class UserService {
         }
 
         return excuted;
+    }
+
+    public boolean checkAdmin(User user) {
+        System.out.println("check admin: " + user);
+        if(user == null) return false;
+        String query = "SELECT level FROM Users WHERE Email = ? AND Password = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, user.getEmail());
+            psmt.setString(2, user.getPassword());
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    int level = rs.getInt(1);
+                    if (level == 2) return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

@@ -8,8 +8,9 @@ public class User {
     private String email;
     private String password;
     private java.sql.Timestamp registrationDate;
-
     private int level;
+
+    private long totalSize;
 
     @Override
     public String toString() {
@@ -20,8 +21,28 @@ public class User {
                 ", password='" + password + '\'' +
                 ", registrationDate=" + registrationDate +
                 ", level=" + level +
+                ", totalSize=" + totalSize +
+                ", storageMaxSize=" + storageMaxSize +
                 '}';
     }
+
+    public long getTotalSize() {
+        return totalSize;
+    }
+
+    public void setTotalSize(long totalSize) {
+        this.totalSize = totalSize;
+    }
+
+    public long getStorageMaxSize() {
+        return storageMaxSize;
+    }
+
+    public void setStorageMaxSize(long storageMaxSize) {
+        this.storageMaxSize = storageMaxSize;
+    }
+
+    private long storageMaxSize;
 
     public int getLevel() {
         return level;

@@ -3,6 +3,7 @@ package org.hoseo.ictcloudspring.dao;
 import org.hoseo.ictcloudspring.connection.DBConnectionPool;
 import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
+import org.hoseo.ictcloudspring.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,8 +11,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -49,6 +55,9 @@ public class FileService {
         newFile.setFileSize(file.getSize());
         newFile.setFileType(extension);
         newFile.setUploadDate(new Timestamp(System.currentTimeMillis()));
+
+        boolean csr = checkStorageRemain(Integer.parseInt(userID), newFile.getFileSize());
+        if (!csr) return 0;
 
         boolean writeSuccesses = fileWrite(uploadFolderPath + SEPARATOR + storagePath + SEPARATOR + fileName, file);
 
@@ -92,6 +101,60 @@ public class FileService {
         }
 
         return 1;
+    }
+
+    public boolean checkStorageRemain(int userID, long fileSize) {
+        long[] sizes = getStorageSize(userID);
+        return sizes[0] >= sizes[1] + fileSize;
+    }
+
+    /***
+     * @param userID
+     * @return long[] sizes = {storageMaxSize, totalSize}
+     * null is something wrong happened
+     */
+    public long[] getStorageSize(int userID) {
+        System.out.println("File Service Get Storage Size: " + userID);
+        long[] sizes = new long[2];
+
+        String query = "SELECT storageMaxSize FROM Users WHERE userID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, userID);
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) sizes[0] = rs.getLong(1);
+                else throw new SQLException("Storage Max Size is not available");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        System.out.println(Arrays.toString(sizes));
+
+        sizes[1] = calculateTotalFileSize(userID);
+
+        return sizes;
+    }
+
+    public long calculateTotalFileSize(int userID) {
+        String query = "SELECT COALESCE(SUM(fileSize), 0) AS totalFileSize " +
+                "FROM Files " +
+                "WHERE userID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            System.out.println(query);
+            psmt.setInt(1, userID);
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) return rs.getLong(1);
+                else throw new SQLException("Storage total Size is not available");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     private boolean fileWrite(String path, MultipartFile file) {
@@ -323,4 +386,317 @@ public class FileService {
     public boolean isVideoFile(String fileType) {
         return fileType.equalsIgnoreCase("mp4") || fileType.equalsIgnoreCase("avi");
     }
+
+    public int initFileAndFolder(int userID) {
+        System.out.println("File Service Get Storage Size: " + userID);
+        int executed;
+
+        // Get all file paths to delete from filesystem
+        List<String> filePaths = new ArrayList<>();
+        String fileQuery = "SELECT storagePath FROM Files WHERE userID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(fileQuery)) {
+            psmt.setInt(1, userID);
+            try (ResultSet rs = psmt.executeQuery()) {
+                while (rs.next()) {
+                    filePaths.add(rs.getString("storagePath"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        // Delete all files from database
+        String query = "DELETE FROM Files WHERE userID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, userID);
+
+            executed = psmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        // Delete all file paths from filesystem
+        for (String path : filePaths) {
+            Path filePath = Paths.get(uploadFolderPath, path);
+            try {
+                if (Files.isDirectory(filePath)) {
+                    // Recursively delete directory contents
+                    Files.walk(filePath)
+                            .sorted(Comparator.reverseOrder())
+                            .map(Path::toFile)
+                            .forEach(java.io.File::delete);
+                } else {
+                    Files.deleteIfExists(filePath);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Get all folder paths to delete from filesystem
+        List<String> folderPaths = new ArrayList<>();
+        query = "WITH RECURSIVE FolderHierarchy AS (" +
+                "    SELECT FolderID, ParentFolderID, storagePath " +
+                "    FROM Folders " +
+                "    WHERE UserID = ? " +
+                "    UNION ALL " +
+                "    SELECT f.FolderID, f.ParentFolderID, f.storagePath " +
+                "    FROM Folders f " +
+                "    INNER JOIN FolderHierarchy fh ON f.ParentFolderID = fh.FolderID " +
+                ") " +
+                "SELECT storagePath FROM FolderHierarchy";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, userID);
+            try (ResultSet rs = psmt.executeQuery()) {
+                while (rs.next()) {
+                    folderPaths.add(rs.getString("storagePath"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        // Delete all folders from database
+        query = "WITH RECURSIVE FolderHierarchy AS (" +
+                "    SELECT FolderID, ParentFolderID " +
+                "    FROM Folders " +
+                "    WHERE UserID = ? " +
+                "    UNION ALL " +
+                "    SELECT f.FolderID, f.ParentFolderID " +
+                "    FROM Folders f " +
+                "    INNER JOIN FolderHierarchy fh ON f.ParentFolderID = fh.FolderID " +
+                ") " +
+                "DELETE FROM Folders " +
+                "WHERE FolderID IN (SELECT FolderID FROM FolderHierarchy) " +
+                "  AND ParentFolderID IS NOT NULL";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, userID);
+
+            executed = psmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        // Delete all file paths from filesystem
+        for (String path : filePaths) {
+            Path filePath = Paths.get(uploadFolderPath, path);
+            try {
+                if (Files.exists(filePath)) { // Check if file or directory exists
+                    if (Files.isDirectory(filePath)) {
+                        // Recursively delete directory contents
+                        Files.walk(filePath)
+                                .sorted(Comparator.reverseOrder())
+                                .map(Path::toFile)
+                                .forEach(java.io.File::delete);
+
+                        // Once the directory is empty, delete it
+                        Files.deleteIfExists(filePath);
+                    } else {
+                        Files.deleteIfExists(filePath); // Delete file
+                    }
+                } else {
+                    System.out.println("File or directory does not exist: " + filePath);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return 1;
+    }
+
+    public int deleteFile(int userID, int fileID) {
+        System.out.println("File Service delete file: " + userID + ", " + fileID);
+        int executed = 0;
+
+        // Get file path to delete from filesystem
+        String filePath = null;
+        String query = "SELECT storagePath FROM Files WHERE userID = ? AND fileID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, userID);
+            psmt.setInt(2, fileID);
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    filePath = rs.getString("storagePath");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        // Delete file from database
+        query = "DELETE FROM Files WHERE userID = ? AND fileID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, userID);
+            psmt.setInt(2, fileID);
+
+            executed = psmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        // Delete file from filesystem
+        if (filePath != null) {
+            Path path = Paths.get(uploadFolderPath, filePath);
+            try {
+                Files.deleteIfExists(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return 0;
+            }
+        }
+
+        return executed;
+    }
+
+    public int deleteFolder(int userID, int folderID) {
+        System.out.println("File Service delete folder: " + userID + ", " + folderID);
+        int executed = 0;
+
+        // Get folder path to delete from filesystem
+        String folderPath = null;
+        String query = "SELECT storagePath FROM Folders WHERE FolderID = ? AND UserID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, folderID);
+            psmt.setInt(2, userID);
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    folderPath = rs.getString("storagePath");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        // 폴더 내에 하위 폴더가 있는지 확인
+        String queryCheckSubfolders = "SELECT COUNT(*) FROM Folders WHERE ParentFolderID = ?";
+        int subfolderCount = 0;
+        try (PreparedStatement psmt = con.prepareStatement(queryCheckSubfolders)) {
+            psmt.setInt(1, folderID);
+            ResultSet rs = psmt.executeQuery();
+            if (rs.next()) {
+                subfolderCount = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+
+        // 하위 폴더가 없고, 폴더 내 파일이 있는 경우 파일 삭제 로직 수행
+        if (subfolderCount == 0) {
+            // 폴더 내 파일 삭제
+            List<Integer> fileIDs = new ArrayList<>();
+            String getFileIDsQuery = "SELECT FileID FROM Files WHERE FolderID = ? AND UserID = ?";
+            try (PreparedStatement psmt = con.prepareStatement(getFileIDsQuery)) {
+                psmt.setInt(1, folderID);
+                psmt.setInt(2, userID);
+                try (ResultSet rs = psmt.executeQuery()) {
+                    while (rs.next()) {
+                        fileIDs.add(rs.getInt("FileID"));
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return 0;
+            }
+
+            for (int fileID : fileIDs) {
+                deleteFile(userID, fileID);
+            }
+
+            // 폴더 삭제 쿼리
+            String queryDeleteFolder = "DELETE FROM Folders WHERE FolderID = ? AND UserID = ?";
+            try (PreparedStatement psmt = con.prepareStatement(queryDeleteFolder)) {
+                psmt.setInt(1, folderID);
+                psmt.setInt(2, userID);
+                executed = psmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return 0;
+            }
+
+            // 폴더를 파일 시스템에서 삭제
+            if (folderPath != null) {
+                Path path = Paths.get(uploadFolderPath, folderPath);
+                try {
+                    Files.walk(path)
+                            .sorted(Comparator.reverseOrder())
+                            .map(Path::toFile)
+                            .forEach(java.io.File::delete);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return 0;
+                }
+            }
+        } else {
+            // 하위 폴더가 있는 경우 폴더 삭제 실패 메시지 반환
+            System.out.println("하위 폴더가 존재하여 폴더 삭제를 할 수 없습니다.");
+            return 0;
+        }
+
+        return executed;
+    }
+
+    public long calculateFolderSize(java.io.File folder) {
+        long length = 0;
+        java.io.File[] files = folder.listFiles();
+
+        if (files != null) {
+            for (java.io.File file : files) {
+                if (file.isFile()) {
+                    length += file.length();
+                } else {
+                    length += calculateFolderSize(file);
+                }
+            }
+        }
+
+        return length;
+    }
+
+    public List<User> getUserStorageSizeList() {
+        List<User> userStorageSizeList = new ArrayList<>();
+
+        String query = "SELECT * FROM Users";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            try(ResultSet rs = psmt.executeQuery()){
+                while(rs.next()){
+                    User user = new User();
+
+                    user.setUserID(rs.getInt("userID"));
+                    user.setLevel(rs.getInt("level"));
+                    user.setEmail(rs.getString("email"));
+                    user.setStorageMaxSize(rs.getLong("storageMaxSize"));
+                    user.setName(rs.getString("name"));
+                    user.setPassword(rs.getString("password"));
+                    user.setRegistrationDate(rs.getTimestamp("registrationDate"));
+                    user.setTotalSize(calculateTotalFileSize(user.getUserID()));
+
+                    userStorageSizeList.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return userStorageSizeList;
+    }
 }
+
+//TODO deleteFolder, deleteFile 안 터지는지 확인(init 처럼 바꿔야 할지도?)
