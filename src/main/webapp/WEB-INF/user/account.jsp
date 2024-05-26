@@ -17,11 +17,11 @@
         <form class="register-form" action="signUp" method="post" name="signup_form"
               onsubmit="return signUpSubmit(event)">
             <div class="register-area">
-                <input type="text" placeholder="name" class="input-signup-name" name="name" required/>
+                <input type="text" placeholder="name (only english)" class="input-signup-name" name="name" required/>
                 <input type="password" placeholder="password" class="input-signup-pwd" name="password" required/>
                 <input type="password" placeholder="password check" class="input-signup-pwd-check" name="password"
                        required/>
-                <input type="email" placeholder="email address" class="input-signup-id" name="email" required/>
+                <input type="email" placeholder="email address (to verify your identity)" class="input-signup-id" name="email" required/>
                 <input type="submit" class="login-signup-button" value="create"/>
             </div>
             <div class="email-verification" style="display: none">

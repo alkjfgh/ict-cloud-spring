@@ -26,6 +26,11 @@
     box-sizing: border-box;
     font-size: 14px;
 }
+.form input.invalid{
+    border: 1px solid red;
+}
+
+
 .login-login-button,
 .login-signup-button{
     font-family: "Roboto", sans-serif;
