@@ -13,18 +13,20 @@
     </div>
 
     <div class="body-middle">
-        <span class="body-text">Easy and secure access <br> to your content</span> <br>
-        <span class="body-addtext">Store, share, and collaborate on files and folders <br> across your phone, tablet, and computer.</span>
+        <strong><span class="body-text">Easy and secure access <br>
+            to your content</span></strong> <br>
+        <span class="body-addtext">Store, share, and collaborate on files and folders <br>
+            across your phone, tablet, and computer.</span>
     </div>
 
     <div class="body-link">
-        <button type="button" class="btn btn-secondary" onclick="location.href = 'user/account'">account</button>
-        <button type="button" class="btn btn-secondary" onclick="location.href = 'file/upload'">upload</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href = 'user/account'"><strong>account</strong></button>
+        <button type="button" class="btn btn-secondary" onclick="location.href = 'file/upload'"><strong>upload</strong></button>
     </div>
 
     <div class="first-text">
-        <p class="body-text">Built-in protection against <br>
-            malware, spam, and ransomware</p>
+        <strong><span class="body-text">Built-in protection against <br>
+            malware, spam, and ransomware</span></strong>
         <p class="body-addtext">With Drive, you can access your files in a secure, encrypted way. Files <br>
             shared with you are automatically scanned and deleted if malware, spam, ransomware,
             or phishing is detected, and because Drive is cloud-based,<br>
@@ -32,16 +34,16 @@
     </div>
 
     <div class="second-text">
-        <p class="body-text">User-centered collaboration <br>
-            apps that maximize teamwork</p>
+        <strong><span class="body-text">User-centered collaboration <br>
+            apps that maximize teamwork</span></strong>
         <p class="body-addtext">Drive integrates seamlessly with cloud-based collaboration apps <br>
             like Docs, Sheets, Slides, and others that help teams effectively <br>
             create and collaborate on real-time content.</p>
     </div>
 
     <div class="third-text">
-        <p class="body-text">Integrate with tools and <br>
-            apps your team already uses</p>
+        <strong><span class="body-text">Integrate with tools and <br>
+            apps your team already uses</span></strong>
         <p class="body-addtext">Drive integrates with and complements the technology your team <br>
             already uses. Collaborate on Microsoft Office files without converting <br>
             file formats, and edit and save over 100 file types, including PDFs, <br>
