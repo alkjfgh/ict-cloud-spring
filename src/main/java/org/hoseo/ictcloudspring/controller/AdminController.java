@@ -1,5 +1,7 @@
 package org.hoseo.ictcloudspring.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.hoseo.ictcloudspring.dao.FileService;
 import org.hoseo.ictcloudspring.dao.UserService;
 import org.hoseo.ictcloudspring.dto.User;
@@ -24,17 +26,24 @@ public class AdminController {
     }
 
     @GetMapping("/admin")
-    public String enterAdminPage(){
-        //TODO admin 확인 해야함.
-        return "/admin/admin";
+    public String enterAdminPage(HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        boolean checkAdmin = userService.checkAdmin(user);
+
+        if(checkAdmin) return "/admin/admin";
+        else return "/main";
     }
 
     @ResponseBody
     @PostMapping("/admin/checkUploadFolderSize")
-    public Map<String, Object> deleteFolder(@RequestBody Map<String, Object> requestData) {
+    public Map<String, Object> checkUploadFolderSize(HttpServletRequest request) {
         System.out.println("AdminController check upload folder size post request");
 
-        boolean checkAdmin = userService.checkAdmin((User) requestData.get("user"));
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        boolean checkAdmin = userService.checkAdmin(user);
 
         Map<String, Object> response = new HashMap<>();
         if (checkAdmin) {
@@ -55,20 +64,30 @@ public class AdminController {
 
     @ResponseBody
     @PostMapping("/admin/userStorageSizeList")
-    public Map<String, Object> getUserStorageSizeList() {
+    public Map<String, Object> getUserStorageSizeList(HttpServletRequest request) {
         System.out.println("AdminController get user storageSize list post request");
 
-        List<User> storageSizeList = fileService.getUserStorageSizeList();
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        boolean checkAdmin = userService.checkAdmin(user);
 
         Map<String, Object> response = new HashMap<>();
-        if (storageSizeList != null) {
-            response.put("status", "success");
-            response.put("message", "Uploads folder size calculated successfully");
-            response.put("storageSizeList", storageSizeList);
-            System.out.println("AdminController get user storageSize list post success");
+        if (checkAdmin) {
+
+            List<User> storageSizeList = fileService.getUserStorageSizeList();
+
+            if (storageSizeList != null) {
+                response.put("status", "success");
+                response.put("message", "Uploads folder size calculated successfully");
+                response.put("storageSizeList", storageSizeList);
+                System.out.println("AdminController get user storageSize list post success");
+            } else {
+                response.put("status", "fail");
+                response.put("message", "Uploads folder size calculated failed");
+            }
         } else {
             response.put("status", "fail");
-            response.put("message", "Uploads folder size calculated failed");
+            response.put("message", "check level");
         }
 
         return response;
