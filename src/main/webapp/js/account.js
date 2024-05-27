@@ -52,13 +52,13 @@ const signUpSubmit = async (event) => {
     }
 
     // 이메일 정규식 검사
-    if (isValidEmail(email)) {
-        alert("Please format your email accordingly.")
+    if (!isValidEmail(email)) {
+        alert("Please format your email accordingly.");
         return false;
     }
 
-    if (isValidPassword(password)) {
-        alert("Please enter the password in the correct format.")
+    if (!isValidPassword(password)) {
+        alert("Please enter the password in the correct format.");
         return false;
     }
 
