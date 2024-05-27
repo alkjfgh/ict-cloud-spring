@@ -207,7 +207,6 @@ const fileUploadHandler = async (event, formData = null) => {
     }
 };
 
-//**********************************************************************************************************************************
 const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
     console.log('download file');
 
@@ -251,7 +250,7 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
         // hideModal();
     }
 };
-//**********************************************************************************************************************************
+
 
 const addFolderHandler = async (userID, folderID, storagePath) => {
     await fetch("/file/addFolder", {

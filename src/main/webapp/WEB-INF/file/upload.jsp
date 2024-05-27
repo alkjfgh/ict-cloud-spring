@@ -78,7 +78,7 @@
                              aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                     <button type="button" class="btn btn-primary d-none" id="downloadBtn" onclick="">Download</button>
-                    <button type="button" >Delete</button>
+                    <button type="button" class="btn btn-primary">Delete</button>
                 </div>
             </div>
         </div>
