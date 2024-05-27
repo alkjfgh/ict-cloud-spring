@@ -1,13 +1,15 @@
 $(document).ready(function () {
-    $('.nav-link, .list-group-item').on('click', function (e) {
+    $('.nav-item, .list-group-item').on('click', function (e) {
         e.preventDefault();
 
         const target = $(this).data('target');
 
-        $('.nav-link, .list-group-item').removeClass('active');
-        $(this).addClass('active');
+        $('.nav-item, .list-group-item').removeClass('active');
+
+        $('.nav-item[data-target="' + target + '"], .list-group-item[data-target="' + target + '"]').addClass('active');
 
         $('#dashboard, #user-management, #file-management, #storage-usage, #settings').hide();
+
         $(target).show();
     });
 });
@@ -57,7 +59,7 @@ function populateUserTable(users) {
             <td>
                 <button class="btn btn-warning btn-sm init-user" data-userid="${user.userID}" data-username="${user.name}">초기화</button>
                 <button class="btn btn-primary btn-sm">편집</button>
-                <button class="btn btn-danger btn-sm">삭제</button>
+                <button class="btn btn-danger btn-sm delete-user" data-userid="${user.userID}" data-username="${user.name}">삭제</button>
             </td>
         `);
 
@@ -69,12 +71,19 @@ function populateUserTable(users) {
     userTableBody.on('click', '.init-user', function () {
         const userID = $(this).data('userid');
         const userName = $(this).data('username');
-        initUser(userID, userName);
+        initUser(userID, userName).then(r => {});
+    });
+
+    // 초기화 버튼에 대한 이벤트 핸들러를 동적으로 할당
+    userTableBody.on('click', '.delete-user', function () {
+        const userID = $(this).data('userid');
+        const userName = $(this).data('username');
+        deleteUser(userID, userName).then(r => {});
     });
 }
 
 const initUser = async (userID, userName) => {
-    alert('Initializing user');
+    alert('Initializing user: ' + userName);
     axios.post('/file/initAll', {userID: userID})
         .then(response => {
             const data = response.data;
@@ -90,6 +99,22 @@ const initUser = async (userID, userName) => {
         });
 }
 
+const deleteUser = async (userID, userName) => {
+    alert('Deleting user: ' + userName)
+    axios.post('/user/delete', {userID: userID})
+        .then(response => {
+            const data = response.data;
+
+            if (data.status === 'success') {
+                alert(`${userName} successfully deleted`);
+            } else {
+                console.error('Failed to delete user:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching delete user:', error);
+        });
+}
 
 // Function to render the chart
 function renderChart(storageSizeList) {

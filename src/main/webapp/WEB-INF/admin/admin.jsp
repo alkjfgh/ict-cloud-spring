@@ -20,20 +20,20 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-            <li class="nav-item active">
-                <a class="nav-link" href="#" data-target="#dashboard">대시보드</a>
+            <li class="nav-item active" data-target="#dashboard">
+                <a class="nav-link" href="#">대시보드</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-target="#user-management">사용자 관리</a>
+            <li class="nav-item" data-target="#user-management">
+                <a class="nav-link" href="#">사용자 관리</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-target="#file-management">파일 관리</a>
+            <li class="nav-item" data-target="#file-management">
+                <a class="nav-link" href="#">파일 관리</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-target="#storage-usage">스토리지 사용량</a>
+            <li class="nav-item" data-target="#storage-usage">
+                <a class="nav-link" href="#">스토리지 사용량</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#" data-target="#settings">설정</a>
+            <li class="nav-item" data-target="#settings">
+                <a class="nav-link" href="#">설정</a>
             </li>
         </ul>
     </div>
