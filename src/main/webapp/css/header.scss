@@ -1,7 +1,9 @@
 .header {
   height: 4rem;
   margin: 0;
-  background-color: #EF3B3A;
+  background-color: #343a40;
+  display: flex;
+  align-items: center;
 
   .sidebar-open {
     width: 3rem;
@@ -20,5 +22,21 @@
   .sidebar-open:hover {
     background-color: #fff;
     cursor: pointer;
+  }
+
+  .user{
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+  
+  .img-button{
+    background: url("usericon.png") no-repeat;
+    background-size: 46px 46px;
+    width: 46px;
+    height: 46px;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
   }
 }
