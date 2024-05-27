@@ -58,7 +58,7 @@ function populateUserTable(users) {
             <td>${formattedDate}</td>
             <td>
                 <button class="btn btn-warning btn-sm init-user" data-userid="${user.userID}" data-username="${user.name}">초기화</button>
-                <button class="btn btn-primary btn-sm edit-user" data-user="${user}"">편집</button>
+                <button class="btn btn-primary btn-sm edit-user" data-user='${JSON.stringify(user)}'>편집</button>
                 <button class="btn btn-danger btn-sm delete-user" data-userid="${user.userID}" data-username="${user.name}">삭제</button>
             </td>
         `);
@@ -67,31 +67,33 @@ function populateUserTable(users) {
         userTableBody.append(row);
     });
 
-
     // 초기화 버튼에 대한 이벤트 핸들러를 동적으로 할당
     userTableBody.on('click', '.init-user', function () {
         const userID = $(this).data('userid');
         const userName = $(this).data('username');
-        initUser(userID, userName).then(r => {});
+        initUser(userID, userName).then(r => {
+        });
     });
 
     // 삭제 버튼에 대한 이벤트 핸들러를 동적으로 할당
     userTableBody.on('click', '.delete-user', function () {
         const userID = $(this).data('userid');
         const userName = $(this).data('username');
-        deleteUser(userID, userName).then(r => {});
+        deleteUser(userID, userName).then(r => {
+        });
     });
 
     // 편집 버튼에 대한 이벤트 핸들러를 동적으로 할당
     userTableBody.on('click', '.edit-user', function () {
         const user = $(this).data('user');
-        console.log(user.userID)
-        console.log(user)
 
         // 모달에 데이터 설정
         $('#editUserId').val(user.userID);
         $('#editUserName').val(user.name);
         $('#editUserEmail').val(user.email);
+        $('#editUserPassword').val(user.password); // 패스워드 필드 추가
+        $('#editUserLevel').val(user.level); // 레벨 필드 추가
+        $('#editUserStorageMaxSize').val(user.storageMaxSize); // 스토리지 최대 크기 필드 추가
 
         // 모달 표시
         $('#editUserModal').modal('show');
@@ -133,33 +135,40 @@ const deleteUser = async (userID, userName) => {
         });
 }
 
-const saveEditUser = async () => {
+$('#saveEditUser').on('click', async function() {
+    alert('Edit User Start');
+
     const userID = $('#editUserId').val();
     const userName = $('#editUserName').val();
     const userEmail = $('#editUserEmail').val();
+    const userPassword = $('#editUserPassword').val();
+    const userLevel = $('#editUserLevel').val();
+    const userStorageMaxSize = $('#editUserStorageMaxSize').val();
 
-    axios.post('/user/edit', {userID: userID, name: userName, email: userEmail})
-        .then(response => {
-            const data = response.data;
+    axios.post('/user/edit', {
+        userID: userID,
+        name: userName,
+        email: userEmail,
+        password: userPassword,
+        level: userLevel,
+        storageMaxSize: userStorageMaxSize
+    }).then(response => {
+        const data = response.data;
 
-            if (data.status === 'success') {
-                alert(`${userName} successfully edited`);
-                $('#editUserModal').modal('hide');
-                getUserStorageSizeList();
-            } else {
-                console.error('Failed to edit user:', data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error editing user:', error);
-        });
-}
-
-$('#saveEditUser').on('click', function () {
-    saveEditUser().then(r => {});
+        if (data.status === 'success') {
+            alert(`${userName} successfully edited`);
+            $('#editUserModal').modal('hide');
+            getUserStorageSizeList();
+        } else {
+            console.error('Failed to edit user:', data.message);
+        }
+    }).catch(error => {
+        console.error('Error editing user:', error);
+    });
 });
 
 let storageChart = null;
+
 // Function to render the chart
 function renderChart(storageSizeList) {
     const userLabels = storageSizeList.map(user => user.name); // 사용자 이름 또는 고유 ID

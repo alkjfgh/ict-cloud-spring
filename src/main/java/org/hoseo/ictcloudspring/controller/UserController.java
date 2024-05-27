@@ -134,6 +134,34 @@ public class UserController {
         return response;
     }
 
+    @ResponseBody
+    @PostMapping("/user/edit")
+    public Map<String, Object> userEdit(@RequestBody Map<String, Object> requestData) {
+        System.out.println("User Controller editUser");
+
+        Map<String, Object> response = new HashMap<>();
+
+        User user = new User();
+        user.setUserID(Integer.parseInt(String.valueOf(requestData.get("userID"))));
+        user.setName((String) requestData.get("name"));
+        user.setEmail((String) requestData.get("email"));
+        user.setPassword((String) requestData.get("password"));
+        user.setLevel(Integer.parseInt(String.valueOf(requestData.get("level"))));
+        user.setStorageMaxSize(Long.parseLong(String.valueOf(requestData.get("storageMaxSize"))));
+
+        int editUserSuccesses = userService.editUser(user);
+
+        if (editUserSuccesses == 1) {
+            response.put("status", "success");
+            response.put("message", "edit user 성공");
+        } else {
+            response.put("status", "fail");
+            response.put("message", "edit user 실패");
+        }
+
+        return response;
+    }
+
     @GetMapping("/user/generateToken")
     public ResponseEntity<Map<String, String>> generateToken(@RequestParam("email") String email) {
         System.out.println("User Controller generateToken");

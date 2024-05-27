@@ -138,7 +138,19 @@
                         <label for="editUserEmail">이메일</label>
                         <input type="email" class="form-control" id="editUserEmail" required>
                     </div>
-                    <input type="hidden" id="editUserId">
+                    <div class="form-group">
+                        <label for="editUserPassword">패스워드</label>
+                        <input type="text" class="form-control" id="editUserPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUserLevel">레벨</label>
+                        <input type="number" class="form-control" id="editUserLevel" min="1" max="2" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUserStorageMaxSize">스토리지 최대 크기</label>
+                        <input type="number" class="form-control" id="editUserStorageMaxSize" required>
+                    </div>
+                    <input type="number" id="editUserId" hidden>
                 </form>
             </div>
             <div class="modal-footer">

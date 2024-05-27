@@ -237,4 +237,29 @@ public class UserService {
 
         return execute;
     }
+
+    public int editUser(User user) {
+        System.out.println("user service edit user: " + user);
+
+        int execute = 0;
+        String query = "UPDATE Users SET Name = ?, Email = ?, Password = ?, Level = ?, storageMaxSize = ? WHERE UserID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, user.getName());
+            psmt.setString(2, user.getEmail());
+            psmt.setString(3, user.getPassword());
+            psmt.setInt(4, user.getLevel());
+            psmt.setLong(5, user.getStorageMaxSize());
+            psmt.setInt(6, user.getUserID());
+
+            execute = psmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return execute;
+
+    }
 }
+
+// TODO psmt, rs try로 자동 close 되도록 모든 service 코드 점검 해야함
