@@ -33,7 +33,7 @@ public class AdminController {
         boolean checkAdmin = userService.checkAdmin(user);
 
         if(checkAdmin) return "/admin/admin";
-        else return "/main";
+        else return "redirect:/main";
     }
 
     @ResponseBody

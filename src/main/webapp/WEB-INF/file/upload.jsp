@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+<jsp:include page="../header.jsp"/>
 <jsp:include page="../sidebar.jsp"/>
 <div>
 <%-- TODO 파일, 폴더 삭제추가 해야함 --%>
