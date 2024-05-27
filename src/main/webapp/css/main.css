@@ -1,68 +1,53 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto:300);
 body {
-    background: #696969;
+    /*background: #0C1125;*/
     font-family: "Roboto", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-image: url("v1016-b-08.jpg");
+    background-size: 1750px;
 }
-.btn{
-    padding: 20px 35px;
-    background-color: #D2A76D;
-}
-.btn:hover{
-    background-color: #DEB887;
-}
-a:link{
-    text-decoration: none;
-    color: #E6C29A;
-}
-a:visited{
-    text-decoration: none;
-    color: #E6C29A;
-}
-a:active{
-    text-decoration: none;
-    color: #E6C29A;
-}
-a:hover{
-    text-decoration: none;
-    color: #E6C29A;
-}
-.body-link {
-    margin-top: 80px;
-    font-size: 30px;
-    margin-left: 280px;
+.main-body{
+    clac(100% - 4rem);
 }
 .body-header{
     text-align: center;
     color: #b3b3b3;
-    font-size: 55px;
-}
-.body-middle>.btn{
-    margin-left: 150px;
-}
-.body-text{
-    font-size: 50px;
+    font-size: 4rem;
+    margin-top: 320px;
 }
 .body-addtext{
-    font-size: 25px;
+    font-size: 14px;
+}
+.bold-text {
+    font-weight: 900;
+}
+.header-text{
+    color: white;
+    text-align: center;
 }
 .body-middle{
     margin-left: 150px;
     margin-top: 270px;
 }
-.first-text{
-    margin-top: 400px;
-    margin-left: 850px;
-    width: 850px;
+.boxes{
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    margin-top: 50px;
 }
-.second-text{
-    margin-left: 150px;
-    margin-top: 300px;
-}
-.third-text{
-    margin-top: 300px;
-    margin-left: 850px;
-    margin-bottom: 150px;
-    width: 850px;
+.first-box,
+.second-box,
+.third-box{
+    width: 250px;
+    height: 150px;
+    border: 1px solid #212121;
+    border-radius: 10px;
+    float: left;
+    box-sizing: border-box;
+    padding: 15px;
+    text-align: center;
+    color: white;
+    background-color: #212121;
+    margin: 10px;
+    flex: 0 0 auto;
 }
