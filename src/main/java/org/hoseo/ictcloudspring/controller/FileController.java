@@ -264,7 +264,6 @@ public class FileController {
             response.put("status", "fail");
             response.put("message", "delete File 실패");
         }
-
         return response;
     }
 

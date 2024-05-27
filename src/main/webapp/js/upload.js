@@ -40,10 +40,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+
 // ---------------------------------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다운로드, 삭제기능 창 뜨기
     const clickdiv = document.getElementById('clicked');
-    const tar = document.getElementsByClassName('file-area');
+    const target = document.getElementsByClassName('file-list-table')[0];
 
     document.addEventListener('contextmenu', (event) => {
         event.preventDefault();
@@ -51,16 +52,14 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
         const clickX = event.clientX;
         const clickY = event.clientY;
 
-        clickdiv.style.left = `${clickX}px`;
-        clickdiv.style.top = `${clickY}px`;
 
-        // clickdiv.style.display = 'none';
-        clickdiv.style.display = 'block';
-        if (event.target === tar){
-            clickdiv.style.display = 'none';
-            alert("ddd");
-            // formData
+        if(event.target.className.contain(target)){
+            clickdiv.style.left = `${clickX}px`;
+            clickdiv.style.top = `${clickY}px`;
+            clickdiv.style.display = 'block';
+            alert("ddd")
         }
+
     });
 });
 
@@ -252,6 +251,7 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
     }
 };
 
+
 const addFolderHandler = async (userID, folderID, storagePath) => {
     await fetch("/file/addFolder", {
         method: "POST",
@@ -314,12 +314,14 @@ const enterFolder = async (p) => {
 
         const folderList = updateFolderList(data.subFolderList);
         folderList.forEach(element => {
-            fileListElement.appendChild(element);
+            $('.file-list-table').find("tbody").append(element);
+            // fileListElement.appendChild(element)
         });
 
         const fileList = updateFileList(data.fileList, data.userID);
         fileList.forEach(element => {
-            fileListElement.appendChild(element);
+            $('.file-list-table').find("tbody").append(element);
+            // fileListElement.appendChild(element)
         });
 
         // fileListElement.load(location.href + ' .file-list-table');
@@ -502,5 +504,35 @@ document.getElementById('fileModal').addEventListener('hidden.bs.modal', functio
     }
     resetModal();
 });
+
+const fileDeleteHandler = async (userID, fileID) => {
+    try{
+        const response = await fetch("/file/deleteFile", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                userID: userID,
+                fileID: fileID,
+            }),
+        });
+        if(response.status === 200) {
+            const result = await response.json();
+
+            if (result.status === "success") {
+                alert(result.message); // 성공 메시지 표시
+                // 추가적인 성공 처리 로직이 있으면 여기에 추가
+            } else {
+                alert(result.message); // 실패 메시지 표시
+            }
+        } else {
+            alert("File deletion failed with status code: " + response.status);
+        }
+    } catch(error){
+        console.error("Error:", error);
+        alert("Error")
+    }
+};
 
 //TODO 파일 다운로드 및 업로드 중에 모달창 안꺼지게. 끈다면 작업이 중단 되도록 하게.
