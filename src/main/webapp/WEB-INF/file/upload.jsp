@@ -27,7 +27,6 @@
     </div>
 
     <div id="clicked"> <!--우클릭 시-->
-        asdfasdfs
     </div>
 
     <div class="body1">
@@ -60,6 +59,10 @@
                 <div class="upload"> <%--업로드--%>
                     <input type="submit" value="Upload"/>
                 </div>
+                <br><br><br><br><br>
+                <button>Download</button>
+                <button>Delete</button>
+
             </form>
         </div>
     </div>

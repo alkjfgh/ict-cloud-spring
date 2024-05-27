@@ -40,10 +40,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+
 // ---------------------------------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다운로드, 삭제기능 창 뜨기
     const clickdiv = document.getElementById('clicked');
-    const tar = document.getElementsByClassName('file-area');
+    const target = document.getElementsByClassName('file-list-table');
 
     document.addEventListener('contextmenu', (event) => {
         event.preventDefault();
@@ -51,16 +52,14 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
         const clickX = event.clientX;
         const clickY = event.clientY;
 
-        clickdiv.style.left = `${clickX}px`;
-        clickdiv.style.top = `${clickY}px`;
 
-        // clickdiv.style.display = 'none';
-        clickdiv.style.display = 'block';
-        if (event.target === tar){
-            clickdiv.style.display = 'none';
-            alert("ddd");
-            // formData
-        }
+        // if(event.target.className.contain(target)){
+            clickdiv.style.left = `${clickX}px`;
+            clickdiv.style.top = `${clickY}px`;
+            clickdiv.style.display = 'block';
+        // }
+
+
     });
 });
 
