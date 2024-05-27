@@ -13,7 +13,7 @@
 <jsp:include page="sidebar.jsp"/>
 <div class="main-body">
     <div class="body-header">
-        <span class="bold-text">ICT</span>
+        <span class="bold-text">ICT</span><span class="next-text">cloud</span>
     </div>
     <div class="header-text">
         <p>technical demonstration is now available</p>

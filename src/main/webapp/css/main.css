@@ -21,6 +21,9 @@ body {
 .bold-text {
     font-weight: 900;
 }
+.next-text{
+    font-size: 20px;
+}
 .header-text{
     color: white;
     text-align: center;
