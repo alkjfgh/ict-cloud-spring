@@ -191,7 +191,7 @@ public class UserService {
 
     public boolean checkAdmin(User user) {
         System.out.println("check admin: " + user);
-        if(user == null) return false;
+        if (user == null) return false;
         String query = "SELECT level FROM Users WHERE Email = ? AND Password = ?";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
@@ -209,5 +209,32 @@ public class UserService {
         }
 
         return false;
+    }
+
+    public int deleteUser(int userID) {
+        System.out.println("user service delete user: " + userID);
+
+        int execute = 0;
+        String query = "DELETE FROM Folders WHERE UserID = ? AND FolderName = 'root'";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, userID);
+
+            execute = psmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        query = "DELETE FROM Users WHERE UserID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, userID);
+
+            execute = psmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return execute;
     }
 }

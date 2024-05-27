@@ -2,6 +2,7 @@ package org.hoseo.ictcloudspring.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.hoseo.ictcloudspring.dao.FileService;
 import org.hoseo.ictcloudspring.dao.UserService;
 import org.hoseo.ictcloudspring.dto.User;
 
@@ -20,10 +21,12 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final FileService fileService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FileService fileService) {
         this.userService = userService;
+        this.fileService = fileService;
     }
 
     @RequestMapping("/user")
@@ -93,13 +96,42 @@ public class UserController {
     }
 
     @GetMapping("/user/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request){
+    public ResponseEntity<String> logout(HttpServletRequest request) {
         System.out.println("User Controller logout");
 
         HttpSession session = request.getSession();
         session.removeAttribute("user");
 
         return ResponseEntity.ok("success");
+    }
+
+    @ResponseBody
+    @PostMapping("/user/delete")
+    public Map<String, Object> deleteUser(@RequestBody Map<String, Object> requestData) {
+        System.out.println("User Controller delete user");
+
+        Map<String, Object> response = new HashMap<>();
+
+        int userID = Integer.parseInt(String.valueOf(requestData.get("userID")));
+
+        int initSuccess = fileService.initFileAndFolder(userID);
+
+        if (initSuccess == 1) {
+            int deleteUserSuccesses = userService.deleteUser(userID);
+
+            if (deleteUserSuccesses == 1) {
+                response.put("status", "success");
+                response.put("message", "delete user 성공");
+            } else {
+                response.put("status", "fail");
+                response.put("message", "delete user 실패");
+            }
+        } else {
+            response.put("status", "fail");
+            response.put("message", "delete user 실패");
+        }
+
+        return response;
     }
 
     @GetMapping("/user/generateToken")

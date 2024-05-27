@@ -14,29 +14,29 @@ $(document).ready(function () {
     });
 });
 
+const getUserStorageSizeList = async () => {
+    axios.post('/admin/userStorageSizeList')
+        .then(response => {
+            const data = response.data;
+
+            if (data.status === 'success') {
+                const users = data.storageSizeList;
+
+                // Populate the user table
+                populateUserTable(users);
+
+                // Render the storage chart
+                renderChart(users);
+            } else {
+                console.error('Failed to load user data:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+        });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-    const getUserStorageSizeList = async () => {
-        axios.post('/admin/userStorageSizeList')
-            .then(response => {
-                const data = response.data;
-
-                if (data.status === 'success') {
-                    const users = data.storageSizeList;
-
-                    // Populate the user table
-                    populateUserTable(users);
-
-                    // Render the storage chart
-                    renderChart(users);
-                } else {
-                    console.error('Failed to load user data:', data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching user data:', error);
-            });
-    }
-
     getUserStorageSizeList();
 });
 
@@ -58,7 +58,7 @@ function populateUserTable(users) {
             <td>${formattedDate}</td>
             <td>
                 <button class="btn btn-warning btn-sm init-user" data-userid="${user.userID}" data-username="${user.name}">초기화</button>
-                <button class="btn btn-primary btn-sm">편집</button>
+                <button class="btn btn-primary btn-sm edit-user" data-user="${user}"">편집</button>
                 <button class="btn btn-danger btn-sm delete-user" data-userid="${user.userID}" data-username="${user.name}">삭제</button>
             </td>
         `);
@@ -67,6 +67,7 @@ function populateUserTable(users) {
         userTableBody.append(row);
     });
 
+
     // 초기화 버튼에 대한 이벤트 핸들러를 동적으로 할당
     userTableBody.on('click', '.init-user', function () {
         const userID = $(this).data('userid');
@@ -74,11 +75,26 @@ function populateUserTable(users) {
         initUser(userID, userName).then(r => {});
     });
 
-    // 초기화 버튼에 대한 이벤트 핸들러를 동적으로 할당
+    // 삭제 버튼에 대한 이벤트 핸들러를 동적으로 할당
     userTableBody.on('click', '.delete-user', function () {
         const userID = $(this).data('userid');
         const userName = $(this).data('username');
         deleteUser(userID, userName).then(r => {});
+    });
+
+    // 편집 버튼에 대한 이벤트 핸들러를 동적으로 할당
+    userTableBody.on('click', '.edit-user', function () {
+        const user = $(this).data('user');
+        console.log(user.userID)
+        console.log(user)
+
+        // 모달에 데이터 설정
+        $('#editUserId').val(user.userID);
+        $('#editUserName').val(user.name);
+        $('#editUserEmail').val(user.email);
+
+        // 모달 표시
+        $('#editUserModal').modal('show');
     });
 }
 
@@ -107,6 +123,7 @@ const deleteUser = async (userID, userName) => {
 
             if (data.status === 'success') {
                 alert(`${userName} successfully deleted`);
+                getUserStorageSizeList();
             } else {
                 console.error('Failed to delete user:', data.message);
             }
@@ -116,6 +133,33 @@ const deleteUser = async (userID, userName) => {
         });
 }
 
+const saveEditUser = async () => {
+    const userID = $('#editUserId').val();
+    const userName = $('#editUserName').val();
+    const userEmail = $('#editUserEmail').val();
+
+    axios.post('/user/edit', {userID: userID, name: userName, email: userEmail})
+        .then(response => {
+            const data = response.data;
+
+            if (data.status === 'success') {
+                alert(`${userName} successfully edited`);
+                $('#editUserModal').modal('hide');
+                getUserStorageSizeList();
+            } else {
+                console.error('Failed to edit user:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error editing user:', error);
+        });
+}
+
+$('#saveEditUser').on('click', function () {
+    saveEditUser().then(r => {});
+});
+
+let storageChart = null;
 // Function to render the chart
 function renderChart(storageSizeList) {
     const userLabels = storageSizeList.map(user => user.name); // 사용자 이름 또는 고유 ID
@@ -123,7 +167,14 @@ function renderChart(storageSizeList) {
     const maxSizes = storageSizeList.map(user => user.storageMaxSize);
 
     const ctx = document.getElementById('storageChart').getContext('2d');
-    new Chart(ctx, {
+
+    // 기존 차트가 존재하면 파괴
+    if (storageChart !== null) {
+        storageChart.destroy();
+    }
+
+    // 새로운 차트 생성
+    storageChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: userLabels,
