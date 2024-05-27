@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-// ---------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------오른클릭
 document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다운로드, 삭제기능 창 뜨기
     const clickdiv = document.getElementById('clicked');
     const target = document.getElementsByClassName('file-list-table')[0];
@@ -53,11 +53,10 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
         const clickY = event.clientY;
 
 
-        if(event.target.className.contain(target)){
+        if(event.target.tagName === 'TD' && target.contains(event.target)){
             clickdiv.style.left = `${clickX}px`;
             clickdiv.style.top = `${clickY}px`;
             clickdiv.style.display = 'block';
-            alert("ddd")
         }
 
     });
@@ -79,6 +78,7 @@ const resetModal = () => {
     const fileDetails = document.getElementById('fileDetails');
     const downloadBtn = document.getElementById('downloadBtn');
 
+
     progressBar.style.width = '0%';
     progressBar.setAttribute('aria-valuenow', 0);
     progressBar.innerText = '0%';
@@ -87,6 +87,8 @@ const resetModal = () => {
 
     downloadBtn.classList.add('d-none');
     downloadBtn.onclick = null;
+
+    // deleteBtn.classList.add('')
 };
 
 const formatSize = (size) => {
