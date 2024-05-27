@@ -60,14 +60,16 @@ body{
   color: black;
 }
 
-#clicked{
+#clicked{ //오른쪽 클릭했을때 나올 div
   display: none;
   position: absolute;
   width: 200px;
   height: 200px;
   background-color: white;
   color: black;
+  z-index: 9999;
 }
+
 
 .drag{
   font: initial;
@@ -97,7 +99,7 @@ body{
 
     .file-area:hover {
       cursor: pointer;
-      background-color: blueviolet;
+      background-color: gray;
     }
 
 
@@ -123,7 +125,7 @@ body{
 
       .folder-area:hover {
         cursor: pointer;
-        background-color: grey;
+        background-color: gray;
       }
 
       .folder-area::before {
