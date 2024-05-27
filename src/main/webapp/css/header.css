@@ -1,0 +1,39 @@
+.header {
+  height: 4rem;
+  margin: 0;
+  background-color: #343a40;
+  position: relative;
+}
+.header .sidebar-open {
+  width: 3rem;
+  height: 3rem;
+  margin-top: 0.5rem;
+  margin-left: 0.5rem;
+  display: inline-block;
+  justify-content: center;
+  align-items: center;
+}
+.header .sidebar-open .stroke-current {
+  stroke: currentColor;
+}
+.header .sidebar-open:hover {
+  background-color: #fff;
+  cursor: pointer;
+}
+.img-button{
+  float: right;
+  background: url("usericon.png") no-repeat;
+  background-size: 46px 46px;
+  width: 48px;
+  height: 48px;
+  margin-right: 10px;
+  border: none;
+}
+.header .user{
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+/*# sourceMappingURL=header.css.map */
