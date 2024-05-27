@@ -7,6 +7,7 @@ body{
   display: none;
 }
 .body1{
+  height: calc(100% - 4rem);
   .show{
     position: relative;
     border-radius: 8px;
@@ -14,8 +15,8 @@ body{
     padding: 5px;
     background-color: rgb(40, 40, 40, 1);
     float: left;
-    width: 60%;
-    height: 95%;
+    width: 70%;
+    height: calc(100% - 15px);
 
   }
 
@@ -25,9 +26,8 @@ body{
     margin-top: 10px;
     padding: 5px;
     background-color: rgba(40, 40, 40, 1);
-    width: 24%;
-    height: 95%;
-
+    width: 28%;
+    height: calc(100% - 15px);
 
   }
 }
@@ -61,7 +61,7 @@ body{
 }
 
 #clicked{ //오른쪽 클릭했을때 나올 div
-  //display: none;
+  display: none;
   position: absolute;
   width: 200px;
   height: 200px;
@@ -84,10 +84,12 @@ body{
   width: 100%;
   margin: 0 auto;
   text-align: center;
+  min-height: 100%;
+  border: #494949 dashed 3px;
+  border-radius: 3px;
 
   .drag-drop-area {
     border: 20px dashed black;
-    min-height: 500px;
 
   }
 
@@ -96,6 +98,7 @@ body{
     width: 100%;
     //margin: 2.5%;
     border-collapse: collapse;
+
 
     .file-area:hover {
       cursor: pointer;
@@ -119,8 +122,11 @@ body{
       }
 
       th, td {
-        border: 5px solid rgba(0, 0, 0, 0.87);
+        border: 5px solid black;
+        border-left: 0;
+        border-right: 0;
         padding: 0.6em;
+
       }
 
       .folder-area:hover {

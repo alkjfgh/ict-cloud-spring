@@ -18,15 +18,6 @@
 <jsp:include page="../sidebar.jsp"/>
 <div>
 <%-- TODO 파일, 폴더 삭제추가 해야함 --%>
-    <div class="head1">
-        <div class="logo">
-
-        </div>
-        <div class="history"> <%--기록 페이지로 이동--%>
-            <a href=""></a>
-        </div>
-    </div>
-
     <div id="clicked"> <!--우클릭 시-->
     </div>
 
@@ -60,9 +51,6 @@
                 <div class="upload"> <%--업로드--%>
                     <input type="submit" value="Upload"/>
                 </div>
-                <br><br><br><br><br>
-                <button>Download</button>
-                <button>Delete</button>
 
             </form>
         </div>
@@ -90,6 +78,7 @@
                              aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                     <button type="button" class="btn btn-primary d-none" id="downloadBtn" onclick="">Download</button>
+                    <button type="button" >Delete</button>
                 </div>
             </div>
         </div>
