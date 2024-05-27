@@ -1,0 +1,68 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:300);
+body {
+    background: #696969;
+    font-family: "Roboto", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.btn{
+    padding: 20px 35px;
+    background-color: #D2A76D;
+}
+.btn:hover{
+    background-color: #DEB887;
+}
+a:link{
+    text-decoration: none;
+    color: #E6C29A;
+}
+a:visited{
+    text-decoration: none;
+    color: #E6C29A;
+}
+a:active{
+    text-decoration: none;
+    color: #E6C29A;
+}
+a:hover{
+    text-decoration: none;
+    color: #E6C29A;
+}
+.body-link {
+    margin-top: 80px;
+    font-size: 30px;
+    margin-left: 280px;
+}
+.body-header{
+    text-align: center;
+    color: #b3b3b3;
+    font-size: 55px;
+}
+.body-middle>.btn{
+    margin-left: 150px;
+}
+.body-text{
+    font-size: 50px;
+}
+.body-addtext{
+    font-size: 25px;
+}
+.body-middle{
+    margin-left: 150px;
+    margin-top: 270px;
+}
+.first-text{
+    margin-top: 400px;
+    margin-left: 850px;
+    width: 850px;
+}
+.second-text{
+    margin-left: 150px;
+    margin-top: 300px;
+}
+.third-text{
+    margin-top: 300px;
+    margin-left: 850px;
+    margin-bottom: 150px;
+    width: 850px;
+}
