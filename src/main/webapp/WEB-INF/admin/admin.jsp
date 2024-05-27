@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>클라우드 스토리지 관리자 페이지</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<c:url value="/css/admin.css"/>">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -106,8 +107,7 @@
             <div id="storage-usage" class="mt-4" style="display: none;">
                 <h2>스토리지 사용량</h2>
                 <p>여기에 스토리지 사용량 통계를 추가하세요.</p>
-                <!-- 예시: 차트 -->
-                <canvas id="storageChart"></canvas>
+                <div id="storageChart" class="chart-container"></div>
             </div>
 
             <div id="settings" class="mt-4" style="display: none;">
