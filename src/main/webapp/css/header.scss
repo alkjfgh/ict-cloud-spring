@@ -1,0 +1,24 @@
+.header {
+  height: 4rem;
+  margin: 0;
+  background-color: #EF3B3A;
+
+  .sidebar-open {
+    width: 3rem;
+    height: 3rem;
+    margin-top: 0.5rem;
+    margin-left: 0.5rem;
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+
+    .stroke-current {
+      stroke: currentColor;
+    }
+  }
+
+  .sidebar-open:hover {
+    background-color: #fff;
+    cursor: pointer;
+  }
+}
