@@ -11,6 +11,6 @@
     <ul class="sidebar-menu">
         <li><a href="<c:url value="/user/info"/>">User info</a></li>
         <li><a href="<c:url value="/file/upload"/>">Dashboard</a></li>
-        <li><a href="<c:url value="/user/logout"/>">Logout</a></li>
+        <li><a href="#" class="logout-link">Logout</a></li>
     </ul>
 </div>

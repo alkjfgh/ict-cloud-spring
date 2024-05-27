@@ -54,7 +54,7 @@ public class UserController {
     @ResponseBody
     @PostMapping("/user/signIn")
     public Map<String, Object> signIn(@ModelAttribute User user, HttpServletRequest request) throws UnsupportedEncodingException {
-        System.out.println("SignIn Controller signIn");
+        System.out.println("User Controller signIn");
 
         Map<String, Object> response = new HashMap<>();
         boolean isSignIn = userService.checkSignIn(user);
@@ -76,7 +76,7 @@ public class UserController {
 
     @PostMapping("/user/signUp")
     public ResponseEntity<String> signUp(@RequestBody User user) {
-        System.out.println("SignIn Controller signUp");
+        System.out.println("User Controller signUp");
         System.out.println("User: " + user);
 
         int isSignUp = userService.insertUser(user); // userService를 통해 사용자 등록 로직을 처리합니다.
@@ -92,9 +92,19 @@ public class UserController {
         }
     }
 
+    @GetMapping("/user/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request){
+        System.out.println("User Controller logout");
+
+        HttpSession session = request.getSession();
+        session.removeAttribute("user");
+
+        return ResponseEntity.ok("success");
+    }
+
     @GetMapping("/user/generateToken")
     public ResponseEntity<Map<String, String>> generateToken(@RequestParam("email") String email) {
-        System.out.println("SignIn Controller generateToken");
+        System.out.println("User Controller generateToken");
         String token = userService.generatedToken(email);
         Map<String, String> responseMap = new HashMap<>();
 
@@ -109,7 +119,7 @@ public class UserController {
 
     @GetMapping("/user/getToken")
     public ResponseEntity<Map<String, String>> getToken(@RequestParam("email") String email) {
-        System.out.println("SignIn Controller getToken");
+        System.out.println("User Controller getToken");
         String token = userService.getToken(email);
         Map<String, String> responseMap = new HashMap<>();
 
@@ -124,7 +134,7 @@ public class UserController {
 
     @GetMapping("/user/deleteToken")
     public ResponseEntity<Map<String, String>> deleteToken(@RequestParam("email") String email) {
-        System.out.println("SignIn Controller deleteToken");
+        System.out.println("User Controller deleteToken");
         int excuted = userService.deleteToken(email);
         Map<String, String> responseMap = new HashMap<>();
 

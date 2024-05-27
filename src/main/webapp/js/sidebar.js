@@ -9,6 +9,16 @@ $(document).ready(() => {
             $(this).closest('li a').addClass('active');
         }
     });
+
+    $('.logout-link').on('click', async (event) => {
+        event.preventDefault();
+
+        const response = await axios.get("/user/logout");
+        console.log(response);
+        if(response.status === 200){
+            location.href = "../main";
+        }
+    })
 });
 
 // 서브메뉴 토글 예제 (서브메뉴가 있는 경우)
