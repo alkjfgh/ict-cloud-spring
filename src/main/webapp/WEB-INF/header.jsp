@@ -17,9 +17,7 @@
 
     <div class="dropdown-menu">
         <h3>
-            <a href="#">
-                Signed in as <strong>username</strong>
-            </a>
+            Signed in as <strong>username</strong>
         </h3>
 
         <ul>
