@@ -62,15 +62,11 @@ public class FileService {
         boolean writeSuccesses = fileWrite(uploadFolderPath + SEPARATOR + storagePath + SEPARATOR + fileName, file);
 
         if (writeSuccesses) {
-            PreparedStatement psmt = null;
-            try {
-                String query = "INSERT INTO Files(UserID, FolderID, Filename, FileSize, StoragePath, UploadDate, LastModifiedDate, fileType) " +
-                        "VALUES (?, ?, ?, ?, ?, SYSDATE(), SYSDATE(), ?);";
-                System.out.println(query);
-                System.out.println(newFile);
-
-                psmt = con.prepareStatement(query);
-
+            String query = "INSERT INTO Files(UserID, FolderID, Filename, FileSize, StoragePath, UploadDate, LastModifiedDate, fileType) " +
+                    "VALUES (?, ?, ?, ?, ?, SYSDATE(), SYSDATE(), ?);";
+            System.out.println(query);
+            System.out.println(newFile);
+            try (PreparedStatement psmt = con.prepareStatement(query);) {
                 psmt.setInt(1, newFile.getUserID());
                 psmt.setInt(2, newFile.getFolderID());
                 psmt.setString(3, newFile.getFilename());
@@ -86,14 +82,6 @@ public class FileService {
 
             } catch (Exception e) {
                 System.out.println("파일 db 업로드 실패: " + e.getMessage());
-            } finally {
-                if (psmt != null) {
-                    try {
-                        psmt.close();
-                    } catch (SQLException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
             }
         } else {
             System.out.println("파일 쓰기 실패");
@@ -183,30 +171,23 @@ public class FileService {
     public int getFolderId(int userID, String storagePath) {
         int folderID = 0;
 
-        try {
-            String query = "SELECT FolderID FROM Folders WHERE UserID = ? AND StoragePath = ?";
-//            storagePath = storagePath.replace("\\", "\\\\");
-            System.out.println(query);
-            System.out.println(userID);
-            System.out.println(storagePath);
+        String query = "SELECT FolderID FROM Folders WHERE UserID = ? AND StoragePath = ?";
+        System.out.println(query);
+        System.out.println(userID);
+        System.out.println(storagePath);
 
-            psmt = con.prepareStatement(query);
+        try (PreparedStatement psmt = con.prepareStatement(query);) {
+//            storagePath = storagePath.replace("\\", "\\\\");
+
             psmt.setInt(1, userID);
             psmt.setNString(2, storagePath);
-            rs = psmt.executeQuery();
-
-            if (rs.next()) {
-                folderID = rs.getInt(1);
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    folderID = rs.getInt(1);
+                }
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (psmt != null) psmt.close();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
         }
 
         return folderID;
@@ -675,8 +656,8 @@ public class FileService {
         String query = "SELECT * FROM Users";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
-            try(ResultSet rs = psmt.executeQuery()){
-                while(rs.next()){
+            try (ResultSet rs = psmt.executeQuery()) {
+                while (rs.next()) {
                     User user = new User();
 
                     user.setUserID(rs.getInt("userID"));
