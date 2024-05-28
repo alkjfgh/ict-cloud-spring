@@ -96,6 +96,33 @@ public class UserController {
         return ResponseEntity.badRequest().body(response);
     }
 
+    @ResponseBody
+    @PostMapping("/user/signOut")
+    public ResponseEntity<Map<String, Object>> updatePassword(HttpServletRequest request) {
+        System.out.println("UserController sign out user");
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        System.out.println(user);
+
+        Map<String, Object> response = new HashMap<>();
+        if (user != null) {
+            int executed = fileService.initFileAndFolder(user.getUserID());
+
+            if (executed == 1) {
+                executed = userService.deleteUser(user.getUserID());
+
+                if (executed == 1) {
+                    session.removeAttribute("user");
+                    return ResponseEntity.ok(response);
+                }
+            }
+        }
+
+        response.put("message", "sign out failed");
+        return ResponseEntity.badRequest().body(response);
+    }
+
     @GetMapping("/user/account")
     public String isSignInSession(HttpServletRequest request) {
         System.out.println("UserController user session check");

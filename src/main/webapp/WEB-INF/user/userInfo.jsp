@@ -41,7 +41,7 @@
                     </div>
                     <div class="information">
                         <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">Change Password</a> |
-                        <a href="#">Unsubscribing</a>
+                        <a href="#" id="sign-out-link">Unsubscribing</a>
                     </div>
                 </div>
             </div>

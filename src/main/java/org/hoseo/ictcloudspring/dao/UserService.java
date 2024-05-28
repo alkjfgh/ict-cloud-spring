@@ -213,8 +213,8 @@ public class UserService {
 
     public int deleteUser(int userID) {
         System.out.println("user service delete user: " + userID);
-
         int execute = 0;
+
         String query = "DELETE FROM Folders WHERE UserID = ? AND FolderName = 'root'";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {

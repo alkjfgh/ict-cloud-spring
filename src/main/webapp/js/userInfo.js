@@ -38,6 +38,12 @@ $(document).ready(function () {
             }
         })
     });
+
+    $('#sign-out-link').on('click', function () {
+        signOut().then(check => {
+            if(check) location.href = "../main";
+        });
+    });
 });
 
 const getUserInfo = async () => {
@@ -61,6 +67,21 @@ const updatePassword = async (changePassword) => {
     await axios.post('/user/updatePassword', {changePassword}).then(res => {
         if (res.status === 200) {
             alert('change password success');
+            check = true;
+        } else {
+            alert('Something error happened');
+        }
+    });
+
+    return check;
+}
+
+const signOut = async () => {
+    let check = false;
+
+    await axios.post('/user/signOut').then(res => {
+        if (res.status === 200) {
+            alert('sign out success');
             check = true;
         } else {
             alert('Something error happened');
