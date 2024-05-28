@@ -20,8 +20,11 @@
   }
 
   .sidebar-open:hover {
-    background-color: #fff;
     cursor: pointer;
+
+    .stroke-current{
+      stroke: #fff;
+    }
   }
 
   .user{
@@ -62,6 +65,10 @@
     background-color: #fff;
     box-shadow: 0 1px 15px rgba(27, 31, 35, 0.15);
     transition: transform 200ms ease-in;
+
+    .islogin{
+      display: none;
+    }
   }
 
   .dropdown-menu.active {
