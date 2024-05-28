@@ -39,9 +39,26 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+//-----------------------------------------------------------------------------------------------------
+// const downloadBtn = document.getElementById('downloadBtn');
+// downloadBtn.classList.remove('d-none');
+// downloadBtn.onclick = () => fileDownloadHandler(userID, fileID, filename, fileSize);
+//
+// const addFolder = document.getElementById('addFolder');
+// addFolder.onclick = () => addFolderHandler(data.userID, data.p, data.storagePathJS);
+
+const deletefile = (userID, fileID) =>{
+    const deleteBtn = document.getElementById('deleteBtn');
+    deleteBtn.onclick = () => fileDeleteHandler(userID, fileID);
+}
 
 
-// ---------------------------------------------------------------------------------------------------오른클릭
+$('#fakeDownloadBtn').on('click', function () {
+    //TODO #downloadBtn 생성 이벤트 발동해야함, #fakeDownloadBtn 안눌리는거 고치기
+    $('#downloadBtn').click();
+});
+
+
 document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다운로드, 삭제기능 창 뜨기
     const clickdiv = document.getElementById('clicked');
     const target = document.getElementsByClassName('file-list-table')[0];
@@ -54,10 +71,21 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
 
 
         if(event.target.tagName === 'TD' && target.contains(event.target)){
+            const userID = event.target.getAttribute('data-user-id');
+            const fileID = event.target.getAttribute('data-file-id');
+
             clickdiv.style.left = `${clickX}px`;
             clickdiv.style.top = `${clickY}px`;
             clickdiv.style.display = 'block';
+
+            console.log('UserID:', userID);
+            console.log('FileID:', fileID);
+        }else{
+            clickdiv.style.display = 'none';
         }
+        // document.addEventListener('click', () => {  //클릭하면 div사라지기
+        //     clickdiv.style.display = 'none'
+        // });
 
     });
 });
@@ -88,7 +116,6 @@ const resetModal = () => {
     downloadBtn.classList.add('d-none');
     downloadBtn.onclick = null;
 
-    // deleteBtn.classList.add('')
 };
 
 const formatSize = (size) => {
@@ -255,6 +282,11 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
 
 
 const addFolderHandler = async (userID, folderID, storagePath) => {
+    if($("#addFolderName").val().length === 0){
+        alert("Foldername cannot be empty");
+        return false;
+    }
+
     await fetch("/file/addFolder", {
         method: "POST",
         headers: {

@@ -74,7 +74,7 @@
                         <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;"
                              aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-<%--                    <button type="button" class="btn btn-primary d-none" id="downloadBtn" onclick="">Download</button>--%>
+                    <button type="button" class="btn btn-primary d-none" id="downloadBtn" onclick="" hidden>Download</button>
 <%--                    <button type="button" class="btn btn-primary" id="deleteBtn" onclick="">Delete</button>--%>
                 </div>
             </div>
@@ -83,7 +83,7 @@
 
     <!-- clicked -->
     <div id="clicked"> <!--우클릭 시-->
-                <button type="button" class="btn btn-primary" id="downloadBtn" onclick="">Download</button>
+                <button type="button" class="btn btn-primary" id="fakeDownloadBtn" onclick="">Download</button>
                 <button type="button" class="btn btn-primary" id="deleteBtn" onclick="">Delete</button>
     </div>
 </div>

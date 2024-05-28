@@ -63,13 +63,16 @@ body{
 #clicked{ //오른쪽 클릭했을때 나올 div
   display: none;
   position: absolute;
-  width: 200px;
-  height: 200px;
+  //width: 200px;
+  //height: 200px;
   background-color: white;
   color: black;
   z-index: 9999;
 }
 
+.btn{
+  margin: 10px;
+}
 
 .drag{
   font: initial;
