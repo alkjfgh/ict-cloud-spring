@@ -8,6 +8,9 @@ body {
   display: none;
 }
 
+.body1 {
+  height: calc(100% - 4rem);
+}
 .body1 .show {
   position: relative;
   border-radius: 8px;
@@ -15,8 +18,8 @@ body {
   padding: 5px;
   background-color: rgb(40, 40, 40);
   float: left;
-  width: 60%;
-  height: 95%;
+  width: 70%;
+  height: calc(100% - 15px);
 }
 .body1 .enter {
   display: inline-block;
@@ -24,8 +27,8 @@ body {
   margin-top: 10px;
   padding: 5px;
   background-color: rgb(40, 40, 40);
-  width: 24%;
-  height: 95%;
+  width: 28%;
+  height: calc(100% - 15px);
 }
 
 #file {
@@ -57,6 +60,7 @@ body {
 }
 
 #clicked {
+  display: none;
   position: absolute;
   width: 200px;
   height: 200px;
@@ -77,10 +81,12 @@ body {
   width: 100%;
   margin: 0 auto;
   text-align: center;
+  min-height: 100%;
+  border: #494949 dashed 3px;
+  border-radius: 3px;
 }
 .file-list-container .drag-drop-area {
   border: 20px dashed black;
-  min-height: 500px;
 }
 .file-list-container .file-list-table {
   width: 100%;
@@ -95,13 +101,15 @@ body {
   height: 4em;
 }
 .file-list-container .file-list-table tr td {
-  text-align: center;
+  text-align: left;
 }
 .file-list-container .file-list-table tr td:nth-of-type(1) {
   text-align: left;
 }
 .file-list-container .file-list-table tr th, .file-list-container .file-list-table tr td {
-  border: 5px solid rgba(0, 0, 0, 0.87);
+  border: 5px solid black;
+  border-left: 0;
+  border-right: 0;
   padding: 0.6em;
 }
 .file-list-container .file-list-table tr .folder-area:hover {

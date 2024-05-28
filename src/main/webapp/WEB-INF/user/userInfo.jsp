@@ -11,6 +11,8 @@
     <title>userinfo</title>
 </head>
 <body>
+<jsp:include page="../header.jsp"/>
+<jsp:include page="../sidebar.jsp"/>
 <div class="container-fluid user-profile">
     <div class="row">
         <div class="col-xs-12">
@@ -22,17 +24,17 @@
                     <div class="row">
                         <div class="container">
                             <h4>Name</h4>
-                            <small>your Name</small>
+                            <small></small>
                             <br/>
                         </div>
                         <div class="container">
                             <h4>Email</h4>
-                            <small>email@email.com</small>
+                            <small></small>
                             <br/>
                         </div>
                         <div class="container">
                             <h4>JoinDate</h4>
-                            <small>0000.00.00</small>
+                            <small></small>
                             <br>
                         </div>
 
@@ -67,8 +69,8 @@
                     <br>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-dark">Confirm Change</button>
+                    <button id="close-modal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="change-password" type="button" class="btn btn-dark">Confirm Change</button>
                 </div>
             </div>
         </div>

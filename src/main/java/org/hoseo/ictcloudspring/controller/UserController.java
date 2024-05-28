@@ -11,10 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -68,6 +68,31 @@ public class UserController {
         }
 
         response.put("message", "get user info failed");
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ResponseBody
+    @PostMapping("/user/updatePassword")
+    public ResponseEntity<Map<String, Object>> updatePassword(HttpServletRequest request, @RequestBody Map<String, Object> requestData) {
+        System.out.println("UserController update password");
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        String changePassword = String.valueOf(requestData.get("changePassword"));
+        System.out.println(user);
+        System.out.println("changePassword: " + changePassword);
+
+        Map<String, Object> response = new HashMap<>();
+        if (user != null) {
+            user.setPassword(changePassword);
+            int executed = userService.updatePassword(user);
+
+            if (executed == 1) {
+                return ResponseEntity.ok(response);
+            }
+        }
+
+        response.put("message", "update password failed");
         return ResponseEntity.badRequest().body(response);
     }
 

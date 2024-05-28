@@ -285,6 +285,23 @@ public class UserService {
 
         return executed;
     }
+
+    public int updatePassword(User user) {
+        System.out.println("user service get user info: " + user);
+        int executed = 0;
+
+        String query = "UPDATE Users SET Password = ? WHERE UserID = ?";
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, user.getPassword());
+            psmt.setInt(2, user.getUserID());
+
+            executed = psmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return executed;
+    }
 }
 
 // TODO psmt, rs try로 자동 close 되도록 모든 service 코드 점검 해야함
