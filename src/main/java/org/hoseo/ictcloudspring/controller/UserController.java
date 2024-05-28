@@ -36,11 +36,39 @@ public class UserController {
         return "redirect:user/account";
     }
 
-    @RequestMapping("/user/info")
-    public String userInfo() {
+    @GetMapping("/user/info")
+    public String userInfo(HttpServletRequest request) {
         System.out.println("UserController info");
 
-        return "user/userInfo";
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/user/account";
+
+        return "/user/userInfo";
+    }
+
+    @GetMapping("/user/getInfo")
+    public ResponseEntity<Map<String, Object>> getUserInfo(HttpServletRequest request) {
+        System.out.println("UserController get user info");
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        Map<String, Object> response = new HashMap<>();
+        if (user != null) {
+            int executed = userService.getUserInfo(user);
+
+            if (executed == 1) {
+                long totalSize = fileService.calculateTotalFileSize(user.getUserID());
+                user.setTotalSize(totalSize);
+                response.put("user", user);
+
+                return ResponseEntity.ok(response);
+            }
+        }
+
+        response.put("message", "get user info failed");
+        return ResponseEntity.badRequest().body(response);
     }
 
     @GetMapping("/user/account")

@@ -260,6 +260,31 @@ public class UserService {
         return execute;
 
     }
+
+    public int getUserInfo(User user) {
+        System.out.println("user service get user info: " + user);
+        int executed = 0;
+
+        String query = "SELECT * FROM Users WHERE Email = ?";
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, user.getEmail());
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    executed = 1;
+
+                    user.setUserID(rs.getInt("userID"));
+                    user.setName(rs.getString("name"));
+                    user.setStorageMaxSize(rs.getLong("storageMaxSize"));
+                    user.setRegistrationDate(rs.getTimestamp("registrationDate"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return executed;
+    }
 }
 
 // TODO psmt, rs try로 자동 close 되도록 모든 service 코드 점검 해야함

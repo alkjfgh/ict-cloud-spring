@@ -3,8 +3,10 @@
 <html>
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet'>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="<c:url value="/css/userInfo.css?ver=1"/>">
     <title>userinfo</title>
 </head>
@@ -21,7 +23,7 @@
                         <div class="container">
                             <h4>Name</h4>
                             <small>your Name</small>
-                            <br />
+                            <br/>
                         </div>
                         <div class="container">
                             <h4>Email</h4>
@@ -53,13 +55,15 @@
                 </div>
                 <div class="modal-body">
                     <lable><h4>Existing Password</h4></lable>
-                    <input type="password" placeholder="existing password" class="input-ex-pwd" name="password" required>
+                    <input type="password" placeholder="existing password" class="input-ex-pwd" name="password"
+                           required>
                     <br>
                     <lable><h4>Change Password</h4></lable>
                     <input type="password" placeholder="password" class="input-signup-pwd" name="password" required/>
                     <br>
                     <lable><h4>Change Password Check</h4></lable>
-                    <input type="password" placeholder="password check" class="input-signup-pwd-check" name="password" required/>
+                    <input type="password" placeholder="password check" class="input-signup-pwd-check" name="password"
+                           required/>
                     <br>
                 </div>
                 <div class="modal-footer">
@@ -71,5 +75,8 @@
     </div>
 </div>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+<script src="<c:url value="/js/userInfo.js"/>"></script>
 </html>
