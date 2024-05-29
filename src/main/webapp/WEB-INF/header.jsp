@@ -21,7 +21,6 @@
         <div class="islogin">
             <h3>
                 Signed in as <strong class="username">username</strong>
-                <%--todo username에 실제 유저 이름 넣어야함--%>
             </h3>
 
             <ul>

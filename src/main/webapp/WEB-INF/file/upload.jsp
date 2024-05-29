@@ -17,7 +17,6 @@
 <jsp:include page="../header.jsp"/>
 <jsp:include page="../sidebar.jsp"/>
 <div>
-<%-- TODO 파일, 폴더 삭제추가 해야함 --%>
     <div class="body1">
         <div class="show">
             <div class="test-view">
