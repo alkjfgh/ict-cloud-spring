@@ -9,7 +9,7 @@ const signInSubmit = (event) => {
         data: $('.login-form').serialize(), // 폼 데이터를 직렬화합니다.
         success: function (response) {
             if (response.status === 'success') {
-                if(response.level == 2) window.location.href = '../admin';
+                if (response.level == 2) window.location.href = '../admin';
                 else window.location.href = '../file/upload'; // 로그인 성공 시 페이지 이동
             } else {
                 alert(response.message); // 로그인 실패 시 메시지 표시
@@ -46,7 +46,7 @@ const signUpSubmit = async (event) => {
     let email = $(".input-signup-id").val();
     let password = $(".input-signup-pwd").val();
 
-    if(!isValidName(name)){
+    if (!isValidName(name)) {
         alert("Please enter your name in English only.");
         return false;
     }
@@ -69,10 +69,16 @@ const signUpSubmit = async (event) => {
         return false;
     }
 
+    const check = await isEmailAlready(email);
+
+    if (check) await sendVerificationEmail();
+    else {
+        alert("is already email");
+        return false;
+    }
+
     $('.register-area').hide();
     $('.email-verification').show();
-
-    sendVerificationEmail()
 }
 
 $(document).ready(function () {
@@ -84,44 +90,44 @@ $(document).ready(function () {
 
     $('.input-signup-name').on('propertychange change keyup paste input', function () {
         const name = $(this).val();
-        if(name === '') {
+        if (name === '') {
             $(this).removeClass('invalid');
             return;
         }
-        if(isValidName(name)) $(this).removeClass('invalid');
+        if (isValidName(name)) $(this).removeClass('invalid');
         else $(this).addClass('invalid');
     });
 
     $('.input-signup-pwd').on('propertychange change keyup paste input', function () {
         const pwd = $(this).val();
-        if(pwd === '') {
+        if (pwd === '') {
             $(this).removeClass('invalid');
             return;
         }
-        if(isValidPassword(pwd)) $(this).removeClass('invalid');
+        if (isValidPassword(pwd)) $(this).removeClass('invalid');
         else $(this).addClass('invalid');
     });
 
     $('.input-signup-pwd-check').on('propertychange change keyup paste input', function () {
         const pwd = $('.input-signup-pwd').val();
         const pwdCheck = $(this).val();
-        if(pwdCheck === '') {
+        if (pwdCheck === '') {
             $(this).removeClass('invalid');
             return;
         }
-        if(isValidPassword(pwdCheck)) $(this).removeClass('invalid');
+        if (isValidPassword(pwdCheck)) $(this).removeClass('invalid');
         else $(this).addClass('invalid');
 
-        if(pwd !== pwdCheck) $(this).addClass('invalid');
+        if (pwd !== pwdCheck) $(this).addClass('invalid');
     });
 
     $('.input-signup-id').on('propertychange change keyup paste input', function () {
         const email = $(this).val();
-        if(email === '') {
+        if (email === '') {
             $(this).removeClass('invalid');
             return;
         }
-        if(isValidEmail(email)) $(this).removeClass('invalid');
+        if (isValidEmail(email)) $(this).removeClass('invalid');
         else $(this).addClass('invalid');
     });
 });
@@ -207,6 +213,21 @@ const generateRandomToken = async () => {
     return token;
 }
 
+const isEmailAlready = async (email) => {
+    let check = false;
+
+    await axios.post('/user/isEmailAlready', {email}).then(res => {
+        if (res.status === 200) {
+            console.log(res.data);
+            check = res.data.check;
+        } else {
+            alert('Something error happened');
+        }
+    });
+
+    return check;
+}
+
 // 이메일 실시간 체크
 function printEmail() {
 
@@ -215,7 +236,7 @@ function printEmail() {
     const email_check = document.getElementById('email_check');
 
     // 입력창의 값이 이메일 형태와 맞지 않게 입력된 경우
-    if(!isEmail(email.value)){
+    if (!isEmail(email.value)) {
 
         // 이메일 입력창의 테두리 빨간색으로 변경
         email.style.borderColor = '#EF4444';

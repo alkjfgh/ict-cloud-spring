@@ -184,7 +184,7 @@ public class UserController {
         System.out.println("User Controller logout");
 
         HttpSession session = request.getSession(false);
-        if(session != null){
+        if (session != null) {
             session.invalidate();
         }
 
@@ -251,6 +251,7 @@ public class UserController {
     @GetMapping("/user/generateToken")
     public ResponseEntity<Map<String, String>> generateToken(@RequestParam("email") String email) {
         System.out.println("User Controller generateToken");
+        int executed = userService.deleteToken(email);
         String token = userService.generatedToken(email);
         Map<String, String> responseMap = new HashMap<>();
 
@@ -290,5 +291,23 @@ public class UserController {
         }
 
         return ResponseEntity.ok(responseMap);
+    }
+
+    @ResponseBody
+    @PostMapping("/user/isEmailAlready")
+    public Map<String, Object> isEmailAlready(@RequestBody Map<String, Object> requestData) {
+        System.out.println("User Controller isEmailAlready");
+
+        String email = (String) requestData.get("email");
+
+        Map<String, Object> response = new HashMap<>();
+        boolean check = false;
+
+        if (email != null || !email.isEmpty()) check = userService.isEmailAlready(email);
+
+        response.put("status", "success");
+        response.put("check", check);
+
+        return response;
     }
 }

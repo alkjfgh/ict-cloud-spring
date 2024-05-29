@@ -146,18 +146,18 @@ public class UserService {
 
     public int deleteToken(String email) {
         System.out.println("delete token: " + email);
-        int excuted = 0;
+        int executed = 0;
         String query = "DELETE FROM Token WHERE email = ?";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
             psmt.setString(1, email);
 
-            excuted = psmt.executeUpdate();
+            executed = psmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return excuted;
+        return executed;
     }
 
     public boolean checkAdmin(User user) {
@@ -272,5 +272,23 @@ public class UserService {
         }
 
         return executed;
+    }
+
+    public boolean isEmailAlready(String email) {
+        System.out.println("user service check email is already: " + email);
+        boolean check = false;
+
+        String query = "SELECT * FROM Users WHERE Email = ?";
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, email);
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (!rs.next()) check = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return check;
     }
 }
