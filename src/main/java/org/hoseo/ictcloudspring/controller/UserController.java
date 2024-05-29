@@ -3,6 +3,8 @@ package org.hoseo.ictcloudspring.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hoseo.ictcloudspring.dao.FileService;
 import org.hoseo.ictcloudspring.dao.UserService;
 import org.hoseo.ictcloudspring.dto.User;
@@ -22,6 +24,7 @@ public class UserController {
 
     private final UserService userService;
     private final FileService fileService;
+    private static final Logger logger = LogManager.getLogger(UserController.class);
 
     @Autowired
     public UserController(UserService userService, FileService fileService) {
@@ -31,28 +34,32 @@ public class UserController {
 
     @RequestMapping("/user")
     public String userHome() {
-        System.out.println("UserController Home");
+        logger.info("UserController Home");
 
         return "redirect:user/account";
     }
 
     @GetMapping("/user/info")
     public String userInfo(HttpServletRequest request) {
-        System.out.println("UserController info");
+        logger.info("UserController info");
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/user/account";
+
+        logger.info("User: " + user);
 
         return "/user/userInfo";
     }
 
     @GetMapping("/user/getInfo")
     public ResponseEntity<Map<String, Object>> getUserInfo(HttpServletRequest request) {
-        System.out.println("UserController get user info");
+        logger.info("UserController get user info");
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+
+        System.out.println("User: " + user);
 
         Map<String, Object> response = new HashMap<>();
         if (user != null) {
@@ -74,13 +81,13 @@ public class UserController {
     @ResponseBody
     @PostMapping("/user/updatePassword")
     public ResponseEntity<Map<String, Object>> updatePassword(HttpServletRequest request, @RequestBody Map<String, Object> requestData) {
-        System.out.println("UserController update password");
+        logger.info("UserController update password");
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         String changePassword = String.valueOf(requestData.get("changePassword"));
-        System.out.println(user);
-        System.out.println("changePassword: " + changePassword);
+        logger.info("User: " + user);
+        logger.info("changePassword: " + changePassword);
 
         Map<String, Object> response = new HashMap<>();
         if (user != null) {
@@ -99,11 +106,11 @@ public class UserController {
     @ResponseBody
     @PostMapping("/user/signOut")
     public ResponseEntity<Map<String, Object>> updatePassword(HttpServletRequest request) {
-        System.out.println("UserController sign out user");
+        logger.info("UserController sign out user");
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        System.out.println(user);
+        logger.info("User: " + user);
 
         Map<String, Object> response = new HashMap<>();
         if (user != null) {
@@ -125,11 +132,14 @@ public class UserController {
 
     @GetMapping("/user/account")
     public String isSignInSession(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("UserController user session check");
+        logger.info("UserController user session check");
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        if (user != null) return "redirect:../file/upload";
+        if (user != null) {
+            logger.info("User: " + user);
+            return "redirect:../file/upload";
+        }
 
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         response.setHeader("Pragma", "no-cache");
@@ -141,7 +151,8 @@ public class UserController {
     @ResponseBody
     @PostMapping("/user/signIn")
     public Map<String, Object> signIn(@ModelAttribute User user, HttpServletRequest request) throws UnsupportedEncodingException {
-        System.out.println("User Controller signIn");
+        logger.info("User Controller signIn");
+        logger.info("User: " + user);
 
         Map<String, Object> response = new HashMap<>();
         boolean isSignIn = userService.checkSignIn(user);
@@ -160,20 +171,15 @@ public class UserController {
         return response;
     }
 
-
     @PostMapping("/user/signUp")
     public ResponseEntity<String> signUp(@RequestBody User user) {
-        System.out.println("User Controller signUp");
-        System.out.println("User: " + user);
+        logger.info("User Controller signUp");
+        logger.info("User: " + user);
 
         int isSignUp = userService.insertUser(user); // userService를 통해 사용자 등록 로직을 처리합니다.
 
         if (isSignUp == 1) {
             return ResponseEntity.ok("success");
-
-//            mav.addObject("message", "회원가입 성공" + user);
-//            mav.addObject("extraMessage", "기본 root 파일을 생성합니다.");
-//            mav.setViewName("redirect:user/account"); // 회원가입 성공 시 보여줄 뷰의 이름
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed");
         }
@@ -181,7 +187,7 @@ public class UserController {
 
     @GetMapping("/user/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
-        System.out.println("User Controller logout");
+        logger.info("User Controller logout");
 
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -194,11 +200,13 @@ public class UserController {
     @ResponseBody
     @PostMapping("/user/delete")
     public Map<String, Object> deleteUser(@RequestBody Map<String, Object> requestData) {
-        System.out.println("User Controller delete user");
+        logger.info("User Controller delete user");
 
         Map<String, Object> response = new HashMap<>();
 
         int userID = Integer.parseInt(String.valueOf(requestData.get("userID")));
+
+        System.out.println("userID: " + userID);
 
         int initSuccess = fileService.initFileAndFolder(userID);
 
@@ -223,7 +231,7 @@ public class UserController {
     @ResponseBody
     @PostMapping("/user/edit")
     public Map<String, Object> userEdit(@RequestBody Map<String, Object> requestData) {
-        System.out.println("User Controller editUser");
+        logger.info("User Controller editUser");
 
         Map<String, Object> response = new HashMap<>();
 
@@ -234,6 +242,8 @@ public class UserController {
         user.setPassword((String) requestData.get("password"));
         user.setLevel(Integer.parseInt(String.valueOf(requestData.get("level"))));
         user.setStorageMaxSize(Long.parseLong(String.valueOf(requestData.get("storageMaxSize"))));
+
+        logger.info(user);
 
         int editUserSuccesses = userService.editUser(user);
 
@@ -250,7 +260,7 @@ public class UserController {
 
     @GetMapping("/user/generateToken")
     public ResponseEntity<Map<String, String>> generateToken(@RequestParam("email") String email) {
-        System.out.println("User Controller generateToken");
+        logger.info("User Controller generateToken: " + email);
         int executed = userService.deleteToken(email);
         String token = userService.generatedToken(email);
         Map<String, String> responseMap = new HashMap<>();
@@ -266,7 +276,7 @@ public class UserController {
 
     @GetMapping("/user/getToken")
     public ResponseEntity<Map<String, String>> getToken(@RequestParam("email") String email) {
-        System.out.println("User Controller getToken");
+        logger.info("User Controller getToken: " + email);
         String token = userService.getToken(email);
         Map<String, String> responseMap = new HashMap<>();
 
@@ -281,7 +291,7 @@ public class UserController {
 
     @GetMapping("/user/deleteToken")
     public ResponseEntity<Map<String, String>> deleteToken(@RequestParam("email") String email) {
-        System.out.println("User Controller deleteToken");
+        logger.info("User Controller deleteToken: " + email);
         int excuted = userService.deleteToken(email);
         Map<String, String> responseMap = new HashMap<>();
 
@@ -296,9 +306,8 @@ public class UserController {
     @ResponseBody
     @PostMapping("/user/isEmailAlready")
     public Map<String, Object> isEmailAlready(@RequestBody Map<String, Object> requestData) {
-        System.out.println("User Controller isEmailAlready");
-
         String email = (String) requestData.get("email");
+        logger.info("User Controller isEmailAlready: " + email);
 
         Map<String, Object> response = new HashMap<>();
         boolean check = false;

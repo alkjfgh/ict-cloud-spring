@@ -32,8 +32,18 @@ dependencies {
     implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api'
     implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+    implementation("org.springframework.boot:spring-boot-starter-log4j2")
+//    implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
+//    implementation 'org.apache.logging.log4j:log4j-core:2.17.0'
+//    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.0'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+configurations {
+    configureEach {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
 }

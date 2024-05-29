@@ -4,10 +4,16 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hoseo.ictcloudspring.controller.UserController;
+import org.hoseo.ictcloudspring.dto.User;
 
 import java.io.IOException;
 
 public class LoginFilter implements Filter {
+    private static final Logger logger = LogManager.getLogger(UserController.class);
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         Filter.super.init(filterConfig);
@@ -15,17 +21,25 @@ public class LoginFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        System.out.println("check user session  filter");
+        logger.info("check user session  filter");
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession(false);
 
         // 로그인 페이지와 리소스 요청을 제외한 나머지 요청에 대해 세션 체크
         String uri = req.getRequestURI();
-        System.out.println(uri);
+        logger.info(uri);
+
         if (session == null || session.getAttribute("user") == null) {
             if (!uri.endsWith("account") && !uri.endsWith("main") && uri.endsWith(".css") && uri.endsWith(".js")) {
                 res.sendRedirect(req.getContextPath() + "/user/account");
+                return;
+            }
+        } else {
+            User user = (User) session.getAttribute("user");
+            if (user.getLevel() != 2 && !uri.endsWith("admin")) {
+                logger.warn("unauthorized enter admin page. User: " + user);
+                res.sendRedirect(req.getContextPath() + "/main");
                 return;
             }
         }

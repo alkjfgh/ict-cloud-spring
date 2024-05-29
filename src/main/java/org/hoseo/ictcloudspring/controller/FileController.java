@@ -3,6 +3,8 @@ package org.hoseo.ictcloudspring.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hoseo.ictcloudspring.dao.FileService;
 import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
@@ -31,6 +33,7 @@ import java.util.Objects;
 public class FileController {
 
     private final FileService fileService;
+    private static final Logger logger = LogManager.getLogger(UserController.class);
 
     @Autowired
     public FileController(FileService fileService) {
@@ -39,8 +42,12 @@ public class FileController {
 
     @GetMapping("/file/upload")
     public Object enterUpload(HttpServletRequest request) {
+        logger.info("File Controller enter upload");
+
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+        logger.info("User: " + user);
+
         if (user == null) {
             return "redirect:../user/account";
         } else {
@@ -73,7 +80,6 @@ public class FileController {
 
             // AJAX 요청인 경우 JSON 형태로 데이터를 반환합니다.
             if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
-                System.out.println("return response");
                 return ResponseEntity.ok(responseMap);
             }
 
@@ -81,7 +87,6 @@ public class FileController {
             ModelAndView mav = new ModelAndView();
             mav.addAllObjects(responseMap);
             mav.setViewName("file/upload");
-            System.out.println("return mav");
             return mav;
         }
     }
@@ -92,7 +97,7 @@ public class FileController {
                                              @RequestParam("userID") String userID,
                                              @RequestParam("storagePath") String storagePath,
                                              @RequestParam("folderID") int folderID) {
-        System.out.println("FileController file upload post request");
+        logger.info("File Controller file upload post request");
         // TODO 같은 이름의 파일 들어왔을 때 처리 생각해야함.
 
         int uploadFileSuccesses = fileService.uploadFile(file, userID, storagePath, folderID, FilenameUtils.getExtension(file.getOriginalFilename()));
@@ -107,7 +112,7 @@ public class FileController {
     @ResponseBody
     @PostMapping("/file/addFolder")
     public Map<String, Object> addFolder(@RequestBody Map<String, Object> requestData) {
-        System.out.println("FileController add folder post request");
+        logger.info("File Controller add folder post request");
 
         Map<String, Object> response = new HashMap<>();
 
@@ -115,7 +120,7 @@ public class FileController {
         String storagePath = (String) requestData.get("storagePath");
         int folderID = (Integer) requestData.get("folderID");
         String addFolderName = (String) requestData.get("addFolderName");
-        System.out.println(storagePath);
+        logger.info("storagePath: " + storagePath);
 
         int addFolderSuccesses = fileService.addFolder(userID, storagePath, folderID, addFolderName);
 
@@ -135,8 +140,8 @@ public class FileController {
             @RequestParam("userID") int userID,
             @RequestParam("fileID") int fileID,
             @RequestParam("filename") String filename) {
-        System.out.println("File Controller download file");
-        System.out.println(fileID + ", " + userID + ", " + filename);
+        logger.info("File Controller download file");
+        logger.info("fileID: " + fileID + ", userID: " + userID + ", filename: " + filename);
 
         StreamingResponseBody responseBody = outputStream -> {
             InputStream inputStream = null;
@@ -150,7 +155,7 @@ public class FileController {
                         outputStream.flush();
                     } catch (IOException e) {
                         if (e.getCause() instanceof org.apache.catalina.connector.ClientAbortException) {
-                            System.out.println("클라이언트가 다운로드를 중단했습니다: " + e.getMessage());
+                            logger.error("클라이언트가 다운로드를 중단했습니다: " + e.getMessage());
                             break;
                         } else {
                             throw e;
@@ -159,16 +164,16 @@ public class FileController {
                 }
             } catch (IOException e) {
                 if (e instanceof org.apache.catalina.connector.ClientAbortException) {
-                    System.out.println("클라이언트가 다운로드를 중단했습니다: " + e.getMessage());
+                    logger.error("클라이언트가 다운로드를 중단했습니다: " + e.getMessage());
                 } else {
-                    e.printStackTrace();
+                    logger.error(e.getLocalizedMessage());
                 }
             } finally {
                 if (inputStream != null) {
                     try {
                         inputStream.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.error(e.getLocalizedMessage());
                     }
                 }
             }
@@ -188,7 +193,7 @@ public class FileController {
     public ResponseEntity<StreamingResponseBody> streamVideo(
             @RequestParam("userID") int userID,
             @RequestParam("fileID") int fileID) {
-        System.out.println("File Controller stream video");
+        logger.info("File Controller stream video");
 
         StreamingResponseBody responseBody = outputStream -> {
             try {
@@ -200,7 +205,7 @@ public class FileController {
                 }
                 inputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getLocalizedMessage());
             }
         };
 
@@ -211,12 +216,12 @@ public class FileController {
 
     @GetMapping("/file/storageSize")
     public ResponseEntity<long[]> fileUpload(@RequestParam("userID") int userID) {
-        System.out.println("FileController storageSize get request");
+        logger.info("File Controller storageSize get request");
 
         long[] sizes = fileService.getStorageSize(userID);
 
         if (sizes != null) {
-            System.out.println("storageMaxSize: " + sizes[0] + " totalSize: " + sizes[1]);
+            logger.info("storageMaxSize: " + sizes[0] + " totalSize: " + sizes[1]);
             return ResponseEntity.ok(sizes);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -226,11 +231,12 @@ public class FileController {
     @ResponseBody
     @PostMapping("/file/initAll")
     public Map<String, Object> initFileAndFolder(@RequestBody Map<String, Object> requestData) {
-        System.out.println("FileController init File and Folder post request");
+        logger.info("File Controller init File and Folder post request");
 
         Map<String, Object> response = new HashMap<>();
 
         int userID = Integer.parseInt(String.valueOf(requestData.get("userID")));
+        logger.info("userID: " + userID);
 
         int initSuccesses = fileService.initFileAndFolder(userID);
 
@@ -248,12 +254,13 @@ public class FileController {
     @ResponseBody
     @PostMapping("/file/deleteFile")
     public Map<String, Object> deleteFile(@RequestBody Map<String, Object> requestData) {
-        System.out.println("FileController delete file post request");
+        logger.info("FileController delete file post request");
 
         Map<String, Object> response = new HashMap<>();
 
         int userID = Integer.parseInt(String.valueOf(requestData.get("userID")));
         int fileID = Integer.parseInt(String.valueOf(requestData.get("fileID")));
+        logger.info("userID: " + userID + " fileID: " + fileID);
 
         int deleteFileSuccesses = fileService.deleteFile(userID, fileID);
 
@@ -270,12 +277,13 @@ public class FileController {
     @ResponseBody
     @PostMapping("/file/deleteFolder")
     public Map<String, Object> deleteFolder(@RequestBody Map<String, Object> requestData) {
-        System.out.println("FileController delete Folder post request");
+        logger.info("FileController delete Folder post request");
 
         Map<String, Object> response = new HashMap<>();
 
         int userID = Integer.parseInt(String.valueOf(requestData.get("userID")));
         int folderID = Integer.parseInt(String.valueOf(requestData.get("folderID")));
+        logger.info("userID: " + userID + " folderID: " + folderID);
 
         int deleteFolderSuccesses = fileService.deleteFolder(userID, folderID);
 

@@ -2,6 +2,8 @@ package org.hoseo.ictcloudspring.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hoseo.ictcloudspring.dao.FileService;
 import org.hoseo.ictcloudspring.dao.UserService;
 import org.hoseo.ictcloudspring.dto.User;
@@ -9,15 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.*;
 
 @Controller
 public class AdminController {
-    private FileService fileService;
-    private UserService userService;
+    private final FileService fileService;
+    private final UserService userService;
+    private static final Logger logger = LogManager.getLogger(UserController.class);
 
     @Autowired
     public AdminController(FileService fileService, UserService userService) {
@@ -27,9 +29,12 @@ public class AdminController {
 
     @GetMapping("/admin")
     public String enterAdminPage(HttpServletRequest request) {
-
+        logger.info("Admin Controller enter admin page");
+        
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+        logger.info("User: " + user);
+
         boolean checkAdmin = userService.checkAdmin(user);
 
         if(checkAdmin) return "/admin/admin";
@@ -39,10 +44,12 @@ public class AdminController {
     @ResponseBody
     @PostMapping("/admin/checkUploadFolderSize")
     public Map<String, Object> checkUploadFolderSize(HttpServletRequest request) {
-        System.out.println("AdminController check upload folder size post request");
+        logger.info("AdminController check upload folder size post request");
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+        logger.info("User: " + user);
+
         boolean checkAdmin = userService.checkAdmin(user);
 
         Map<String, Object> response = new HashMap<>();
@@ -65,7 +72,7 @@ public class AdminController {
     @ResponseBody
     @PostMapping("/admin/userStorageSizeList")
     public Map<String, Object> getUserStorageSizeList(HttpServletRequest request) {
-        System.out.println("AdminController get user storageSize list post request");
+        logger.info("AdminController get user storageSize list post request");
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
@@ -80,7 +87,7 @@ public class AdminController {
                 response.put("status", "success");
                 response.put("message", "Uploads folder size calculated successfully");
                 response.put("storageSizeList", storageSizeList);
-                System.out.println("AdminController get user storageSize list post success");
+                logger.info("AdminController get user storageSize list post success");
             } else {
                 response.put("status", "fail");
                 response.put("message", "Uploads folder size calculated failed");
