@@ -18,17 +18,26 @@ $(document).ready(function () {
     });
 });
 
-let dropdownMenu = document.querySelector(".dropdown-menu")
-let dropdownButton = document.querySelector(".dropdown-button")
+document.addEventListener('DOMContentLoaded', function() {
+    let dropdownMenu = document.querySelector(".dropdown-menu");
+    let dropdownButton = document.querySelector(".dropdown-button");
 
-dropdownButton.addEventListener("click", function(event) {
-    if (this.active) {
-        dropdownMenu.classList.remove("active")
+    if (dropdownButton && dropdownMenu) {
+        dropdownButton.addEventListener("click", function(event) {
+            event.stopPropagation(); // 버블링 방지
+            if (dropdownMenu.classList.contains("active")) {
+                dropdownMenu.classList.remove("active");
+            } else {
+                dropdownMenu.classList.add("active");
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.dropdown-menu') && !event.target.closest('.dropdown-button')) {
+                dropdownMenu.classList.remove("active");
+            }
+        });
     } else {
-        dropdownMenu.classList.add("active")
+        console.error("dropdownButton 또는 dropdownMenu 요소를 찾을 수 없습니다.");
     }
-
-    this.active = !this.active
-})
-
-dropdownButton.active = false
+});
