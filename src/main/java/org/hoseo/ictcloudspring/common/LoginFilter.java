@@ -21,28 +21,37 @@ public class LoginFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        logger.info("check user session  filter");
+        logger.info("check user session filter");
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
         HttpSession session = req.getSession(false);
 
         // 로그인 페이지와 리소스 요청을 제외한 나머지 요청에 대해 세션 체크
         String uri = req.getRequestURI();
-        logger.info(uri);
+        logger.info("uri: " + uri);
 
         if (session == null || session.getAttribute("user") == null) {
-            if (!uri.endsWith("account") && !uri.endsWith("main") && uri.endsWith(".css") && uri.endsWith(".js")) {
+            System.out.println("111111111111111111111111111111111111111111");
+            if (!uri.endsWith("account") && !uri.endsWith("main") && uri.endsWith(".css") && uri.endsWith(".js") && !uri.endsWith(".jpg") && !uri.endsWith(".png")) {
+                System.out.println("22222222222222222222222222222222222222");
                 res.sendRedirect(req.getContextPath() + "/user/account");
                 return;
             }
-        } else {
+        } /*else {
+            System.out.println("================================");
+            System.out.println("================================");
+            System.out.println("else!!!!!!!!!!!!!!!!!!!!");
             User user = (User) session.getAttribute("user");
+            System.out.println(user);
             if (user.getLevel() != 2 && !uri.endsWith("admin")) {
                 logger.warn("unauthorized enter admin page. User: " + user);
+                System.out.print("path: ");
+                System.out.println(req.getContextPath() + "/main");
                 res.sendRedirect(req.getContextPath() + "/main");
                 return;
             }
-        }
+        }*/
+
         chain.doFilter(request, response);
     }
 
