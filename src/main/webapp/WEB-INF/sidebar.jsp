@@ -9,7 +9,6 @@
         <h2><a href="<c:url value="/main"/>">ICT CLOUD</a></h2>
     </div>
     <ul class="sidebar-menu">
-        <li><a href="<c:url value="/user/info"/>">User info</a></li>
         <li><a href="<c:url value="/file/upload"/>">Dashboard</a></li>
         <li><a href="#" class="logout-link">Logout</a></li>
     </ul>
