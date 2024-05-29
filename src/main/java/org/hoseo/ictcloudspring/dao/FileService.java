@@ -1,6 +1,9 @@
 package org.hoseo.ictcloudspring.dao;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hoseo.ictcloudspring.connection.DBConnectionPool;
+import org.hoseo.ictcloudspring.controller.UserController;
 import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
 import org.hoseo.ictcloudspring.dto.User;
@@ -27,6 +30,7 @@ public class FileService {
     private PreparedStatement psmt;
     private ResultSet rs;
     private final String SEPARATOR = java.io.File.separator;
+    private static final Logger logger = LogManager.getLogger(UserController.class);
 
     @Autowired
     public FileService(DBConnectionPool dbConnectionPool) throws SQLException {
@@ -35,13 +39,15 @@ public class FileService {
         java.io.File f = new java.io.File(uploadFolderPath);
 
         if (!f.exists()) {
-            System.out.println("MKDIR UPLOAD PATH: " + f.mkdir());
+            logger.info("MKDIR UPLOAD PATH: " + f.mkdir());
         }
     }
 
     public int uploadFile(MultipartFile file, String userID, String storagePath, int folderID, String extension) {
+        logger.info("File Service upload file");
+
         if (file.isEmpty()) {
-            System.out.println("파일이 비어있습니다.");
+            logger.warn("파일이 비어있습니다.");
             return 0;
         }
 
@@ -64,8 +70,9 @@ public class FileService {
         if (writeSuccesses) {
             String query = "INSERT INTO Files(UserID, FolderID, Filename, FileSize, StoragePath, UploadDate, LastModifiedDate, fileType) " +
                     "VALUES (?, ?, ?, ?, ?, SYSDATE(), SYSDATE(), ?);";
-            System.out.println(query);
-            System.out.println(newFile);
+            logger.info("query: " + query);
+            logger.info("file: " + newFile);
+
             try (PreparedStatement psmt = con.prepareStatement(query);) {
                 psmt.setInt(1, newFile.getUserID());
                 psmt.setInt(2, newFile.getFolderID());
@@ -76,15 +83,15 @@ public class FileService {
 
                 boolean executed = psmt.execute();
                 if (executed) {
-                    System.out.println("파일 db 업로드 성공: " + storagePath);
-                    System.out.println(newFile);
+                    logger.info("파일 db 업로드 성공: " + storagePath);
+                    logger.info("file: " + newFile);
                 }
 
             } catch (Exception e) {
-                System.out.println("파일 db 업로드 실패: " + e.getMessage());
+                logger.error("파일 db 업로드 실패: " + e.getLocalizedMessage());
             }
         } else {
-            System.out.println("파일 쓰기 실패");
+            logger.warn("파일 쓰기 실패");
             return 0;
         }
 
@@ -92,6 +99,9 @@ public class FileService {
     }
 
     public boolean checkStorageRemain(int userID, long fileSize) {
+        logger.info("File Service check storage remain");
+        logger.info("userID: " + userID + " fileSize: " + fileSize);
+
         long[] sizes = getStorageSize(userID);
         return sizes[0] >= sizes[1] + fileSize;
     }
@@ -102,7 +112,9 @@ public class FileService {
      * null is something wrong happened
      */
     public long[] getStorageSize(int userID) {
-        System.out.println("File Service Get Storage Size: " + userID);
+        logger.info("File Service Get Storage Size");
+        logger.info("userID: " + userID);
+
         long[] sizes = new long[2];
 
         String query = "SELECT storageMaxSize FROM Users WHERE userID = ?";
@@ -115,11 +127,11 @@ public class FileService {
                 else throw new SQLException("Storage Max Size is not available");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
             return null;
         }
 
-        System.out.println(Arrays.toString(sizes));
+        logger.info(Arrays.toString(sizes));
 
         sizes[1] = calculateTotalFileSize(userID);
 
@@ -127,12 +139,15 @@ public class FileService {
     }
 
     public long calculateTotalFileSize(int userID) {
+        logger.info("File Service calculate total filesize");
+        logger.info("userID: " + userID);
+
         String query = "SELECT COALESCE(SUM(fileSize), 0) AS totalFileSize " +
                 "FROM Files " +
                 "WHERE userID = ?";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
-            System.out.println(query);
+            logger.info(query);
             psmt.setInt(1, userID);
 
             try (ResultSet rs = psmt.executeQuery()) {
@@ -140,12 +155,15 @@ public class FileService {
                 else throw new SQLException("Storage total Size is not available");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
             return 0;
         }
     }
 
     private boolean fileWrite(String path, MultipartFile file) {
+        logger.info("File Service file write");
+        logger.info("path: " + path);
+
         try {
             java.io.File dest = new java.io.File(path);
 
@@ -154,7 +172,7 @@ public class FileService {
             if (!parentDir.exists()) {
                 boolean dirsCreated = parentDir.mkdirs();
                 if (!dirsCreated) {
-                    System.out.println("필요한 폴더를 생성할 수 없습니다.");
+                    logger.warn("필요한 폴더를 생성할 수 없습니다.");
                     return false;
                 }
             }
@@ -163,18 +181,21 @@ public class FileService {
 
             return true;
         } catch (IOException e) {
-            System.out.println("파일 저장 실패: " + e.getMessage());
+            logger.error("파일 저장 실패: " + e.getLocalizedMessage());
             return false;
         }
     }
 
     public int getFolderId(int userID, String storagePath) {
+        logger.info("File Service get folder id");
+        logger.info("userID: " + userID + " storagePath: " + storagePath);
+
         int folderID = 0;
 
         String query = "SELECT FolderID FROM Folders WHERE UserID = ? AND StoragePath = ?";
-        System.out.println(query);
-        System.out.println(userID);
-        System.out.println(storagePath);
+        logger.info(query);
+        logger.info(userID);
+        logger.info(storagePath);
 
         try (PreparedStatement psmt = con.prepareStatement(query);) {
 //            storagePath = storagePath.replace("\\", "\\\\");
@@ -187,19 +208,20 @@ public class FileService {
                 }
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getLocalizedMessage());
         }
 
         return folderID;
     }
 
     public List<File> getFilesByUserIdAndFolderId(int userId, int folderId) {
-        System.out.println("getFilesByUserIDAndFolderID()");
+        logger.info("File Service get files by userID and FolderID");
+        logger.info("userID: " + userId + " folderID: " + folderId);
+
         List<File> files = new ArrayList<>();
 
         String query = "SELECT * FROM Files WHERE UserID = ? AND FolderID = ?";
-        System.out.println(query);
-        System.out.println(userId + ", " + folderId);
+        logger.info(query);
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
             psmt.setInt(1, userId);
@@ -223,13 +245,16 @@ public class FileService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return files;
     }
 
     public List<Folder> getSubFoldersByFolderId(int folderId) {
+        logger.info("File Service get sub folders by folderID");
+        logger.info("folderID: " + folderId);
+
         List<Folder> folders = new ArrayList<>();
 
         String query = "SELECT * FROM Folders WHERE ParentFolderID = ?";
@@ -249,18 +274,17 @@ public class FileService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return folders;
     }
 
     public int addFolder(int userID, String storagePath, int folderID, String addFolderName) {
-        System.out.println("File Service add folder");
-        int addFolderSuccesses = 0;
+        logger.info("File Service add folder");
+        logger.info("userID: " + userID + " storagePath: " + storagePath + " folderID: " + folderID + " addFolderName: " + addFolderName);
 
-        System.out.println("=====================");
-        System.out.println(userID + ", " + storagePath + ", " + folderID + ", " + addFolderName);
+        int addFolderSuccesses = 0;
 
         String query = "INSERT INTO Folders(ParentFolderID, UserID, FolderName, StoragePath) VALUES(?,?,?,?)";
 
@@ -272,13 +296,16 @@ public class FileService {
 
             addFolderSuccesses = psmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return addFolderSuccesses;
     }
 
     public String getStoragePath(int userID, int folderID) {
+        logger.info("File Service get storagePath");
+        logger.info("userID: " + userID + " folderID: " + folderID);
+
         String storagePath = "root";
 
         String query = "SELECT storagePath FROM Folders WHERE userID = ? AND folderID = ?";
@@ -293,13 +320,16 @@ public class FileService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return storagePath;
     }
 
     public boolean isFolderId(int userID, int folderID) {
+        logger.info("File Service is folderID");
+        logger.info("userID: " + userID + " folderID: " + folderID);
+
         boolean isFI = false;
 
         String query = "SELECT * FROM Folders WHERE userID = ? AND folderID = ?";
@@ -314,19 +344,22 @@ public class FileService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return isFI;
     }
 
-    public int getParentFolderId(int p) {
+    public int getParentFolderId(int folderID) {
+        logger.info("File Service get parent folderID");
+        logger.info("folderID: " + folderID);
+
         int parentFolderID = 0;
 
         String query = "SELECT parentFolderID FROM Folders WHERE folderID = ?";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
-            psmt.setInt(1, p);
+            psmt.setInt(1, folderID);
 
             try (ResultSet rs = psmt.executeQuery()) {
                 if (rs.next()) {
@@ -334,13 +367,16 @@ public class FileService {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.error(e.getLocalizedMessage());
         }
 
         return parentFolderID;
     }
 
     public InputStream getFileStream(int userID, int fileID) throws IOException {
+        logger.info("File Service get file stream");
+        logger.info("userID: + " + userID + " fileID: " + fileID);
+
         // TODO user 검증 여기서? 생각해봐야함
         String query = "SELECT storagePath, filename FROM Files WHERE fileID = ?";
         String storagePath = "";
@@ -355,8 +391,7 @@ public class FileService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new IOException("Database error while retrieving file path", e);
+            logger.error("Database error while retrieving file path: " + e.getLocalizedMessage());
         }
 
         // Example path; replace with actual file path logic
@@ -369,7 +404,9 @@ public class FileService {
     }
 
     public int initFileAndFolder(int userID) {
-        System.out.println("File Service Get Storage Size: " + userID);
+        logger.info("File Service Get Storage Size");
+        logger.info("userID: " + userID);
+
         int executed;
 
         // Get all file paths to delete from filesystem
@@ -384,7 +421,7 @@ public class FileService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
             return 0;
         }
 
@@ -396,7 +433,7 @@ public class FileService {
 
             executed = psmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
             return 0;
         }
 
@@ -414,7 +451,7 @@ public class FileService {
                     Files.deleteIfExists(filePath);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getLocalizedMessage());
             }
         }
 
@@ -439,7 +476,7 @@ public class FileService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
             return 0;
         }
 
@@ -462,7 +499,7 @@ public class FileService {
 
             executed = psmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
             return 0;
         }
 
@@ -484,10 +521,10 @@ public class FileService {
                         Files.deleteIfExists(filePath); // Delete file
                     }
                 } else {
-                    System.out.println("File or directory does not exist: " + filePath);
+                    logger.info("File or directory does not exist: " + filePath);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getLocalizedMessage());
             }
         }
 
@@ -495,7 +532,9 @@ public class FileService {
     }
 
     public int deleteFile(int userID, int fileID) {
-        System.out.println("File Service delete file: " + userID + ", " + fileID);
+        logger.info("File Service delete file");
+        logger.info("userID: " + userID + " fileID: " + fileID);
+
         int executed = 0;
 
         // Get file path to delete from filesystem
@@ -512,7 +551,7 @@ public class FileService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
             return 0;
         }
 
@@ -525,7 +564,7 @@ public class FileService {
 
             executed = psmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
             return 0;
         }
 
@@ -535,7 +574,7 @@ public class FileService {
             try {
                 Files.deleteIfExists(path);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getLocalizedMessage());
                 return 0;
             }
         }
@@ -544,7 +583,9 @@ public class FileService {
     }
 
     public int deleteFolder(int userID, int folderID) {
-        System.out.println("File Service delete folder: " + userID + ", " + folderID);
+        logger.info("File Service delete folder");
+        logger.info("userID: " + userID + ", folderID: " + folderID);
+
         int executed = 0;
 
         // Get folder path to delete from filesystem
@@ -560,7 +601,7 @@ public class FileService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
             return 0;
         }
 
@@ -574,7 +615,7 @@ public class FileService {
                 subfolderCount = rs.getInt(1);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
             return 0;
         }
 
@@ -592,7 +633,7 @@ public class FileService {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error(e.getLocalizedMessage());
                 return 0;
             }
 
@@ -607,7 +648,7 @@ public class FileService {
                 psmt.setInt(2, userID);
                 executed = psmt.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error(e.getLocalizedMessage());
                 return 0;
             }
 
@@ -620,13 +661,13 @@ public class FileService {
                             .map(Path::toFile)
                             .forEach(java.io.File::delete);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getLocalizedMessage());
                     return 0;
                 }
             }
         } else {
             // 하위 폴더가 있는 경우 폴더 삭제 실패 메시지 반환
-            System.out.println("하위 폴더가 존재하여 폴더 삭제를 할 수 없습니다.");
+            logger.warn("하위 폴더가 존재하여 폴더 삭제를 할 수 없습니다.");
             return 0;
         }
 
@@ -634,6 +675,8 @@ public class FileService {
     }
 
     public long calculateFolderSize(java.io.File folder) {
+        logger.info("File Service calculate folderSize");
+
         long length = 0;
         java.io.File[] files = folder.listFiles();
 
@@ -651,6 +694,8 @@ public class FileService {
     }
 
     public List<User> getUserStorageSizeList() {
+        logger.info("File Service get user storageSizeList");
+
         List<User> userStorageSizeList = new ArrayList<>();
 
         String query = "SELECT * FROM Users";
@@ -673,7 +718,7 @@ public class FileService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return userStorageSizeList;

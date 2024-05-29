@@ -76,11 +76,12 @@ public class AdminController {
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+        logger.info("User: " + user);
+
         boolean checkAdmin = userService.checkAdmin(user);
 
         Map<String, Object> response = new HashMap<>();
         if (checkAdmin) {
-
             List<User> storageSizeList = fileService.getUserStorageSizeList();
 
             if (storageSizeList != null) {

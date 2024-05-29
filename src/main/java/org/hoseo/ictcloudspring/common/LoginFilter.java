@@ -31,9 +31,7 @@ public class LoginFilter implements Filter {
         logger.info("uri: " + uri);
 
         if (session == null || session.getAttribute("user") == null) {
-            System.out.println("111111111111111111111111111111111111111111");
             if (!uri.endsWith("account") && !uri.endsWith("main") && uri.endsWith(".css") && uri.endsWith(".js") && !uri.endsWith(".jpg") && !uri.endsWith(".png")) {
-                System.out.println("22222222222222222222222222222222222222");
                 res.sendRedirect(req.getContextPath() + "/user/account");
                 return;
             }

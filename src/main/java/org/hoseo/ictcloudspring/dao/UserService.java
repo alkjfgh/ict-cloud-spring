@@ -1,7 +1,9 @@
 package org.hoseo.ictcloudspring.dao;
 
-import org.hibernate.annotations.processing.SQL;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hoseo.ictcloudspring.connection.DBConnectionPool;
+import org.hoseo.ictcloudspring.controller.UserController;
 import org.hoseo.ictcloudspring.dto.Token;
 import org.hoseo.ictcloudspring.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import java.sql.*;
 @Service
 public class UserService {
     private final Connection con;
+    private static final Logger logger = LogManager.getLogger(UserController.class);
 
     @Autowired
     public UserService(DBConnectionPool dbConnectionPool) {
@@ -24,10 +27,13 @@ public class UserService {
     }
 
     public int insertUser(User user) {
+        logger.info("User Service insert user");
+        logger.info("User: " + user);
+        
         int isSignUp = 0;
         String query = "INSERT INTO Users(name, email, password, registrationDate)" +
                 " VALUES(?, ?, ?, SYSDATE())"; // 회원가입한 유저 정보를 테이블에 저장 하는 쿼리
-        System.out.println(query);
+        logger.info(query);
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
             psmt.setString(1, user.getName());
@@ -36,11 +42,11 @@ public class UserService {
 
             isSignUp = psmt.executeUpdate(); // 쿼리 실행해서 isSignUp에 성공했는지 여부 저장
 
-            System.out.println(user);
-            System.out.println(isSignUp);
+            logger.info(user);
+            logger.info("isSignUp: " + isSignUp);
 
             if (isSignUp == 1) { // 회원가입이 성공하면
-                System.out.println("회원가입 성공" + user);
+                logger.info("회원가입 성공" + user);
 
                 query = "SELECT UserId FROM Users WHERE Email = ?"; // 유저아이디를 가지고 옴
                 try (PreparedStatement psmt2 = con.prepareStatement(query);) {
@@ -55,7 +61,7 @@ public class UserService {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("insert user: " + e.getMessage());
+            logger.error(e.getLocalizedMessage());
         }
 
         return isSignUp;
@@ -65,9 +71,12 @@ public class UserService {
      * userId에 맞는 공간에 root 폴더를 생성하는 메소드
      **/
     private int initFolder(int userId) {
+        logger.info("User Service init folder");
+        logger.info("userID: " + userId);
+
         int isInitFolder = 0;
         String query = "INSERT INTO Folders (FolderName, UserID, storagePath) VALUES (?, ?, ?)";
-        System.out.println(query);
+        logger.info(query);
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
             psmt.setString(1, "root");
@@ -76,18 +85,20 @@ public class UserService {
 
             isInitFolder = psmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("initFolder: " + e.getMessage());
+            logger.error(e.getLocalizedMessage());
         }
 
         return isInitFolder;
     }
 
     public boolean checkSignIn(User user) {
+        logger.info("User Service check sign in");
+        logger.info("User: " + user);
+
         boolean loggedIn = false;
         String query = "SELECT * FROM Users WHERE email = ? AND password = ?";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
-            ;
             psmt.setString(1, user.getEmail());
             psmt.setString(2, user.getPassword());
 
@@ -100,14 +111,16 @@ public class UserService {
                 }
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getLocalizedMessage());
         }
 
         return loggedIn;
     }
 
     public String generatedToken(String email) {
-        System.out.println("generated token: " + email);
+        logger.info("User Service generated token");
+        logger.info("email: " + email);
+
         String query = "INSERT INTO Token values(?,?)";
         Token token = new Token(email);
 
@@ -116,17 +129,19 @@ public class UserService {
             psmt.setString(2, token.getToken());
 
             int excuted = psmt.executeUpdate();
-            if (excuted == 0) throw new SQLException("Token");
+            if (excuted == 0) throw new SQLException("Can't insert token");
             return token.getToken();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return null;
     }
 
     public String getToken(String email) {
-        System.out.println("get token: " + email);
+        logger.info("User Service get token");
+        logger.info("email: " + email);
+
         String query = "SELECT token FROm Token WHERE email = ?";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
@@ -138,14 +153,16 @@ public class UserService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return null;
     }
 
     public int deleteToken(String email) {
-        System.out.println("delete token: " + email);
+        logger.info("User Service delete token");
+        logger.info("token: " + email);
+
         int executed = 0;
         String query = "DELETE FROM Token WHERE email = ?";
 
@@ -154,14 +171,16 @@ public class UserService {
 
             executed = psmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return executed;
     }
 
     public boolean checkAdmin(User user) {
-        System.out.println("check admin: " + user);
+        logger.info("User Service check admin");
+        logger.info("User: " + user);
+
         if (user == null) return false;
         String query = "SELECT level FROM Users WHERE Email = ? AND Password = ?";
 
@@ -176,14 +195,16 @@ public class UserService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return false;
     }
 
     public int deleteUser(int userID) {
-        System.out.println("user service delete user: " + userID);
+        logger.info("user service delete user");
+        logger.info("userID: " + userID);
+
         int execute = 0;
 
         String query = "DELETE FROM Folders WHERE UserID = ? AND FolderName = 'root'";
@@ -193,7 +214,7 @@ public class UserService {
 
             execute = psmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         query = "DELETE FROM Users WHERE UserID = ?";
@@ -203,14 +224,15 @@ public class UserService {
 
             execute = psmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return execute;
     }
 
     public int editUser(User user) {
-        System.out.println("user service edit user: " + user);
+        logger.info("user service edit user");
+        logger.info("User: " + user);
 
         int execute = 0;
         String query = "UPDATE Users SET Name = ?, Email = ?, Password = ?, Level = ?, storageMaxSize = ? WHERE UserID = ?";
@@ -225,7 +247,7 @@ public class UserService {
 
             execute = psmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return execute;
@@ -233,7 +255,9 @@ public class UserService {
     }
 
     public int getUserInfo(User user) {
-        System.out.println("user service get user info: " + user);
+        logger.info("user service get user info");
+        logger.info("User: " + user);
+
         int executed = 0;
 
         String query = "SELECT * FROM Users WHERE Email = ?";
@@ -251,14 +275,16 @@ public class UserService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return executed;
     }
 
     public int updatePassword(User user) {
-        System.out.println("user service get user info: " + user);
+        logger.info("user service get user info");
+        logger.info("User: " + user);
+
         int executed = 0;
 
         String query = "UPDATE Users SET Password = ? WHERE UserID = ?";
@@ -268,14 +294,16 @@ public class UserService {
 
             executed = psmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return executed;
     }
 
     public boolean isEmailAlready(String email) {
-        System.out.println("user service check email is already: " + email);
+        logger.info("user service check email is already");
+        logger.info("email: " + email);
+
         boolean check = false;
 
         String query = "SELECT * FROM Users WHERE Email = ?";
@@ -286,7 +314,7 @@ public class UserService {
                 if (!rs.next()) check = true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage());
         }
 
         return check;
