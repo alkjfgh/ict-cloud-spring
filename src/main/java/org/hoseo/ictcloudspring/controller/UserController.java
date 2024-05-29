@@ -1,6 +1,7 @@
 package org.hoseo.ictcloudspring.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.hoseo.ictcloudspring.dao.FileService;
 import org.hoseo.ictcloudspring.dao.UserService;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -124,12 +124,16 @@ public class UserController {
     }
 
     @GetMapping("/user/account")
-    public String isSignInSession(HttpServletRequest request) {
+    public String isSignInSession(HttpServletRequest request, HttpServletResponse response) {
         System.out.println("UserController user session check");
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user != null) return "redirect:../file/upload";
+
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
 
         return "user/account";
     }
@@ -179,8 +183,10 @@ public class UserController {
     public ResponseEntity<String> logout(HttpServletRequest request) {
         System.out.println("User Controller logout");
 
-        HttpSession session = request.getSession();
-        session.removeAttribute("user");
+        HttpSession session = request.getSession(false);
+        if(session != null){
+            session.invalidate();
+        }
 
         return ResponseEntity.ok("success");
     }
