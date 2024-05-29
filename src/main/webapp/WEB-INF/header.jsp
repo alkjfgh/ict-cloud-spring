@@ -47,12 +47,12 @@
             <ul>
                 <li>
                     <a href="<c:url value="/user/account"/>">
-                        Login
+                        Sign in
                     </a>
                 </li>
                 <li>
                     <a href="<c:url value="/user/account#"/>">
-                        Sign in
+                        Sign up
                     </a>
                 </li>
             </ul>
