@@ -24,16 +24,12 @@ public class UserService {
     }
 
     public int insertUser(User user) {
-        PreparedStatement psmt = null;
         int isSignUp = 0;
-        ResultSet rs = null;
+        String query = "INSERT INTO Users(name, email, password, registrationDate)" +
+                " VALUES(?, ?, ?, SYSDATE())"; // 회원가입한 유저 정보를 테이블에 저장 하는 쿼리
+        System.out.println(query);
 
-        try {
-            String query = "INSERT INTO Users(name, email, password, registrationDate)" +
-                    " VALUES(?, ?, ?, SYSDATE())"; // 회원가입한 유저 정보를 테이블에 저장 하는 쿼리
-            System.out.println(query);
-            psmt = con.prepareStatement(query);
-
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
             psmt.setString(1, user.getName());
             psmt.setString(2, user.getEmail());
             psmt.setString(3, user.getPassword());
@@ -47,24 +43,19 @@ public class UserService {
                 System.out.println("회원가입 성공" + user);
 
                 query = "SELECT UserId FROM Users WHERE Email = ?"; // 유저아이디를 가지고 옴
-                psmt = con.prepareStatement(query);
-                psmt.setString(1, user.getEmail());
+                try (PreparedStatement psmt2 = con.prepareStatement(query);) {
+                    psmt2.setString(1, user.getEmail());
 
-                rs = psmt.executeQuery();
-                if (rs.next()) {
-                    int userId = rs.getInt(1);
-                    initFolder(userId);
+                    try (ResultSet rs = psmt2.executeQuery()) {
+                        if (rs.next()) {
+                            int userId = rs.getInt(1);
+                            initFolder(userId);
+                        }
+                    }
                 }
             }
         } catch (SQLException e) {
             System.out.println("insert user: " + e.getMessage());
-        } finally {
-            try {
-                if (psmt != null) psmt.close();
-                if (rs != null) rs.close();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
         }
 
         return isSignUp;
@@ -74,14 +65,11 @@ public class UserService {
      * userId에 맞는 공간에 root 폴더를 생성하는 메소드
      **/
     private int initFolder(int userId) {
-        PreparedStatement psmt = null;
         int isInitFolder = 0;
+        String query = "INSERT INTO Folders (FolderName, UserID, storagePath) VALUES (?, ?, ?)";
+        System.out.println(query);
 
-        try {
-            String query = "INSERT INTO Folders (FolderName, UserID, storagePath) VALUES (?, ?, ?)";
-            System.out.println(query);
-            psmt = con.prepareStatement(query);
-
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
             psmt.setString(1, "root");
             psmt.setInt(2, userId);
             psmt.setString(3, userId + File.separator + "root"); //root 폴더 생성
@@ -89,47 +77,30 @@ public class UserService {
             isInitFolder = psmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("initFolder: " + e.getMessage());
-        } finally {
-            try {
-                if (psmt != null) psmt.close();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
         }
 
         return isInitFolder;
     }
 
     public boolean checkSignIn(User user) {
-        PreparedStatement psmt = null;
-        ResultSet rs = null;
         boolean loggedIn = false;
+        String query = "SELECT * FROM Users WHERE email = ? AND password = ?";
 
-        try {
-            String query = "SELECT * FROM Users WHERE email = ? AND password = ?";
-            psmt = con.prepareStatement(query);
-
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            ;
             psmt.setString(1, user.getEmail());
             psmt.setString(2, user.getPassword());
 
-            rs = psmt.executeQuery();
-
-            // 로그인 성공 여부 확인
-            if (rs.next()) {
-                loggedIn = true;
-                user.setUserID(rs.getInt("userID"));
-                user.setLevel(rs.getInt("level"));
+            try (ResultSet rs = psmt.executeQuery()) {
+                // 로그인 성공 여부 확인
+                if (rs.next()) {
+                    loggedIn = true;
+                    user.setUserID(rs.getInt("userID"));
+                    user.setLevel(rs.getInt("level"));
+                }
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } finally {
-            // 자원을 해제합니다.
-            try {
-                if (psmt != null) psmt.close();
-                if (rs != null) rs.close();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
         }
 
         return loggedIn;
@@ -213,8 +184,8 @@ public class UserService {
 
     public int deleteUser(int userID) {
         System.out.println("user service delete user: " + userID);
-
         int execute = 0;
+
         String query = "DELETE FROM Folders WHERE UserID = ? AND FolderName = 'root'";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
@@ -236,5 +207,70 @@ public class UserService {
         }
 
         return execute;
+    }
+
+    public int editUser(User user) {
+        System.out.println("user service edit user: " + user);
+
+        int execute = 0;
+        String query = "UPDATE Users SET Name = ?, Email = ?, Password = ?, Level = ?, storageMaxSize = ? WHERE UserID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, user.getName());
+            psmt.setString(2, user.getEmail());
+            psmt.setString(3, user.getPassword());
+            psmt.setInt(4, user.getLevel());
+            psmt.setLong(5, user.getStorageMaxSize());
+            psmt.setInt(6, user.getUserID());
+
+            execute = psmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return execute;
+
+    }
+
+    public int getUserInfo(User user) {
+        System.out.println("user service get user info: " + user);
+        int executed = 0;
+
+        String query = "SELECT * FROM Users WHERE Email = ?";
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, user.getEmail());
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    executed = 1;
+
+                    user.setUserID(rs.getInt("userID"));
+                    user.setName(rs.getString("name"));
+                    user.setStorageMaxSize(rs.getLong("storageMaxSize"));
+                    user.setRegistrationDate(rs.getTimestamp("registrationDate"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return executed;
+    }
+
+    public int updatePassword(User user) {
+        System.out.println("user service get user info: " + user);
+        int executed = 0;
+
+        String query = "UPDATE Users SET Password = ? WHERE UserID = ?";
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, user.getPassword());
+            psmt.setInt(2, user.getUserID());
+
+            executed = psmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return executed;
     }
 }

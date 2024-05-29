@@ -3,12 +3,16 @@
 <html>
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet'>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="<c:url value="/css/userInfo.css?ver=1"/>">
     <title>userinfo</title>
 </head>
 <body>
+<jsp:include page="../header.jsp"/>
+<jsp:include page="../sidebar.jsp"/>
 <div class="container-fluid user-profile">
     <div class="row">
         <div class="col-xs-12">
@@ -20,24 +24,24 @@
                     <div class="row">
                         <div class="container">
                             <h4>Name</h4>
-                            <small>your Name</small>
-                            <br />
+                            <small></small>
+                            <br/>
                         </div>
                         <div class="container">
                             <h4>Email</h4>
-                            <small>email@email.com</small>
+                            <small></small>
                             <br/>
                         </div>
                         <div class="container">
                             <h4>JoinDate</h4>
-                            <small>0000.00.00</small>
+                            <small></small>
                             <br>
                         </div>
 
                     </div>
                     <div class="information">
                         <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">Change Password</a> |
-                        <a href="#">Unsubscribing</a>
+                        <a href="#" id="sign-out-link">Unsubscribing</a>
                     </div>
                 </div>
             </div>
@@ -53,23 +57,28 @@
                 </div>
                 <div class="modal-body">
                     <lable><h4>Existing Password</h4></lable>
-                    <input type="password" placeholder="existing password" class="input-ex-pwd" name="password" required>
+                    <input type="password" placeholder="existing password" class="input-ex-pwd" name="password"
+                           required>
                     <br>
                     <lable><h4>Change Password</h4></lable>
                     <input type="password" placeholder="password" class="input-signup-pwd" name="password" required/>
                     <br>
                     <lable><h4>Change Password Check</h4></lable>
-                    <input type="password" placeholder="password check" class="input-signup-pwd-check" name="password" required/>
+                    <input type="password" placeholder="password check" class="input-signup-pwd-check" name="password"
+                           required/>
                     <br>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-dark">Confirm Change</button>
+                    <button id="close-modal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="change-password" type="button" class="btn btn-dark">Confirm Change</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+<script src="<c:url value="/js/userInfo.js"/>"></script>
 </html>

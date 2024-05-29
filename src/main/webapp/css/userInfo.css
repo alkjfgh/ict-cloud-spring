@@ -6,7 +6,7 @@ body {
     color: #333;
     margin: 0;
     padding: 0;
-    display: flex;
+    /*display: flex;*/
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -31,7 +31,7 @@ body {
 }
 .user-profile .user-profile-card {
     position: relative;
-    padding-top: 0;
+    padding-top: 3rem;
     overflow: hidden;
 }
 .information{

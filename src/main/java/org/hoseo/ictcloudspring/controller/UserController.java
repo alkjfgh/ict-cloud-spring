@@ -11,10 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -36,11 +36,91 @@ public class UserController {
         return "redirect:user/account";
     }
 
-    @RequestMapping("/user/info")
-    public String userInfo() {
+    @GetMapping("/user/info")
+    public String userInfo(HttpServletRequest request) {
         System.out.println("UserController info");
 
-        return "user/userInfo";
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/user/account";
+
+        return "/user/userInfo";
+    }
+
+    @GetMapping("/user/getInfo")
+    public ResponseEntity<Map<String, Object>> getUserInfo(HttpServletRequest request) {
+        System.out.println("UserController get user info");
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        Map<String, Object> response = new HashMap<>();
+        if (user != null) {
+            int executed = userService.getUserInfo(user);
+
+            if (executed == 1) {
+                long totalSize = fileService.calculateTotalFileSize(user.getUserID());
+                user.setTotalSize(totalSize);
+                response.put("user", user);
+
+                return ResponseEntity.ok(response);
+            }
+        }
+
+        response.put("message", "get user info failed");
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ResponseBody
+    @PostMapping("/user/updatePassword")
+    public ResponseEntity<Map<String, Object>> updatePassword(HttpServletRequest request, @RequestBody Map<String, Object> requestData) {
+        System.out.println("UserController update password");
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        String changePassword = String.valueOf(requestData.get("changePassword"));
+        System.out.println(user);
+        System.out.println("changePassword: " + changePassword);
+
+        Map<String, Object> response = new HashMap<>();
+        if (user != null) {
+            user.setPassword(changePassword);
+            int executed = userService.updatePassword(user);
+
+            if (executed == 1) {
+                return ResponseEntity.ok(response);
+            }
+        }
+
+        response.put("message", "update password failed");
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ResponseBody
+    @PostMapping("/user/signOut")
+    public ResponseEntity<Map<String, Object>> updatePassword(HttpServletRequest request) {
+        System.out.println("UserController sign out user");
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        System.out.println(user);
+
+        Map<String, Object> response = new HashMap<>();
+        if (user != null) {
+            int executed = fileService.initFileAndFolder(user.getUserID());
+
+            if (executed == 1) {
+                executed = userService.deleteUser(user.getUserID());
+
+                if (executed == 1) {
+                    session.removeAttribute("user");
+                    return ResponseEntity.ok(response);
+                }
+            }
+        }
+
+        response.put("message", "sign out failed");
+        return ResponseEntity.badRequest().body(response);
     }
 
     @GetMapping("/user/account")
@@ -129,6 +209,34 @@ public class UserController {
         } else {
             response.put("status", "fail");
             response.put("message", "delete user 실패");
+        }
+
+        return response;
+    }
+
+    @ResponseBody
+    @PostMapping("/user/edit")
+    public Map<String, Object> userEdit(@RequestBody Map<String, Object> requestData) {
+        System.out.println("User Controller editUser");
+
+        Map<String, Object> response = new HashMap<>();
+
+        User user = new User();
+        user.setUserID(Integer.parseInt(String.valueOf(requestData.get("userID"))));
+        user.setName((String) requestData.get("name"));
+        user.setEmail((String) requestData.get("email"));
+        user.setPassword((String) requestData.get("password"));
+        user.setLevel(Integer.parseInt(String.valueOf(requestData.get("level"))));
+        user.setStorageMaxSize(Long.parseLong(String.valueOf(requestData.get("storageMaxSize"))));
+
+        int editUserSuccesses = userService.editUser(user);
+
+        if (editUserSuccesses == 1) {
+            response.put("status", "success");
+            response.put("message", "edit user 성공");
+        } else {
+            response.put("status", "fail");
+            response.put("message", "edit user 실패");
         }
 
         return response;

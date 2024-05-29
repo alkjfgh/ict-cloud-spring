@@ -1,0 +1,15 @@
+.chart-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.chart-item {
+  flex: 1 1 calc(33.333% - 20px); /* 3개씩 배치하고 간격을 고려한 너비 */
+  margin: 10px; /* 각 차트 간의 간격 */
+  box-sizing: border-box;
+}
+
+canvas {
+  width: 100% !important; /* 차트가 컨테이너의 너비를 채우도록 설정 */
+  height: auto !important;
+}
