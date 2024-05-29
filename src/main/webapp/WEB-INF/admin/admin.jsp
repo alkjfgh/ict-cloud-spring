@@ -56,6 +56,14 @@
             <div id="dashboard">
                 <h1>대시보드</h1>
                 <p>여기에 대시보드 내용을 추가하세요.</p>
+                <h2>로그 파일</h2>
+                <ul id="logFiles" class="list-group">
+                    <!-- 로그 파일 목록이 여기에 추가됩니다. -->
+                </ul>
+                <div id="logContent" style="display: none; margin-top: 20px;">
+                    <h3>로그 내용</h3>
+                    <pre id="logText" style="height: 40vh; overflow-y: scroll"></pre>
+                </div>
             </div>
 
             <div id="user-management" class="mt-4" style="display: none;">

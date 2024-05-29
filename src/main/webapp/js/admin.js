@@ -8,23 +8,62 @@ $(document).ready(function () {
         $(target).show();
     });
 
-    getUserStorageSizeList();
+    loadLogFiles();
+
+    getUserStorageSizeList().then(users => {
+        populateUserTable(users);
+        renderChart(users);
+    });
 });
 
+
+const loadLogFiles = () => {
+    axios.get('/api/logs')
+        .then(function (response) {
+            const logFiles = response.data;
+            const logFilesList = $('#logFiles');
+            logFilesList.empty();
+            logFiles.forEach(function (file) {
+                const listItem = $('<li class="list-group-item">')
+                    .text(file)
+                    .click(function () {
+                        loadLogContent(file);
+                    });
+                logFilesList.append(listItem);
+            });
+        })
+        .catch(function (error) {
+            console.error('Error fetching log files:', error);
+        });
+}
+
+const loadLogContent = (fileName) => {
+    axios.get(`/api/logs/${fileName}`)
+        .then(function(response) {
+            $('#logContent').show();
+            $('#logText').text(response.data);
+        })
+        .catch(function(error) {
+            console.error('Error fetching log content:', error);
+        });
+}
+
 const getUserStorageSizeList = async () => {
+    let users = null;
+
     try {
         const response = await axios.post('/admin/userStorageSizeList');
         const data = response.data;
         if (data.status === 'success') {
-            const users = data.storageSizeList;
-            populateUserTable(users);
-            renderChart(users);
+            users = data.storageSizeList;
         } else {
             console.error('Failed to load user data:', data.message);
         }
     } catch (error) {
         console.error('Error fetching user data:', error);
     }
+
+    return users;
 }
 
 function populateUserTable(users) {
@@ -53,22 +92,23 @@ function populateUserTable(users) {
     });
 
     userTableBody.off('click', '.init-user');
-    userTableBody.on('click', '.init-user', function () {
+    userTableBody.on('click', '.init-user', async function () {
         const userID = $(this).data('userid');
         const userName = $(this).data('username');
-        initUser(userID, userName);
+        await initUser(userID, userName);
     });
 
     userTableBody.off('click', '.delete-user');
-    userTableBody.on('click', '.delete-user', function () {
+    userTableBody.on('click', '.delete-user', async function () {
         const userID = $(this).data('userid');
         const userName = $(this).data('username');
-        deleteUser(userID, userName);
+        await deleteUser(userID, userName);
     });
 
     userTableBody.off('click', '.edit-user');
     userTableBody.on('click', '.edit-user', function () {
         const user = $(this).data('user');
+
         $('#editUserId').val(user.userID);
         $('#editUserName').val(user.name);
         $('#editUserEmail').val(user.email);
@@ -102,6 +142,7 @@ const deleteUser = async (userID, userName) => {
         if (data.status === 'success') {
             alert(`${userName} successfully deleted`);
             getUserStorageSizeList();
+            loadLogFiles();
         } else {
             console.error('Failed to delete user:', data.message);
         }
@@ -133,6 +174,7 @@ $('#saveEditUser').on('click', async function () {
             alert(`${userName} successfully edited`);
             $('#editUserModal').modal('hide');
             getUserStorageSizeList();
+            loadLogFiles();
         } else {
             console.error('Failed to edit user:', data.message);
         }
