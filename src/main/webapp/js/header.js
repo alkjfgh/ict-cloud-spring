@@ -1,4 +1,17 @@
 let isSidebarOpen = false
+
+let announdata = [
+    {date:"2024-05-27 04:07:45", title:"제목", content:"본문"},
+    {date:"2024-05-27 04:07:45", title:"제목", content:"본문"},
+    {date:"2024-05-27 04:07:45", title:"제목", content:"본문"},
+    {date:"2024-05-27 04:07:45", title:"제목", content:"본문"},
+    {date:"2024-05-27 04:07:45", title:"제목", content:"본문"},
+    {date:"2024-05-27 04:07:45", title:"제목", content:"본문"},
+    {date:"2024-05-27 04:07:45", title:"제목", content:"본문"},
+    {date:"2024-05-27 04:07:45", title:"제목", content:"본문"},
+    {date:"2024-05-27 04:07:45", title:"제목", content:"본문"},
+];
+
 $(document).ready(function () {
     $('.sidebar-open').on('click', function () {
         // $('.sidebar').show();
@@ -16,7 +29,33 @@ $(document).ready(function () {
             }
         }
     });
+
+    initAnnounce(announdata);
+
+    $('.announcement-title-container').on('click', function () {
+        console.log(this);
+    });
 });
+
+const initAnnounce = (announdata) => {
+    let announcementContainer = $('.announcement-container');
+
+    announdata.forEach((item) => {
+        let announcement = document.createElement('div');
+        announcement.className = 'announcement-list';
+        announcement.innerHTML = `
+                <div class="announcement-title-container">
+                    <span class="announcement-title">${item.title}</span>
+                    <span class="announcement-uploaddate">${item.date}</span>
+                </div>
+                <div class="announcement-content-container">
+                    <div class="announcement-content hide">${item.content}</div>
+                </div>`
+
+        announcementContainer.append(announcement);
+    })
+
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     let dropdownMenu = document.querySelector(".dropdown-menu");
@@ -40,4 +79,27 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error("dropdownButton 또는 dropdownMenu 요소를 찾을 수 없습니다.");
     }
+});
+
+// 모달
+$(document).ready(function () {
+    // 모달 제어 코드
+    let modal = $("#announcementModal");
+    let btn = $(".dropdown-menu a[href='#']");
+    let span = $(".close")[0];
+
+    btn.click(function(event) {
+        event.preventDefault(); // 기본 이벤트 방지
+        modal.css("display", "block");
+    });
+
+    span.onclick = function() {
+        modal.css("display", "none");
+    }
+
+    $(window).click(function(event) {
+        if (event.target === modal[0]) {
+            modal.css("display", "none");
+        }
+    });
 });
