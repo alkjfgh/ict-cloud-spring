@@ -75,7 +75,6 @@
                              aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                     <button type="button" class="btn btn-primary d-none" id="downloadBtn" onclick="" hidden>Download</button>
-<%--                    <button type="button" class="btn btn-primary" id="deleteBtn" onclick="">Delete</button>--%>
                 </div>
             </div>
         </div>
@@ -83,8 +82,8 @@
 
     <!-- clicked -->
     <div id="clicked"> <!--우클릭 시-->
-                <button type="button" class="btn btn-primary" id="fakeDownloadBtn" onclick="">Download</button>
-                <button type="button" class="btn btn-primary" id="deleteBtn" onclick="">Delete</button>
+        <button type="button" class="btn btn-primary" id="fakeDownloadBtn" onclick="">Download</button>
+        <button type="button" class="btn btn-primary" id="DeleteBtn" onclick="">Delete</button>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

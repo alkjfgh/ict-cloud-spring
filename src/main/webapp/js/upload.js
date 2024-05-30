@@ -39,23 +39,38 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-//-----------------------------------------------------------------------------------------------------
-// const downloadBtn = document.getElementById('downloadBtn');
-// downloadBtn.classList.remove('d-none');
-// downloadBtn.onclick = () => fileDownloadHandler(userID, fileID, filename, fileSize);
-//
-// const addFolder = document.getElementById('addFolder');
-// addFolder.onclick = () => addFolderHandler(data.userID, data.p, data.storagePathJS);
-
-const deletefile = (userID, fileID) =>{
-    const deleteBtn = document.getElementById('deleteBtn');
-    deleteBtn.onclick = () => fileDeleteHandler(userID, fileID);
-}
 
 
-$('#fakeDownloadBtn').on('click', function () {
-    //TODO #downloadBtn 생성 이벤트 발동해야함, #fakeDownloadBtn 안눌리는거 고치기
+//const deletefile = (userID, fileID) =>{
+//    const deleteBtn = document.getElementById('deleteBtn');
+//    deleteBtn.onclick = () => fileDeleteHandler(userID, fileID);
+//}
+
+
+$('#fakeDownloadBtn').on('click', async function () {
+    const fakeDownloadBtn = document.getElementById('fakeDownloadBtn');
+
+    const userid = fakeDownloadBtn.dataset.userid;
+    const fileid = fakeDownloadBtn.dataset.fileid;
+    const filename = fakeDownloadBtn.dataset.filename;
+    const filesize = parseInt(fakeDownloadBtn.dataset.filesize);
+    const filetype = fakeDownloadBtn.dataset.filetype;
+
+    await showFileDetails(userid, fileid, filename, filesize, filetype);
+
     $('#downloadBtn').click();
+});
+
+$('#DeleteBtn').on('click', async function (){
+    const DeleteBtn = document.getElementById('DeleteBtn');
+
+    const userid = DeleteBtn.dataset.userid;
+    const fileid = DeleteBtn.dataset.fileid;
+
+    console.log(userid);
+    console.log(fileid);
+
+    await deleteFileDetail(userid, fileid)
 });
 
 
@@ -71,22 +86,38 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
 
 
         if(event.target.tagName === 'TD' && target.contains(event.target)){
-            const userID = event.target.getAttribute('data-user-id');
-            const fileID = event.target.getAttribute('data-file-id');
+            const trElement = event.target.closest('tr');
+            const userID = trElement ? trElement.getAttribute('data-user-id') : null;
+            const fileID = trElement ? trElement.getAttribute('data-id') : null;
+            const filename = trElement ? trElement.getAttribute('data-file-name') : null;
+            const fileSize = trElement ? trElement.getAttribute('data-file-size') : null;
+            const fileType = trElement ? trElement.getAttribute('data-file-type') : null;
 
             clickdiv.style.left = `${clickX}px`;
             clickdiv.style.top = `${clickY}px`;
             clickdiv.style.display = 'block';
 
-            console.log('UserID:', userID);
-            console.log('FileID:', fileID);
+            document.getElementById('fakeDownloadBtn').dataset.userid = userID;
+            document.getElementById('fakeDownloadBtn').dataset.fileid = fileID;
+            document.getElementById('fakeDownloadBtn').dataset.filename = filename;
+            document.getElementById('fakeDownloadBtn').dataset.filesize = fileSize;
+            document.getElementById('fakeDownloadBtn').dataset.filetype = fileType;
+
+            document.getElementById('DeleteBtn').dataset.userid = userID;
+            document.getElementById('DeleteBtn').dataset.fileid = fileID;
+
         }else{
             clickdiv.style.display = 'none';
         }
-        // document.addEventListener('click', () => {  //클릭하면 div사라지기
-        //     clickdiv.style.display = 'none'
-        // });
-
+    });
+    document.addEventListener('click', (event) => {  //클릭하면 div사라지기
+        //console.log(event.target)
+        //console.log(event.target.id !== 'downloadBtn')
+        //console.log(event.target.id !== 'clicked')
+        //console.log(event.target.id !== 'downloadBtn')
+        if(event.target.id !== 'downloadBtn' && event.target.id !== 'clicked' && !document.getElementById('clicked').contains(event.target)){
+            clickdiv.style.display = 'none';
+        }
     });
 });
 
@@ -280,7 +311,6 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
     }
 };
 
-
 const addFolderHandler = async (userID, folderID, storagePath) => {
     if($("#addFolderName").val().length === 0){
         alert("Foldername cannot be empty");
@@ -378,6 +408,8 @@ const updateFolderList = (folderList) => {
         folderInner.innerHTML = folder.folderName;
 
         folderElement.appendChild(folderInner);
+        folderElement.dataset.id = folder.folderID;
+
         tmpList.push((folderElement));
     });
 
@@ -399,6 +431,11 @@ const updateFileList = (fileList, userID) => {
         let fileTypeClass = getFileTypeClass(file.fileType);
 
         fileElement.className = `file-area ${fileTypeClass}`;
+        fileElement.setAttribute('data-file-id', file.fileID);
+        fileElement.setAttribute('data-user-id', userID);
+        fileElement.setAttribute('data-file-name', file.filename);
+        fileElement.setAttribute('data-file-size', file.fileSize);
+        fileElement.setAttribute('data-file-type', file.fileType);
 
         fileInner1.innerHTML = file.filename;
         fileInner2.innerHTML = formatDate(file.uploadDate);
@@ -412,11 +449,11 @@ const updateFileList = (fileList, userID) => {
         fileElement.appendChild(fileInner4);
         fileElement.appendChild(fileInner5);
 
-        fileElement.onclick = () => showFileDetails(userID, file.fileID, file.filename, file.fileSize, file.fileType);
+        // fileElement.onclick = () => showFileDetails(userID, file.fileID, file.filename, file.fileSize, file.fileType);
+        fileElement.dataset.id = file.fileID;
 
         tmpList.push(fileElement);
     });
-
     return tmpList;
 }
 
@@ -457,6 +494,29 @@ const showFileDetails = async (userID, fileID, filename, fileSize, fileType) => 
     const downloadBtn = document.getElementById('downloadBtn');
     downloadBtn.classList.remove('d-none');
     downloadBtn.onclick = () => fileDownloadHandler(userID, fileID, filename, fileSize);
+
+    resetVideoPlayer();
+
+    if (isVideoFile(fileType)) {
+        const videoUrl = `/file/stream?userID=${encodeURIComponent(userID)}&fileID=${encodeURIComponent(fileID)}`;
+        // const videoUrl = `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4`;
+        showVideo(videoUrl);
+    }
+
+    showModal();
+}
+
+const deleteFileDetail = async (userid, fileid) =>{
+    console.log("deleteFileDetail");
+    const fileDetails = document.getElementById('fileDetails');
+    fileDetails.innerHTML = `
+        <p>userID: ${userid}</p>
+        <p>fileID: ${fileid}</p>
+    `
+    // console.log(userid);
+    // console.log(fileid);
+
+    await fileDeleteHandler(userid, fileid);
 
     resetVideoPlayer();
 
@@ -540,6 +600,7 @@ document.getElementById('fileModal').addEventListener('hidden.bs.modal', functio
 });
 
 const fileDeleteHandler = async (userID, fileID) => {
+    console.log("fileDeleteHandler");
     try{
         const response = await fetch("/file/deleteFile", {
             method: "POST",
@@ -557,6 +618,8 @@ const fileDeleteHandler = async (userID, fileID) => {
             if (result.status === "success") {
                 alert(result.message); // 성공 메시지 표시
                 // 추가적인 성공 처리 로직이 있으면 여기에 추가
+                //*************************************************************************
+                const row = document.querySelector('tr[data-file-id="${fileID"]')
             } else {
                 alert(result.message); // 실패 메시지 표시
             }
