@@ -539,7 +539,8 @@ public class FileService {
 
         // Get file path to delete from filesystem
         String filePath = null;
-        String query = "SELECT storagePath FROM Files WHERE userID = ? AND fileID = ?";
+        String fileName = null;
+        String query = "SELECT storagePath, filename FROM Files WHERE userID = ? AND fileID = ?";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
             psmt.setInt(1, userID);
@@ -548,6 +549,7 @@ public class FileService {
             try (ResultSet rs = psmt.executeQuery()) {
                 if (rs.next()) {
                     filePath = rs.getString("storagePath");
+                    fileName = rs.getString("filename");
                 }
             }
         } catch (SQLException e) {
@@ -570,7 +572,7 @@ public class FileService {
 
         // Delete file from filesystem
         if (filePath != null) {
-            Path path = Paths.get(uploadFolderPath, filePath);
+            Path path = Paths.get(uploadFolderPath, filePath + SEPARATOR + fileName);
             try {
                 Files.deleteIfExists(path);
             } catch (IOException e) {
