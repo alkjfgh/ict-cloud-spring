@@ -61,12 +61,16 @@ body {
 
 #clicked {
   display: none;
+  border-radius: 5px;
   position: absolute;
-  width: 200px;
-  height: 200px;
   background-color: white;
   color: black;
   z-index: 9999;
+  margin: 10px;
+}
+
+.btn {
+  margin: 15px 10px 15px 10px;
 }
 
 .drag {
@@ -82,7 +86,7 @@ body {
   margin: 0 auto;
   text-align: center;
   min-height: 100%;
-  border: #494949 dashed 3px;
+  border: #494949 dotted 3px;
   border-radius: 3px;
 }
 .file-list-container .drag-drop-area {
@@ -105,6 +109,9 @@ body {
 }
 .file-list-container .file-list-table tr td:nth-of-type(1) {
   text-align: left;
+}
+.file-list-container .file-list-table tr th:nth-child(n+1) {
+  border-top: 0;
 }
 .file-list-container .file-list-table tr th, .file-list-container .file-list-table tr td {
   border: 5px solid black;
