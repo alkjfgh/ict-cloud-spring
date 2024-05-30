@@ -62,14 +62,17 @@ body{
 
 #clicked{ //오른쪽 클릭했을때 나올 div
   display: none;
+  border-radius: 5px;
   position: absolute;
-  width: 200px;
-  height: 200px;
   background-color: white;
   color: black;
   z-index: 9999;
+  margin: 10px;
 }
 
+.btn{
+  margin: 15px 10px 15px 10px;
+}
 
 .drag{
   font: initial;
@@ -85,7 +88,7 @@ body{
   margin: 0 auto;
   text-align: center;
   min-height: 100%;
-  border: #494949 dashed 3px;
+  border: #494949 dotted 3px;
   border-radius: 3px;
 
   .drag-drop-area {
@@ -105,13 +108,8 @@ body{
       background-color: gray;
     }
 
-
     tr {
       height: 4em;
-
-      th {
-
-      }
 
       td {
         text-align: left;
@@ -121,12 +119,16 @@ body{
         text-align: left;
       }
 
+      th:nth-child(n+1){
+        border-top: 0;
+      }
+
+
       th, td {
         border: 5px solid black;
         border-left: 0;
         border-right: 0;
         padding: 0.6em;
-
       }
 
       .folder-area:hover {
