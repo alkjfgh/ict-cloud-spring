@@ -90,6 +90,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const initialFolderID = ${p}; // 초기 폴더 ID를 설정
+        $('#folderID').val(initialFolderID);
         enterFolder(initialFolderID);
     });
 
