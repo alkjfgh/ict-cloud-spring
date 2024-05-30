@@ -26,6 +26,7 @@
             </div>
             <div class="file-list-container drag-drop-area">
                 <table class="file-list-table">
+                    <tbody></tbody>
                 </table>
             </div>
         </div>

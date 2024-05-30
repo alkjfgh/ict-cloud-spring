@@ -376,14 +376,14 @@ const enterFolder = async (p) => {
 
         const folderList = updateFolderList(data.subFolderList);
         folderList.forEach(element => {
-            $('.file-list-table').find("tbody").append(element);
-            // fileListElement.appendChild(element)
+            // $('.file-list-table').find("tbody").append(element);
+            fileListElement.appendChild(element)
         });
 
         const fileList = updateFileList(data.fileList, data.userID);
         fileList.forEach(element => {
-            $('.file-list-table').find("tbody").append(element);
-            // fileListElement.appendChild(element)
+            // $('.file-list-table').find("tbody").append(element);
+            fileListElement.appendChild(element)
         });
 
         // fileListElement.load(location.href + ' .file-list-table');
