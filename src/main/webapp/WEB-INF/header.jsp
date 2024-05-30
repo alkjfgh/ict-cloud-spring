@@ -40,7 +40,7 @@
         <%--    로그인 안됐을 때--%>
         <div class="notlogin">
             <h3>
-                Sign in to <strong>ICTcloud</strong>
+                Sign in to <strong>ICT-CLOUD</strong>
             </h3>
 
             <ul>
@@ -50,7 +50,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="<c:url value="/user/account#"/>">
+                    <a href="<c:url value="/user/account?c=1"/>">
                         Sign up
                     </a>
                 </li>

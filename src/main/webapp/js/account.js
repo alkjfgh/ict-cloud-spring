@@ -82,6 +82,8 @@ const signUpSubmit = async (event) => {
 }
 
 $(document).ready(function () {
+    const form = $(".form");
+
     $('.message a').click(function () {
         $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
         $('.register-area').show();
@@ -130,6 +132,16 @@ $(document).ready(function () {
         if (isValidEmail(email)) $(this).removeClass('invalid');
         else $(this).addClass('invalid');
     });
+
+    const urlStr = window.location.href;
+    const url = new URL(urlStr);
+    const urlParams = url.searchParams;
+    const c = urlParams.get('c');
+    if(c.length > 0 && c === '1'){
+        form.hide();
+        $('.login-form').find('a').click();
+        form.show();
+    }
 });
 
 const sendVerificationEmail = async () => {
