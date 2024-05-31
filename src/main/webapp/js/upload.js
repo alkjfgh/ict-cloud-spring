@@ -40,12 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-//const deletefile = (userID, fileID) =>{
-//    const deleteBtn = document.getElementById('deleteBtn');
-//    deleteBtn.onclick = () => fileDeleteHandler(userID, fileID);
-//}
-
-
 $('#fakeDownloadBtn').on('click', async function () {
     const fakeDownloadBtn = document.getElementById('fakeDownloadBtn');
 
@@ -75,6 +69,7 @@ $('#DeleteBtn').on('click', async function (){
 document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다운로드, 삭제기능 창 뜨기
     const clickdiv = document.getElementById('clicked');
     const target = document.getElementsByClassName('file-list-table')[0];
+    const dbtn = document.getElementById('fakeDownloadBtn');
 
     document.addEventListener('contextmenu', (event) => {
         event.preventDefault();
@@ -84,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
 
 
         if(event.target.tagName === 'TD' && target.contains(event.target)){
+            dbtn.style.display = 'inline';
             const trElement = event.target.closest('tr');
             const userID = trElement ? trElement.getAttribute('data-user-id') : null;
             const fileID = trElement ? trElement.getAttribute('data-id') : null;
@@ -104,15 +100,14 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
             document.getElementById('DeleteBtn').dataset.userid = userID;
             document.getElementById('DeleteBtn').dataset.fileid = fileID;
 
+            if(event.target.className === 'folder-area'){ //타겟이 폴더
+                dbtn.style.display = 'none';
+            }
         }else{
             clickdiv.style.display = 'none';
         }
     });
     document.addEventListener('click', (event) => {  //클릭하면 div사라지기
-        //console.log(event.target)
-        //console.log(event.target.id !== 'downloadBtn')
-        //console.log(event.target.id !== 'clicked')
-        //console.log(event.target.id !== 'downloadBtn')
         if(event.target.id !== 'downloadBtn' && event.target.id !== 'clicked' && !document.getElementById('clicked').contains(event.target)){
             clickdiv.style.display = 'none';
         }
