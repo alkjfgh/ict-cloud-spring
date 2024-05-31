@@ -26,6 +26,7 @@
             </div>
             <div class="file-list-container drag-drop-area">
                 <table class="file-list-table">
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
@@ -90,6 +91,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const initialFolderID = ${p}; // 초기 폴더 ID를 설정
+        $('#folderID').val(initialFolderID);
         enterFolder(initialFolderID);
     });
 

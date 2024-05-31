@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     const dragDropArea = document.getElementsByClassName('drag-drop-area')[0];
 
-
     dragDropArea.addEventListener('dragover', function (e) {
         e.preventDefault(); // 기본 이벤트 방지
         e.stopPropagation(); // 이벤트 전파 방지
@@ -67,8 +66,7 @@ $('#DeleteBtn').on('click', async function (){
     const userid = DeleteBtn.dataset.userid;
     const fileid = DeleteBtn.dataset.fileid;
 
-    console.log(userid);
-    console.log(fileid);
+    $('#clicked').hide();
 
     await deleteFileDetail(userid, fileid)
 });
@@ -378,14 +376,14 @@ const enterFolder = async (p) => {
 
         const folderList = updateFolderList(data.subFolderList);
         folderList.forEach(element => {
-            $('.file-list-table').find("tbody").append(element);
-            // fileListElement.appendChild(element)
+            // $('.file-list-table').find("tbody").append(element);
+            fileListElement.appendChild(element)
         });
 
         const fileList = updateFileList(data.fileList, data.userID);
         fileList.forEach(element => {
-            $('.file-list-table').find("tbody").append(element);
-            // fileListElement.appendChild(element)
+            // $('.file-list-table').find("tbody").append(element);
+            fileListElement.appendChild(element)
         });
 
         // fileListElement.load(location.href + ' .file-list-table');
@@ -517,16 +515,6 @@ const deleteFileDetail = async (userid, fileid) =>{
     // console.log(fileid);
 
     await fileDeleteHandler(userid, fileid);
-
-    resetVideoPlayer();
-
-    if (isVideoFile(fileType)) {
-        const videoUrl = `/file/stream?userID=${encodeURIComponent(userID)}&fileID=${encodeURIComponent(fileID)}`;
-        // const videoUrl = `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4`;
-        showVideo(videoUrl);
-    }
-
-    showModal();
 }
 
 const isVideoFile = (fileType) => {
@@ -619,7 +607,9 @@ const fileDeleteHandler = async (userID, fileID) => {
                 alert(result.message); // 성공 메시지 표시
                 // 추가적인 성공 처리 로직이 있으면 여기에 추가
                 //*************************************************************************
-                const row = document.querySelector('tr[data-file-id="${fileID"]')
+                await enterFolder($('#folderID').val());
+                const row = document.querySelector('tr[data-file-id="${fileID"]');
+                console.log("success");
             } else {
                 alert(result.message); // 실패 메시지 표시
             }
