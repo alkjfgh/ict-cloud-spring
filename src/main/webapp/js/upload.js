@@ -59,10 +59,18 @@ $('#DeleteBtn').on('click', async function (){
 
     const userid = DeleteBtn.dataset.userid;
     const fileid = DeleteBtn.dataset.fileid;
+    const folderid = DeleteBtn.dataset.folderid;
 
     $('#clicked').hide();
 
-    await deleteFileDetail(userid, fileid)
+    // const targetClassName = $(this).attr('class');
+
+    // if (targetClassName === 'file-area') {
+    //     await deleteFileDetail(userid, fileid);
+    // } else if (targetClassName === 'folder-area') {
+        await folderDeleteHandler(userid, folderid);
+    // }
+
 });
 
 
@@ -86,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
             const filename = trElement ? trElement.getAttribute('data-file-name') : null;
             const fileSize = trElement ? trElement.getAttribute('data-file-size') : null;
             const fileType = trElement ? trElement.getAttribute('data-file-type') : null;
+            const folderID = trElement ? trElement.getAttribute('data-folder-id') : null;
 
             clickdiv.style.left = `${clickX}px`;
             clickdiv.style.top = `${clickY}px`;
@@ -99,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
 
             document.getElementById('DeleteBtn').dataset.userid = userID;
             document.getElementById('DeleteBtn').dataset.fileid = fileID;
+            document.getElementById('DeleteBtn').dataset.folderid = folderID; //^^^^^^^
 
             if(event.target.className === 'folder-area'){ //타겟이 폴더
                 dbtn.style.display = 'none';
@@ -395,6 +405,8 @@ const updateFolderList = (folderList) => {
         let folderElement = document.createElement("tr");
         let folderInner = document.createElement("td");
 
+        folderElement.setAttribute('data-folder-id', folder.folderID); //^^^^^^^^^
+
         folderInner.className = "folder-area";
         folderInner.colSpan = 5;
         folderInner.onclick = () => enterFolder(folder.folderID);
@@ -506,8 +518,8 @@ const deleteFileDetail = async (userid, fileid) =>{
         <p>userID: ${userid}</p>
         <p>fileID: ${fileid}</p>
     `
-    // console.log(userid);
-    // console.log(fileid);
+    console.log(userid);
+    console.log(fileid);
 
     await fileDeleteHandler(userid, fileid);
 }
@@ -603,13 +615,49 @@ const fileDeleteHandler = async (userID, fileID) => {
                 // 추가적인 성공 처리 로직이 있으면 여기에 추가
                 //*************************************************************************
                 await enterFolder($('#folderID').val());
-                const row = document.querySelector('tr[data-file-id="${fileID"]');
+                const row = document.querySelector('tr[data-file-id="${fileID}"]'); //^^^^^^^^
                 console.log("success");
             } else {
                 alert(result.message); // 실패 메시지 표시
             }
         } else {
             alert("File deletion failed with status code: " + response.status);
+        }
+    } catch(error){
+        console.error("Error:", error);
+        alert("Error")
+    }
+};
+
+const folderDeleteHandler = async (userID, folderID) => { //^^^^^^^^^^^^
+    console.log("folderDeleteHandler");
+    try{
+        const response = await fetch("/file/deleteFolder", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                userID: userID,
+                folderID: folderID,
+            }),
+        });
+        if(response.status === 200) {
+            const result = await response.json();
+
+            if (result.status === "success") {
+                alert(result.message); // 성공 메시지 표시
+                // 추가적인 성공 처리 로직이 있으면 여기에 추가
+                await enterFolder($('#folderID').val());
+                const row = document.querySelector('tr[folder-area="${folderID}"]'); //^^^^^^^^^^^
+                console.log("success");
+            } else {
+                alert(result.message); // 실패 메시지 표시
+
+            }
+        } else {
+            console.log("bbbbbbb"); //^^^^^^에러
+            alert("Folder deletion failed with status code: " + response.status);
         }
     } catch(error){
         console.error("Error:", error);
