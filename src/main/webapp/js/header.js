@@ -1,4 +1,33 @@
 let isSidebarOpen = false
+
+let announdata = [
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+    {date: "2024-05-27 04:07:45", title: "제목", content: "본문"},
+];
+
 $(document).ready(function () {
     const islogin = $('.islogin');
     const notlogin = $('.notlogin');
@@ -30,6 +59,44 @@ $(document).ready(function () {
     });
 });
 
+const initAnnounce = (announdata) => {
+    let announcementContainer = $('.announcement-container');
+    announcementContainer.empty();
+
+    let accordionId = 'accordionExample';
+    let accordion = document.createElement('div');
+    accordion.className = 'accordion';
+    accordion.id = accordionId;
+
+    announdata.forEach((item, index) => {
+        let uniqueId = `collapse${index}`;
+        let announcement = document.createElement('div');
+        announcement.className = 'accordion-item';
+        announcement.innerHTML = `
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${uniqueId}" aria-expanded="false" aria-controls="${uniqueId}">
+                        ${item.title} ${item.date}
+                    </button>
+                </h2>
+                <div id="${uniqueId}" class="accordion-collapse collapse" data-bs-parent="#${accordionId}">
+                    <div class="accordion-body">
+                        ${item.content}
+                    </div>
+                </div>`;
+
+        accordion.appendChild(announcement);
+    });
+    announcementContainer.append(accordion);
+}
+
+// <div className="announcement-title-container">
+//     <span className="announcement-title">${item.title}</span>
+//     <span className="announcement-uploaddate">${item.date}</span>
+// </div>
+// <div className="announcement-content-container">
+//     <div className="announcement-content hide">${item.content}</div>
+// </div>
+
 document.addEventListener('DOMContentLoaded', function () {
     let dropdownMenu = document.querySelector(".dropdown-menu");
     let dropdownButton = document.querySelector(".dropdown-button");
@@ -49,7 +116,71 @@ document.addEventListener('DOMContentLoaded', function () {
                 dropdownMenu.classList.remove("active");
             }
         });
+
+        dropdownMenu.addEventListener('click', function (event){
+            if(event.target.tagName === 'A'){
+                dropdownMenu.classList.remove("active");
+            }
+        })
     } else {
         console.error("dropdownButton 또는 dropdownMenu 요소를 찾을 수 없습니다.");
     }
+});
+
+// 모달
+$(document).ready(function () {
+    // 모달 제어 코드
+    let modal = $("#announcementModal");
+    let btn = $(".dropdown-menu a[href='#']");
+    let span = $(".close")[0];
+
+    initAnnounce(announdata);
+
+    btn.click(function (event) {
+        event.preventDefault(); // 기본 이벤트 방지
+
+        $(".accordion-collapse").each(function() {
+            let collapseInstance = bootstrap.Collapse.getInstance(this);
+            if (collapseInstance) {
+                collapseInstance.hide();
+            } else {
+                new bootstrap.Collapse(this, {
+                    toggle: false
+                }).hide();
+            }
+        });
+
+        modal.css("display", "block");
+    });
+
+    span.onclick = function () {
+        modal.css("display", "none");
+        $(".accordion-collapse").each(function() {
+            let collapseInstance = bootstrap.Collapse.getInstance(this);
+            if (collapseInstance) {
+                collapseInstance.hide();
+            } else {
+                new bootstrap.Collapse(this, {
+                    toggle: false
+                }).hide();
+            }
+        });
+    }
+
+    $(window).click(function (event) {
+        if (event.target === modal[0]) {
+            modal.css("display", "none");
+
+            $(".accordion-collapse").each(function() {
+                let collapseInstance = bootstrap.Collapse.getInstance(this);
+                if (collapseInstance) {
+                    collapseInstance.hide();
+                } else {
+                    new bootstrap.Collapse(this, {
+                        toggle: false
+                    }).hide();
+                }
+            });
+        }
+    });
 });

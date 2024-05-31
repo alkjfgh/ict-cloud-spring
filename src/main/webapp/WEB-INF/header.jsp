@@ -2,6 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <link rel="stylesheet" href="<c:url value='/css/header.css?ver=1'/>"/>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="<c:url value='/js/header.js?ver=1'/>"></script>
 
 <div class="header">
@@ -31,7 +32,12 @@
                 </li>
                 <li>
                     <a href="#">
-                        Sign out
+                        Log out
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        Announcement
                     </a>
                 </li>
             </ul>
@@ -54,7 +60,36 @@
                         Sign up
                     </a>
                 </li>
+                <li>
+                    <a href="#">
+                        Announcement
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
 </div>
+
+<%--    모달--%>
+<div id="announcementModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Announcement</h2> <br>
+        <div class="announcement-container">
+<%--            <div class="announcement-list">--%>
+<%--                <div class="-announcement-title-container">--%>
+<%--                    <span class="announcement-title">title</span>--%>
+<%--                    <span class="announcement-uploaddate">date</span>--%>
+<%--                </div>--%>
+<%--                <div class="announcement-content-container">--%>
+<%--                    <div class="announcement-content">content</div>--%>
+<%--                </div>--%>
+<%--            </div>--%>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous">
+</script>

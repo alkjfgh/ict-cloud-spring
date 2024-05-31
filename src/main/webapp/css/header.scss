@@ -1,7 +1,7 @@
 .header {
   height: 4rem;
   margin: 0;
-  background-color: #343a40;
+  background-color: #adb5bd;
   display: flex;
   align-items: center;
 
@@ -22,18 +22,18 @@
   .sidebar-open:hover {
     cursor: pointer;
 
-    .stroke-current{
+    .stroke-current {
       stroke: #fff;
     }
   }
 
-  .user{
+  .user {
     margin-left: auto;
     display: flex;
     align-items: center;
   }
-  
-  .dropdown-button{
+
+  .dropdown-button {
     background: url("../img/usericon.png") no-repeat;
     background-size: 46px 46px;
     width: 46px;
@@ -66,7 +66,7 @@
     box-shadow: 0 1px 15px rgba(27, 31, 35, 0.15);
     transition: transform 200ms ease-in;
 
-    .islogin{
+    .islogin {
       display: none;
     }
   }
@@ -131,5 +131,111 @@
   .dropdown-menu ul a:hover {
     color: #fff;
     background-color: #868e96;
+  }
+}
+
+/* 모달 */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  text-align: center;
+  overflow-y: initial !important;
+
+  ::-webkit-scrollbar{
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb{
+    background-color: #2f3542;
+    border-radius: 10px;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #fefefe;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+  }
+
+  a {
+    text-decoration-line: none;
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 500px;
+    overflow-y: auto;
+    max-height: 550px;
+  }
+
+  .accordion-body {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    width: 20px;
+
+    &:hover,
+    &:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  }
+
+  .announcement-container {
+
+    .announcement-list {
+
+      .announcement-title-container {
+
+        cursor: pointer;
+        display: flex;
+        margin-bottom: 10px;
+
+        .announcement-title {
+          margin-left: 60px;
+        }
+
+        .announcement-uploaddate {
+          margin-left: 120px;
+          position: relative;
+
+          &::after {
+            width: 15px;
+            height: 15px;
+            border-top: 2px solid #121212;
+            border-right: 2px solid #121212;
+            display: inline-block;
+            transform: rotate(135deg);
+            margin-left: 65px;
+            position: relative;
+            content: "";
+          }
+        }
+      }
+    }
+  }
+}
+
+#announcementModal {
+  .hide {
+    display: none;
   }
 }
