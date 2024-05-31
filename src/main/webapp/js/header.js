@@ -1,5 +1,8 @@
 let isSidebarOpen = false
 $(document).ready(function () {
+    const islogin = $('.islogin');
+    const notlogin = $('.notlogin');
+
     $('.sidebar-open').on('click', function () {
         // $('.sidebar').show();
         $('.sidebar').css('left', '0'); // 사이드바를 오른쪽으로 이동
@@ -7,7 +10,7 @@ $(document).ready(function () {
     });
 
     $(document).on('click', function () {
-        if(isSidebarOpen){
+        if (isSidebarOpen) {
             const sidebar = $(".sidebar");
             const sidebar_open = $(".sidebar-open");
             if (!sidebar_open.is(event.target) && !sidebar_open.has(event.target).length && !sidebar.is(event.target) && !sidebar.has(event.target).length) {
@@ -16,14 +19,23 @@ $(document).ready(function () {
             }
         }
     });
+
+    axios.get('/user/checkSession').then(res => {
+        if (res.status === 200) {
+            if (res.data.check) islogin.show();
+            else notlogin.show();
+        } else {
+            notlogin.show();
+        }
+    });
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     let dropdownMenu = document.querySelector(".dropdown-menu");
     let dropdownButton = document.querySelector(".dropdown-button");
 
     if (dropdownButton && dropdownMenu) {
-        dropdownButton.addEventListener("click", function(event) {
+        dropdownButton.addEventListener("click", function (event) {
             event.stopPropagation(); // 버블링 방지
             if (dropdownMenu.classList.contains("active")) {
                 dropdownMenu.classList.remove("active");
@@ -32,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             if (!event.target.closest('.dropdown-menu') && !event.target.closest('.dropdown-button')) {
                 dropdownMenu.classList.remove("active");
             }

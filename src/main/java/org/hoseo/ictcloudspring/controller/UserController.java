@@ -52,6 +52,22 @@ public class UserController {
         return "/user/userInfo";
     }
 
+    @GetMapping("/user/checkSession")
+    public ResponseEntity<Map<String, Object>> checkSession(HttpServletRequest request) {
+        logger.info("UserController check session");
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        System.out.println("User: " + user);
+
+        Map<String, Object> response = new HashMap<>();
+        if (user != null) response.put("check", true);
+        else response.put("check", false);
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/user/getInfo")
     public ResponseEntity<Map<String, Object>> getUserInfo(HttpServletRequest request) {
         logger.info("UserController get user info");
