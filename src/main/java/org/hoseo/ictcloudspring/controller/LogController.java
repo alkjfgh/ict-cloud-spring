@@ -1,5 +1,7 @@
 package org.hoseo.ictcloudspring.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hoseo.ictcloudspring.dao.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -21,14 +23,17 @@ public class LogController {
 
     @Autowired
     private LogService logService;
+    private static final Logger logger = LogManager.getLogger(LogController.class);
 
     @GetMapping
     public List<String> getLogFiles() {
+        logger.info("Log Controller get log files");
         return logService.getLogFiles();
     }
 
     @GetMapping("/{fileName}")
     public ResponseEntity<Resource> getLogFile(@PathVariable String fileName) throws MalformedURLException {
+        logger.info("Log Controller get log file by name " + fileName);
         Path file = logService.getLogFilePath(fileName);
         Resource resource = new UrlResource(file.toUri());
         return ResponseEntity.ok().body(resource);

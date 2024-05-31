@@ -15,7 +15,7 @@ import java.sql.*;
 @Service
 public class UserService {
     private final Connection con;
-    private static final Logger logger = LogManager.getLogger(UserController.class);
+    private static final Logger logger = LogManager.getLogger(UserService.class);
 
     @Autowired
     public UserService(DBConnectionPool dbConnectionPool) {

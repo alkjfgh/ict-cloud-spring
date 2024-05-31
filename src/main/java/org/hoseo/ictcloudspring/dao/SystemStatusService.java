@@ -1,5 +1,7 @@
 package org.hoseo.ictcloudspring.dao;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hoseo.ictcloudspring.dto.DatabaseStatus;
 import org.hoseo.ictcloudspring.dto.ServerStatus;
 import org.hoseo.ictcloudspring.dto.StorageUsage;
@@ -19,8 +21,10 @@ public class SystemStatusService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private static final Logger logger = LogManager.getLogger(SystemStatusService.class);
 
     public ServerStatus getServerStatus() {
+        logger.info("System Status Service get server status");
         // Get JVM uptime
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
         long uptimeMillis = runtimeMXBean.getUptime();
@@ -33,6 +37,7 @@ public class SystemStatusService {
     }
 
     public DatabaseStatus getDatabaseStatus() {
+        logger.info("System Status Service get database status");
         String status = "Unknown";
         String dbSize = "Unknown";
 
@@ -42,13 +47,14 @@ public class SystemStatusService {
                 dbSize = getDatabaseSize(connection);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Error getting database status", e);
         }
 
         return new DatabaseStatus(status, dbSize);
     }
 
     public StorageUsage getStorageUsage() {
+        logger.info("System Status Service get storage usage");
         // Assume we are checking the root directory of the system
         File root = new File("/");
         long totalSpace = root.getTotalSpace();
@@ -59,6 +65,7 @@ public class SystemStatusService {
     }
 
     private String formatUptime(long uptimeMillis) {
+        logger.info("System Status Service format uptime");
         long uptimeSeconds = uptimeMillis / 1000;
         long hours = uptimeSeconds / 3600;
         long minutes = (uptimeSeconds % 3600) / 60;
@@ -68,6 +75,7 @@ public class SystemStatusService {
     }
 
     private String getDatabaseSize(Connection connection) throws SQLException {
+        logger.info("System Status Service get database size");
         String dbSize = "0";
 
         try (ResultSet resultSet = connection.createStatement().executeQuery("SELECT\n" +
@@ -82,6 +90,8 @@ public class SystemStatusService {
             if (resultSet.next()) {
                 dbSize = resultSet.getString(2);
             }
+        } catch (Exception e){
+            logger.error(e);
         }
 
         return dbSize;

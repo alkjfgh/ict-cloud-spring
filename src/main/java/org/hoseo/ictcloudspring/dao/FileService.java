@@ -31,7 +31,7 @@ public class FileService {
     private PreparedStatement psmt;
     private ResultSet rs;
     private final String SEPARATOR = java.io.File.separator;
-    private static final Logger logger = LogManager.getLogger(UserController.class);
+    private static final Logger logger = LogManager.getLogger(FileService.class);
 
     @Autowired
     public FileService(DBConnectionPool dbConnectionPool) throws SQLException {
