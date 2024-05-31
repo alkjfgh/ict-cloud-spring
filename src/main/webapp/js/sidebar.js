@@ -18,7 +18,13 @@ $(document).ready(() => {
         if(response.status === 200){
             location.href = "../main";
         }
-    })
+    });
+
+    axios.get('/user/checkSession').then(res => {
+        if (res.status === 200) {
+            if (res.data.check) $('.sidebar-menu li:nth-of-type(2)').show();
+        }
+    });
 });
 
 // 서브메뉴 토글 예제 (서브메뉴가 있는 경우)

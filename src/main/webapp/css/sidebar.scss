@@ -32,6 +32,10 @@
     list-style: none;
     padding: 0;
 
+    li:nth-of-type(2){
+      display: none;
+    }
+
     li {
       margin: 0;
       padding: 0;
