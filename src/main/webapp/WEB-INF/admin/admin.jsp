@@ -12,6 +12,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -54,7 +56,7 @@
         </div>
         <div class="col-md-9">
             <div id="dashboard">
-<%--                <h1>대시보드</h1>--%>
+                <%--                <h1>대시보드</h1>--%>
                 <div id="serverStatus">
                     <h2>Server Status</h2>
                     <p>Status: <span id="serverStatusText"></span></p>
@@ -69,6 +71,10 @@
                     <h2>Storage Usage</h2>
                     <p>Used Space: <span id="usedSpace"></span></p>
                     <p>Total Space: <span id="totalSpace"></span></p>
+                </div>
+                <div id="realTimeActivity" class="mt-4">
+                    <h2>실시간 파일 활동</h2>
+                    <ul id="activityLog" class="list-group"></ul>
                 </div>
                 <h2>로그 파일</h2>
                 <ul id="logFiles" class="list-group">
@@ -111,7 +117,8 @@
                             <input type="date" id="endDate" name="endDate" class="form-control" placeholder="종료 날짜">
                         </div>
                         <div class="col-md-3">
-                            <input type="number" id="minFileSize" name="minFileSize" class="form-control" placeholder="최소 파일 크기">
+                            <input type="number" id="minFileSize" name="minFileSize" class="form-control"
+                                   placeholder="최소 파일 크기">
                             <select id="minFileSizeUnit" name="minFileSizeUnit" class="form-control">
                                 <option value="B">B</option>
                                 <option value="KB">KB</option>
@@ -120,7 +127,8 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <input type="number" id="maxFileSize" name="maxFileSize" class="form-control" placeholder="최대 파일 크기">
+                            <input type="number" id="maxFileSize" name="maxFileSize" class="form-control"
+                                   placeholder="최대 파일 크기">
                             <select id="maxFileSizeUnit" name="maxFileSizeUnit" class="form-control">
                                 <option value="B">B</option>
                                 <option value="KB">KB</option>
@@ -167,7 +175,8 @@
 </div>
 
 <!-- Modal for Editing User -->
-<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -241,12 +250,6 @@ TODO
  API 관리: API 키 생성 및 관리, API 사용 통계.
  통합 및 연동: 외부 서비스(Google Drive, Dropbox 등)와의 통합 설정.
  4. 추가하면 좋을 항목
- 로그 관리
- 활동 로그: 시스템 내 모든 활동 기록. (파일 업로드, 삭제, 로그인/로그아웃 등)
- 에러 로그: 시스템 에러 및 경고 로그.
- 권한 및 역할 관리
- 사용자 역할 설정: 다양한 역할(관리자, 일반 사용자 등) 설정 및 관리.
- 권한 제어: 각 역할별로 접근 가능한 기능 및 페이지 설정.
  보고서 생성
  사용자 보고서: 특정 기간 동안의 사용자 활동 보고서.
  스토리지 보고서: 스토리지 사용량, 파일 업로드/다운로드 통계 보고서.

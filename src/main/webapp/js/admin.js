@@ -142,7 +142,6 @@ $(document).ready(function () {
         });
     });
 
-
     loadLogFiles();
     fetchServerStatus();
     startUptimeUpdater();
@@ -155,6 +154,8 @@ $(document).ready(function () {
         populateUserTable(users);
         renderChart(users);
     });
+
+    activitySocket();
 });
 
 let currentOpenFile = ''; // 현재 열린 파일 이름을 추적하는 변수
@@ -485,4 +486,34 @@ function convertToBytes(size, unit) {
         GB: 1024 * 1024 * 1024
     };
     return size * (units[unit] || 1);
+}
+
+const activitySocket = () => {
+    const socket = new SockJS('/ws');
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+        stompClient.subscribe('/topic/fileActivity', function (activity) {
+            console.log('Received: ' + activity.body); // 메시지 수신 시 콘솔에 출력
+            console.log(activity)
+            // showActivity(JSON.parse(activity.body));
+            showActivity(activity.body);
+        });
+    }, function (error) {
+        console.error('STOMP error: ' + error); // 연결 실패 시 콘솔에 출력
+    });
+
+    function showActivity(message) {
+        const activityLog = document.getElementById('activityLog');
+        const newItem = document.createElement('li');
+        newItem.className = 'list-group-item';
+        newItem.textContent = message;
+        activityLog.insertBefore(newItem, activityLog.firstChild);
+
+        // 최대 50개 항목 유지
+        while (activityLog.children.length > 50) {
+            activityLog.removeChild(activityLog.lastChild);
+        }
+    }
 }

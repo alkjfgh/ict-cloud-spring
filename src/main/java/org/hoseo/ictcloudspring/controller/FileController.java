@@ -2,6 +2,7 @@ package org.hoseo.ictcloudspring.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,7 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +42,12 @@ public class FileController {
     private final FileService fileService;
     private static final Logger logger = LogManager.getLogger(UserController.class);
 
+    private final SimpMessagingTemplate template;
+
     @Autowired
-    public FileController(FileService fileService) {
+    public FileController(FileService fileService, SimpMessagingTemplate template) {
         this.fileService = fileService;
+        this.template = template;
     }
 
     @GetMapping("/file/upload")
@@ -106,6 +113,7 @@ public class FileController {
         int uploadFileSuccesses = fileService.uploadFile(file, userID, storagePath, folderID, FilenameUtils.getExtension(file.getOriginalFilename()));
 
         if (uploadFileSuccesses == 1) {
+            template.convertAndSend("/topic/fileActivity", Timestamp.valueOf(LocalDateTime.now()) + " => UserID: " + userID + ", File uploaded: " + file.getOriginalFilename());
             return ResponseEntity.ok("File uploaded successfully");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed");
@@ -186,6 +194,7 @@ public class FileController {
         String encodedFileName = URLEncoder.encode(filename, StandardCharsets.UTF_8).replace("+", "%20");
         String contentDisposition = "attachment; filename*=UTF-8''" + encodedFileName;
 
+        template.convertAndSend("/topic/fileActivity", Timestamp.valueOf(LocalDateTime.now()) + " => UserID: " + userID + ", File downloaded: " + filename);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(mimeType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
