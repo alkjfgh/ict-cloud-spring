@@ -146,6 +146,21 @@
 
             <div id="settings" class="mt-4" style="display: none;">
                 <h2>설정</h2>
+                <button class="btn btn-primary" id="backupButton">백업</button>
+                <input type="file" id="restoreFileInput" style="display: none;">
+                <button class="btn btn-secondary" id="restoreButton">복원</button>
+                <h3>공지사항 업로드</h3>
+                <form id="noticeForm">
+                    <div class="form-group">
+                        <label for="noticeTitle">제목</label>
+                        <input type="text" class="form-control" id="noticeTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="noticeContent">내용</label>
+                        <textarea class="form-control" id="noticeContent" name="content" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">업로드</button>
+                </form>
             </div>
         </div>
     </div>
@@ -221,7 +236,6 @@ TODO
  필수 항목
  일반 설정: 시스템 이름, 로고, 기본 언어, 시간대 설정.
  보안 설정: 비밀번호 정책, 2단계 인증 설정, 세션 타임아웃 설정.
- 백업 및 복원: 시스템 데이터 백업 및 복원 기능.
  이메일 설정: 시스템 알림 및 공지를 위한 이메일 서버 설정.
  추가하면 좋은 기능
  API 관리: API 키 생성 및 관리, API 사용 통계.

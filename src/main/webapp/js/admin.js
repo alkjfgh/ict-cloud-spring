@@ -25,13 +25,6 @@ $(document).ready(function () {
 
         const userId = document.getElementById('userId').value;
 
-        console.log({filename: filename,
-            startDate: startDate,
-            endDate: endDate,
-            minFileSize: minFileSizeInBytes,
-            maxFileSize: maxFileSizeInBytes,
-            userId: userId})
-
         axios.get('/file/searchFiles', {
             params: {
                 filename: filename,
@@ -82,6 +75,73 @@ $(document).ready(function () {
             console.error('검색 중 오류 발생:', error);
         });
     });
+
+    document.getElementById('backupButton').addEventListener('click', function () {
+        axios.post('/file/backup', {}, {responseType: 'blob'})
+            .then(response => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'backup.zip');
+                document.body.appendChild(link);
+                link.click();
+            })
+            .catch(error => {
+                console.error('Backup error:', error);
+                alert('백업 실패');
+            });
+    });
+
+    document.getElementById('restoreButton').addEventListener('click', function () {
+        document.getElementById('restoreFileInput').click();
+    });
+
+    document.getElementById('restoreFileInput').addEventListener('change', function () {
+        const file = document.getElementById('restoreFileInput').files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        axios.post('/file/restore', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then(response => {
+                alert('복원 성공');
+            })
+            .catch(error => {
+                console.error('Restore error:', error);
+                alert('복원 실패');
+            });
+    });
+
+    document.getElementById('noticeForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const title = document.getElementById('noticeTitle').value;
+        const content = document.getElementById('noticeContent').value;
+
+        const formData = new URLSearchParams();
+        formData.append('title', title);
+        formData.append('content', content);
+
+        axios.post('/admin/uploadNotice', formData, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(response => {
+            if (response.data.status === 'success') {
+                alert('공지사항 업로드 성공');
+                document.getElementById('noticeForm').reset();
+            } else {
+                alert('공지사항 업로드 실패: ' + response.data.message);
+            }
+        }).catch(error => {
+            console.error('공지사항 업로드 중 오류 발생:', error);
+            alert('공지사항 업로드 중 오류 발생');
+        });
+    });
+
 
     loadLogFiles();
     fetchServerStatus();
@@ -298,8 +358,6 @@ function renderChart(storageSizeList) {
         if (storageCharts[user.name]) {
             storageCharts[user.name].destroy();
         }
-
-        console.log(usedSize, remainingSize);
 
         storageCharts[user.name] = new Chart(ctx, {
             type: 'pie',

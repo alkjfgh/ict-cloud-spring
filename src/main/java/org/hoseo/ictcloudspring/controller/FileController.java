@@ -10,6 +10,8 @@ import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
 import org.hoseo.ictcloudspring.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -322,6 +324,40 @@ public class FileController {
         return ResponseEntity.ok(files);
     }
 
+    // 백업 엔드포인트
+    @PostMapping("/file/backup")
+    public ResponseEntity<Resource> backupFiles() {
+        logger.info("FileController backup files");
 
+        try {
+            InputStream backupStream = fileService.backupFiles();
+
+            InputStreamResource resource = new InputStreamResource(backupStream);
+            String backupFileName = "backup.zip";
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + backupFileName + "\"")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+
+        } catch (IOException e) {
+            logger.error("Error during backup: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    // 복원 엔드포인트
+    @PostMapping("/file/restore")
+    public ResponseEntity<String> restoreFiles(@RequestParam("file") MultipartFile file) {
+        logger.info("FileController restore files");
+
+        try {
+            fileService.restoreFiles(file);
+            return ResponseEntity.ok("Files restored successfully");
+        } catch (IOException e) {
+            logger.error("Error during restore: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Restore failed");
+        }
+    }
     // TODO 다운로드 속도 정할지 고민
 }

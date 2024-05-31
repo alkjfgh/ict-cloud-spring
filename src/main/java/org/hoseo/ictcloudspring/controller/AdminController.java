@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hoseo.ictcloudspring.dao.FileService;
+import org.hoseo.ictcloudspring.dao.NoticeService;
 import org.hoseo.ictcloudspring.dao.UserService;
 import org.hoseo.ictcloudspring.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,14 @@ import java.util.*;
 public class AdminController {
     private final FileService fileService;
     private final UserService userService;
-    private static final Logger logger = LogManager.getLogger(UserController.class);
+    private final NoticeService noticeService;
+    private static final Logger logger = LogManager.getLogger(AdminController.class);
 
     @Autowired
-    public AdminController(FileService fileService, UserService userService) {
+    public AdminController(FileService fileService, UserService userService, NoticeService noticeService) {
         this.fileService = fileService;
         this.userService = userService;
+        this.noticeService = noticeService;
     }
 
     @GetMapping("/admin")
@@ -92,6 +95,40 @@ public class AdminController {
             } else {
                 response.put("status", "fail");
                 response.put("message", "Uploads folder size calculated failed");
+            }
+        } else {
+            response.put("status", "fail");
+            response.put("message", "check level");
+        }
+
+        return response;
+    }
+
+    @ResponseBody
+    @PostMapping("/admin/uploadNotice")
+    public Map<String, Object> uploadNotice(HttpServletRequest request) {
+        logger.info("AdminController upload notice post request");
+
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        logger.info("User: " + user);
+
+        boolean checkAdmin = userService.checkAdmin(user);
+
+        Map<String, Object> response = new HashMap<>();
+        if (checkAdmin) {
+            String title = request.getParameter("title");
+            String content = request.getParameter("content");
+            logger.info("Title: " + title);
+            logger.info("Content: " + content);
+
+            int result = noticeService.saveNotice(title, content);
+            if (result > 0) {
+                response.put("status", "success");
+                response.put("message", "Notice uploaded successfully");
+            } else {
+                response.put("status", "fail");
+                response.put("message", "Notice upload failed");
             }
         } else {
             response.put("status", "fail");
