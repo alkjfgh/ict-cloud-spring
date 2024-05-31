@@ -10,6 +10,9 @@ $(document).ready(function () {
 
     loadLogFiles();
     fetchServerStatus();
+    startUptimeUpdater();
+    // Optionally, resynchronize server status every 5 minutes to adjust the server start time
+    setInterval(fetchServerStatus, 5 * 60 * 1000);
     fetchDatabaseStatus();
     fetchStorageUsage();
 
@@ -20,6 +23,7 @@ $(document).ready(function () {
 });
 
 let currentOpenFile = ''; // 현재 열린 파일 이름을 추적하는 변수
+let serverStartTime = null; // Will store the initial server start time
 
 const loadLogFiles = () => {
     axios.get('/api/logs')
@@ -255,23 +259,59 @@ function renderChart(storageSizeList) {
     });
 }
 
+function parseDuration(duration) {
+    const parts = duration.split(':');
+    const hours = parseInt(parts[0], 10);
+    const minutes = parseInt(parts[1], 10);
+    const seconds = parseInt(parts[2], 10);
+    return hours * 3600 * 1000 + minutes * 60 * 1000 + seconds * 1000; // convert to milliseconds
+}
+
 function fetchServerStatus() {
     axios.get('/api/system-status/server')
         .then(response => {
             const data = response.data;
             $('#serverStatusText').text(data.status);
-            $('#serverUptime').text(data.uptime);
+
+            // If serverStartTime not set, calculate it based on the current time minus the uptime duration
+            if (!serverStartTime) {
+                const uptimeDuration = parseDuration(data.uptime); // Parse the duration into milliseconds
+                serverStartTime = new Date(new Date() - uptimeDuration); // Set the start time by subtracting duration from the current time
+                startUptimeUpdater(); // Start the timer to update the display
+                console.log(data.uptime);
+                console.log(serverStartTime);
+            }
         })
         .catch(error => {
             console.error('Error fetching server status:', error);
         });
 }
 
+// Function to update uptime every second
+function startUptimeUpdater() {
+    setInterval(() => {
+        if (serverStartTime) {
+            const now = new Date();
+            const uptime = new Date(now - serverStartTime);
+            const uptimeStr = formatUptime(uptime);
+            $('#serverUptime').text(uptimeStr);
+        }
+    }, 1000);
+}
+
+// Format uptime into a human-readable format
+function formatUptime(uptime) {
+    const hours = uptime.getUTCHours();
+    const minutes = uptime.getUTCMinutes();
+    const seconds = uptime.getUTCSeconds();
+    return `${hours}h ${minutes}m ${seconds}s`;
+}
+
+
 function fetchDatabaseStatus() {
     axios.get('/api/system-status/database')
         .then(response => {
             const data = response.data;
-            console.log(data)
             $('#databaseStatusText').text(data.status);
             $('#databaseSize').text(formatBytes(data.dbSize)); // 변환 함수 적용
         })
