@@ -54,15 +54,28 @@
         </div>
         <div class="col-md-9">
             <div id="dashboard">
-                <h1>대시보드</h1>
-                <p>여기에 대시보드 내용을 추가하세요.</p>
+<%--                <h1>대시보드</h1>--%>
+                <div id="serverStatus">
+                    <h2>Server Status</h2>
+                    <p>Status: <span id="serverStatusText"></span></p>
+                    <p>Uptime: <span id="serverUptime"></span></p>
+                </div>
+                <div id="databaseStatus" class="mt-4">
+                    <h2>Database Status</h2>
+                    <p>Status: <span id="databaseStatusText"></span></p>
+                    <p>Database Size: <span id="databaseSize"></span></p>
+                </div>
+                <div id="storageUsage" class="mt-4">
+                    <h2>Storage Usage</h2>
+                    <p>Used Space: <span id="usedSpace"></span></p>
+                    <p>Total Space: <span id="totalSpace"></span></p>
+                </div>
                 <h2>로그 파일</h2>
                 <ul id="logFiles" class="list-group">
-                    <!-- 로그 파일 목록이 여기에 추가됩니다. -->
                 </ul>
                 <div id="logContent" style="display: none; margin-top: 20px;">
                     <h3>로그 내용</h3>
-                    <pre id="logText" style="height: 40vh; overflow-y: scroll"></pre>
+                    <pre id="logText" style="height: 60vh; overflow-y: scroll"></pre>
                 </div>
             </div>
 
@@ -178,7 +191,6 @@ TODO
  클라우드 스토리지 프로젝트의 관리자 페이지는 여러 가지 중요한 기능을 포함할 수 있습니다. 이미 사용자 관리와 스토리지 사용량 기능을 구현하셨다면, 나머지 항목에 대해서도 구체적으로 어떤 기능을 추가하면 좋을지 설명드리겠습니다. 필요 없을 수 있는 항목이나 추가하면 좋을 항목도 함께 제안드리겠습니다.
  1. 대시보드
  필수 항목
- 시스템 상태 요약: 현재 서버 상태, 데이터베이스 상태, 스토리지 사용량, 최근 오류 또는 경고 로그 요약.
  사용자 활동: 최근 로그인한 사용자, 가장 많이 사용하는 사용자, 최근 업로드된 파일.
  파일 업로드/다운로드 통계: 최근 24시간, 7일, 30일 동안의 파일 업로드 및 다운로드 통계.
  알림 및 공지: 시스템 알림, 유지보수 공지, 업데이트 정보 등.

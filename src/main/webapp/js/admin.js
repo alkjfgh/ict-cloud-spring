@@ -9,6 +9,9 @@ $(document).ready(function () {
     });
 
     loadLogFiles();
+    fetchServerStatus();
+    fetchDatabaseStatus();
+    fetchStorageUsage();
 
     getUserStorageSizeList().then(users => {
         populateUserTable(users);
@@ -16,6 +19,7 @@ $(document).ready(function () {
     });
 });
 
+let currentOpenFile = ''; // 현재 열린 파일 이름을 추적하는 변수
 
 const loadLogFiles = () => {
     axios.get('/api/logs')
@@ -27,9 +31,17 @@ const loadLogFiles = () => {
                 const listItem = $('<li class="list-group-item">')
                     .text(file)
                     .click(function () {
-                        loadLogContent(file);
+                        // 파일명이 현재 열린 파일과 같으면 내용을 숨김
+                        if (currentOpenFile === file) {
+                            $('#logContent').hide();
+                            currentOpenFile = ''; // 현재 열린 파일 변수를 초기화
+                        } else {
+                            loadLogContent(file);
+                            currentOpenFile = file; // 현재 열린 파일을 업데이트
+                        }
                     });
-                logFilesList.append(listItem);
+                if(file === 'ICT_CLOUD.log') logFilesList.prepend(listItem);
+                else logFilesList.append(listItem);
             });
         })
         .catch(function (error) {
@@ -241,4 +253,53 @@ function renderChart(storageSizeList) {
             }
         });
     });
+}
+
+function fetchServerStatus() {
+    axios.get('/api/system-status/server')
+        .then(response => {
+            const data = response.data;
+            $('#serverStatusText').text(data.status);
+            $('#serverUptime').text(data.uptime);
+        })
+        .catch(error => {
+            console.error('Error fetching server status:', error);
+        });
+}
+
+function fetchDatabaseStatus() {
+    axios.get('/api/system-status/database')
+        .then(response => {
+            const data = response.data;
+            console.log(data)
+            $('#databaseStatusText').text(data.status);
+            $('#databaseSize').text(formatBytes(data.dbSize)); // 변환 함수 적용
+        })
+        .catch(error => {
+            console.error('Error fetching database status:', error);
+        });
+}
+
+function fetchStorageUsage() {
+    axios.get('/api/system-status/storage')
+        .then(response => {
+            const data = response.data;
+            $('#usedSpace').text(formatBytes(data.usedSpace)); // 변환 함수 적용
+            $('#totalSpace').text(formatBytes(data.totalSpace)); // 변환 함수 적용
+        })
+        .catch(error => {
+            console.error('Error fetching storage usage:', error);
+        });
+}
+
+function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
