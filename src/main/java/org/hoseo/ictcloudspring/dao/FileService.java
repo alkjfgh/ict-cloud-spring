@@ -726,6 +726,75 @@ public class FileService {
 
         return userStorageSizeList;
     }
-}
 
-//TODO deleteFolder, deleteFile 안 터지는지 확인(init 처럼 바꿔야 할지도?)
+    public List<File> searchFiles(String filename, Timestamp startDate, Timestamp endDate, Long minFileSize, Long maxFileSize, Integer userId) {
+        logger.info("File Service Search Files");
+
+        List<File> files = new ArrayList<>();
+        String query = "SELECT * FROM Files WHERE 1=1";
+
+        if (filename != null && !filename.isEmpty()) {
+            query += " AND filename LIKE ?";
+        }
+        if (startDate != null) {
+            query += " AND uploadDate >= ?";
+        }
+        if (endDate != null) {
+            query += " AND uploadDate <= ?";
+        }
+        if (minFileSize != null && minFileSize > 0) {
+            query += " AND fileSize >= ?";
+        }
+        if (maxFileSize != null && maxFileSize > 0) {
+            query += " AND fileSize <= ?";
+        }
+        if (userId != null) {
+            query += " AND userID = ?";
+        }
+
+        logger.info("query: " + query);
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            int paramIndex = 1;
+
+            if (filename != null && !filename.isEmpty()) {
+                psmt.setString(paramIndex++, "%" + filename + "%");
+            }
+            if (startDate != null) {
+                psmt.setTimestamp(paramIndex++, startDate);
+            }
+            if (endDate != null) {
+                psmt.setTimestamp(paramIndex++, endDate);
+            }
+            if (minFileSize != null && minFileSize > 0) {
+                psmt.setLong(paramIndex++, minFileSize);
+            }
+            if (maxFileSize != null && maxFileSize > 0) {
+                psmt.setLong(paramIndex++, maxFileSize);
+            }
+            if (userId != null) {
+                psmt.setInt(paramIndex++, userId);
+            }
+
+            try (ResultSet rs = psmt.executeQuery()) {
+                while (rs.next()) {
+                    File file = new File();
+                    file.setFileID(rs.getInt("fileID"));
+                    file.setUserID(rs.getInt("userID"));
+                    file.setFolderID(rs.getInt("folderID"));
+                    file.setFilename(rs.getString("filename"));
+                    file.setFileSize(rs.getLong("fileSize"));
+                    file.setFileType(rs.getString("fileType"));
+                    file.setStoragePath(rs.getString("storagePath"));
+                    file.setUploadDate(rs.getTimestamp("uploadDate"));
+                    file.setLastModifiedDate(rs.getTimestamp("lastModifiedDate"));
+                    files.add(file);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error searching files: ", e);
+        }
+
+        return files;
+    }
+}

@@ -98,42 +98,54 @@
             </div>
 
             <div id="file-management" class="mt-4" style="display: none;">
-                <h2>파일 관리</h2>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>파일 ID</th>
-                        <th>파일 이름</th>
-                        <th>파일 크기</th>
-                        <th>업로드 날짜</th>
-                        <th>작업</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>example.txt</td>
-                        <td>15 KB</td>
-                        <td>2024-01-01</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm">다운로드</button>
-                            <button class="btn btn-danger btn-sm">삭제</button>
-                        </td>
-                    </tr>
-                    <!-- 추가 파일 데이터 -->
-                    </tbody>
-                </table>
+                <h2>파일 검색</h2>
+                <form id="searchForm">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <input type="text" id="filename" name="filename" class="form-control" placeholder="파일 이름">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" id="startDate" name="startDate" class="form-control" placeholder="시작 날짜">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" id="endDate" name="endDate" class="form-control" placeholder="종료 날짜">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" id="minFileSize" name="minFileSize" class="form-control" placeholder="최소 파일 크기">
+                            <select id="minFileSizeUnit" name="minFileSizeUnit" class="form-control">
+                                <option value="B">B</option>
+                                <option value="KB">KB</option>
+                                <option value="MB">MB</option>
+                                <option value="GB">GB</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" id="maxFileSize" name="maxFileSize" class="form-control" placeholder="최대 파일 크기">
+                            <select id="maxFileSizeUnit" name="maxFileSizeUnit" class="form-control">
+                                <option value="B">B</option>
+                                <option value="KB">KB</option>
+                                <option value="MB">MB</option>
+                                <option value="GB">GB</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" id="userId" name="userId" class="form-control" placeholder="사용자 ID">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary mb-3" type="submit">검색</button>
+                </form>
+                <div id="searchResults">
+                    <!-- 검색 결과 표시 -->
+                </div>
             </div>
 
             <div id="storage-usage" class="mt-4" style="display: none;">
                 <h2>스토리지 사용량</h2>
-                <p>여기에 스토리지 사용량 통계를 추가하세요.</p>
                 <div id="storageChart" class="chart-container"></div>
             </div>
 
             <div id="settings" class="mt-4" style="display: none;">
                 <h2>설정</h2>
-                <p>여기에 설정 내용을 추가하세요.</p>
             </div>
         </div>
     </div>
@@ -199,7 +211,6 @@ TODO
  비즈니스 인텔리전스: 사용자 및 파일 사용 패턴에 대한 분석.
  2. 파일 관리
  필수 항목
- 파일 검색 및 필터링: 파일 이름, 업로드 날짜, 파일 크기, 사용자 등으로 검색 및 필터링.
  파일 미리보기 및 다운로드: 선택한 파일의 미리보기 기능과 다운로드 기능.
  파일 삭제 및 복원: 파일 삭제와 휴지통에서 복원 기능.
  파일 접근 권한 관리: 파일별로 접근 권한 설정(공개, 비공개, 특정 사용자만 접근 가능).

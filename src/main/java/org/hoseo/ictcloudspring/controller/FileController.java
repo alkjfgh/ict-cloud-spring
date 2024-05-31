@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -297,6 +298,30 @@ public class FileController {
 
         return response;
     }
+
+    @GetMapping("/file/searchFiles")
+    @ResponseBody
+    public ResponseEntity<List<File>> searchFiles(@RequestParam(required = false) String filename,
+                                                  @RequestParam(required = false) String startDate,
+                                                  @RequestParam(required = false) String endDate,
+                                                  @RequestParam(required = false) Long minFileSize,
+                                                  @RequestParam(required = false) Long maxFileSize,
+                                                  @RequestParam(required = false) Integer userId) {
+        logger.info("FileController Search Files");
+
+        Timestamp startTimestamp = null;
+        Timestamp endTimestamp = null;
+        if (startDate != null && !startDate.isEmpty()) {
+            startTimestamp = Timestamp.valueOf(startDate + " 00:00:00");
+        }
+        if (endDate != null && !endDate.isEmpty()) {
+            endTimestamp = Timestamp.valueOf(endDate + " 23:59:59");
+        }
+
+        List<File> files = fileService.searchFiles(filename, startTimestamp, endTimestamp, minFileSize, maxFileSize, userId);
+        return ResponseEntity.ok(files);
+    }
+
 
     // TODO 다운로드 속도 정할지 고민
 }

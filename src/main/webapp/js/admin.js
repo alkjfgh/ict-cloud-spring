@@ -8,6 +8,81 @@ $(document).ready(function () {
         $(target).show();
     });
 
+    document.getElementById('searchForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const filename = document.getElementById('filename').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        const minFileSize = document.getElementById('minFileSize').value;
+        const minFileSizeUnit = document.getElementById('minFileSizeUnit').value;
+        const minFileSizeInBytes = convertToBytes(minFileSize, minFileSizeUnit);
+
+        const maxFileSize = document.getElementById('maxFileSize').value;
+        const maxFileSizeUnit = document.getElementById('maxFileSizeUnit').value;
+        const maxFileSizeInBytes = convertToBytes(maxFileSize, maxFileSizeUnit);
+
+        const userId = document.getElementById('userId').value;
+
+        console.log({filename: filename,
+            startDate: startDate,
+            endDate: endDate,
+            minFileSize: minFileSizeInBytes,
+            maxFileSize: maxFileSizeInBytes,
+            userId: userId})
+
+        axios.get('/file/searchFiles', {
+            params: {
+                filename: filename,
+                startDate: startDate,
+                endDate: endDate,
+                minFileSize: minFileSizeInBytes,
+                maxFileSize: maxFileSizeInBytes,
+                userId: userId
+            }
+        }).then(function (response) {
+            const results = response.data;
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = '';
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<p>검색 결과가 없습니다.</p>';
+            } else {
+                const table = document.createElement('table');
+                table.classList.add('table', 'table-bordered');
+
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                const headers = ['파일 ID', '파일 이름', '파일 크기', '업로드 날짜', '사용자 ID'];
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.innerText = header;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                results.forEach(file => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td>${file.fileID}</td>
+                            <td>${file.filename}</td>
+                            <td>${formatBytes(file.fileSize)}</td>
+                            <td>${new Date(file.uploadDate).toLocaleDateString()}</td>
+                            <td>${file.userID}</td>
+                        `;
+                    tbody.appendChild(row);
+                });
+                table.appendChild(tbody);
+                resultsContainer.appendChild(table);
+            }
+        }).catch(function (error) {
+            console.error('검색 중 오류 발생:', error);
+        });
+    });
+
     loadLogFiles();
     fetchServerStatus();
     startUptimeUpdater();
@@ -44,7 +119,7 @@ const loadLogFiles = () => {
                             currentOpenFile = file; // 현재 열린 파일을 업데이트
                         }
                     });
-                if(file === 'ICT_CLOUD.log') logFilesList.prepend(listItem);
+                if (file === 'ICT_CLOUD.log') logFilesList.prepend(listItem);
                 else logFilesList.append(listItem);
             });
         })
@@ -55,11 +130,11 @@ const loadLogFiles = () => {
 
 const loadLogContent = (fileName) => {
     axios.get(`/api/logs/${fileName}`)
-        .then(function(response) {
+        .then(function (response) {
             $('#logContent').show();
             $('#logText').text(response.data);
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.error('Error fetching log content:', error);
         });
 }
@@ -138,7 +213,7 @@ function populateUserTable(users) {
 const initUser = async (userID, userName) => {
     alert('Initializing user: ' + userName);
     try {
-        const response = await axios.post('/file/initAll', { userID });
+        const response = await axios.post('/file/initAll', {userID});
         const data = response.data;
         if (data.status === 'success') {
             alert(`${userName} successfully initialized`);
@@ -153,7 +228,7 @@ const initUser = async (userID, userName) => {
 const deleteUser = async (userID, userName) => {
     alert('Deleting user: ' + userName);
     try {
-        const response = await axios.post('/user/delete', { userID });
+        const response = await axios.post('/user/delete', {userID});
         const data = response.data;
         if (data.status === 'success') {
             alert(`${userName} successfully deleted`);
@@ -342,4 +417,14 @@ function formatBytes(bytes, decimals = 2) {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+function convertToBytes(size, unit) {
+    const units = {
+        B: 1,
+        KB: 1024,
+        MB: 1024 * 1024,
+        GB: 1024 * 1024 * 1024
+    };
+    return size * (units[unit] || 1);
 }
