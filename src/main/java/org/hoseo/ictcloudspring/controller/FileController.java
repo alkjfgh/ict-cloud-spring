@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.hoseo.ictcloudspring.dao.FileService;
 import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
+import org.hoseo.ictcloudspring.dto.ShareInfo;
 import org.hoseo.ictcloudspring.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -48,6 +50,83 @@ public class FileController {
     public FileController(FileService fileService, SimpMessagingTemplate template) {
         this.fileService = fileService;
         this.template = template;
+    }
+
+    // 공유된 파일 다운로드 처리
+    @GetMapping("/file/sd")
+    public ResponseEntity<StreamingResponseBody> downloadSharedFile(
+            @RequestParam("shareID") String shareID,
+            @RequestParam(value = "password", required = false) String password) {
+        logger.info("File Controller download shared file");
+        logger.info("shareID: " + shareID);
+
+        // 공유 정보 검증
+        ShareInfo shareInfo = fileService.getShareInfo(shareID);
+        if (shareInfo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        String permissionType = shareInfo.getPermissionType();
+        String sharePassword = shareInfo.getSharePassword();
+        java.util.Date expirationDate = shareInfo.getExpirationDate();
+
+        if (expirationDate != null && expirationDate.before(new java.util.Date())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        if (!"open".equalsIgnoreCase(permissionType) && (password == null || !password.equals(sharePassword))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        int userID = shareInfo.getOwnerID();
+        int itemID = shareInfo.getItemID();
+        String itemType = shareInfo.getItemType();
+
+        StreamingResponseBody responseBody = outputStream -> {
+            InputStream inputStream = null;
+            try {
+                inputStream = fileService.getFileStream(userID, itemID);
+                byte[] buffer = new byte[1024 * 1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    try {
+                        outputStream.write(buffer, 0, bytesRead);
+                        outputStream.flush();
+                    } catch (IOException e) {
+                        if (e.getCause() instanceof org.apache.catalina.connector.ClientAbortException) {
+                            logger.error("클라이언트가 다운로드를 중단했습니다: " + e.getMessage());
+                            break;
+                        } else {
+                            throw e;
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                if (e instanceof org.apache.catalina.connector.ClientAbortException) {
+                    logger.error("클라이언트가 다운로드를 중단했습니다: " + e.getMessage());
+                } else {
+                    logger.error(e.getLocalizedMessage());
+                }
+            } finally {
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        logger.error(e.getLocalizedMessage());
+                    }
+                }
+            }
+        };
+
+        String mimeType = "application/octet-stream";
+        String encodedFileName = URLEncoder.encode(itemType + "_" + itemID, StandardCharsets.UTF_8).replace("+", "%20");
+        String contentDisposition = "attachment; filename*=UTF-8''" + encodedFileName;
+
+        template.convertAndSend("/topic/fileActivity", Timestamp.valueOf(LocalDateTime.now()) + " => Shared file downloaded: " + itemType + "_" + itemID);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(mimeType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                .body(responseBody);
     }
 
     @GetMapping("/file/upload")

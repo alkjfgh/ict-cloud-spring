@@ -18,3 +18,16 @@ canvas {
   max-height: 300px; /* 최대 높이 설정 */
   overflow-y: auto; /* 세로 스크롤 설정 */
 }
+
+ .log-info {
+   color: green;
+ }
+.log-error {
+  color: red;
+}
+.log-warning {
+  color: orange;
+}
+.log-debug {
+  color: blue;
+}
