@@ -39,36 +39,6 @@ public class FileService {
         }
     }
 
-    public ShareInfo getShareInfo(String shareID) {
-        logger.info("File Service get share info");
-        logger.info("shareID: " + shareID);
-
-        String query = "SELECT * FROM ShareInfo WHERE ShareID = ?";
-        ShareInfo shareInfo = null;
-
-        try (PreparedStatement psmt = con.prepareStatement(query)) {
-            psmt.setString(1, shareID);
-            try (ResultSet rs = psmt.executeQuery()) {
-                if (rs.next()) {
-                    shareInfo = new ShareInfo();
-                    shareInfo.setShareID(rs.getString("ShareID"));
-                    shareInfo.setOwnerID(rs.getInt("OwnerID"));
-                    shareInfo.setItemID(rs.getInt("ItemID"));
-                    shareInfo.setItemType(rs.getString("ItemType"));
-                    shareInfo.setPermissionType(rs.getString("PermissionType"));
-                    shareInfo.setExpirationDate(rs.getDate("ExpirationDate"));
-                    shareInfo.setCreationDate(rs.getDate("CreationDate"));
-                    shareInfo.setSharePassword(rs.getString("SharePassword"));
-                }
-            }
-        } catch (SQLException e) {
-            logger.error("Database error while retrieving share info: " + e.getLocalizedMessage());
-        }
-
-        return shareInfo;
-    }
-
-
     public int uploadFile(MultipartFile file, String userID, String storagePath, int folderID, String extension) {
         logger.info("File Service upload file");
 
@@ -914,5 +884,91 @@ public class FileService {
         }
 
         return destFile;
+    }
+
+    public File getFileById(int fileId) {
+        logger.info("File Service get file by ID");
+        File file = null;
+        String query = "SELECT * FROM Files WHERE FileID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, fileId);
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    file = new File();
+                    file.setFileID(rs.getInt("FileID"));
+                    file.setUserID(rs.getInt("UserID"));
+                    file.setFolderID(rs.getInt("FolderID"));
+                    file.setFilename(rs.getString("Filename"));
+                    file.setFileSize(rs.getLong("FileSize"));
+                    file.setStoragePath(rs.getString("StoragePath"));
+                    file.setFileType(rs.getString("fileType"));
+                    file.setUploadDate(rs.getTimestamp("UploadDate"));
+                    file.setLastModifiedDate(rs.getTimestamp("LastModifiedDate"));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error retrieving file by ID: ", e);
+        }
+
+        return file;
+    }
+
+    public Folder getFolderById(int folderId) {
+        logger.info("File Service get folder by ID");
+        Folder folder = null;
+        String query = "SELECT * FROM Folders WHERE FolderID = ?";
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, folderId);
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    folder = new Folder();
+                    folder.setFolderID(rs.getInt("FolderID"));
+                    folder.setParentFolderID(rs.getInt("ParentFolderID"));
+                    folder.setUserID(rs.getInt("UserID"));
+                    folder.setFolderName(rs.getString("FolderName"));
+                    folder.setStoragePath(rs.getString("StoragePath"));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error retrieving folder by ID: ", e);
+        }
+
+        return folder;
+    }
+    public void zipFolder(java.io.File folder, OutputStream outputStream) throws IOException {
+        try (ZipOutputStream zipOut = new ZipOutputStream(outputStream)) {
+            zipFileInternal(folder, folder.getName(), zipOut);
+        }
+    }
+
+    private void zipFileInternal(java.io.File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
+        if (fileToZip.isHidden()) {
+            return;
+        }
+        if (fileToZip.isDirectory()) {
+            if (!fileName.endsWith("/")) {
+                fileName += "/";
+            }
+            zipOut.putNextEntry(new ZipEntry(fileName));
+            zipOut.closeEntry();
+            java.io.File[] children = fileToZip.listFiles();
+            if (children != null) {
+                for (java.io.File childFile : children) {
+                    zipFileInternal(childFile, fileName + childFile.getName(), zipOut);
+                }
+            }
+            return;
+        }
+        try (FileInputStream fis = new FileInputStream(fileToZip)) {
+            ZipEntry zipEntry = new ZipEntry(fileName);
+            zipOut.putNextEntry(zipEntry);
+            byte[] bytes = new byte[1024];
+            int length;
+            while ((length = fis.read(bytes)) >= 0) {
+                zipOut.write(bytes, 0, length);
+            }
+        }
     }
 }

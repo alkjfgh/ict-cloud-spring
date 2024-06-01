@@ -98,11 +98,11 @@
                             <label for="shareExpiration">공유 기한</label>
                             <input type="date" class="form-control" id="shareExpiration" required>
                         </div>
-                        <button type="button" class="btn btn-primary" id="shareSubmit">공유 시작</button>
+                        <button type="submit" class="btn btn-primary" id="shareSubmit">공유 시작</button>
                     </form>
                     <div id="shareLinkContainer" class="mt-3" style="display: none;">
                         <h5>공유 링크:</h5>
-                        <p id="shareLink"></p>
+                        <a href=""><p id="shareLink"></p></a>
                     </div>
                 </div>
             </div>
@@ -113,7 +113,7 @@
     <div id="clicked"> <!--우클릭 시-->
         <button type="button" class="btn btn-primary" id="fakeDownloadBtn" onclick="">Download</button>
         <button type="button" class="btn btn-primary" id="DeleteBtn" onclick="">Delete</button>
-        <button type="button" class="btn btn-primary" id="ShareBtn" onclick="">Delete</button>
+        <button type="button" class="btn btn-primary" id="ShareBtn" onclick="">Share</button>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

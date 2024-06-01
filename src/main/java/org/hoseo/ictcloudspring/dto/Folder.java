@@ -7,6 +7,17 @@ public class Folder {
     private String folderName;
     private String storagePath;
 
+    @Override
+    public String toString() {
+        return "Folder{" +
+                "folderID=" + folderID +
+                ", parentFolderID=" + parentFolderID +
+                ", userID=" + userID +
+                ", folderName='" + folderName + '\'' +
+                ", storagePath='" + storagePath + '\'' +
+                '}';
+    }
+
     public int getFolderID() {
         return folderID;
     }

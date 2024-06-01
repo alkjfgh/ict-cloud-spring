@@ -14,11 +14,11 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-12">
-            <h2 class="text-center">파일 다운로드</h2>
-            <div id="fileInfo" style="display: none;">
-                <h4>파일 정보</h4>
-                <p id="fileName">파일 이름: </p>
-                <p id="fileSize">파일 크기: </p>
+            <h2 class="text-center">다운로드</h2>
+            <div id="info" style="display: none;">
+                <h4>정보</h4>
+                <p id="name">이름: </p>
+                <p id="size">크기: </p>
                 <form id="downloadForm" class="mt-4">
                     <button type="submit" class="btn btn-primary btn-block">다운로드</button>
                 </form>

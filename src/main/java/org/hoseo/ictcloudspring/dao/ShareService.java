@@ -60,7 +60,7 @@ public class ShareService {
             psmt.setString(4, shareInfo.getItemType());
             psmt.setString(5, shareInfo.getPermissionType());
             psmt.setDate(6, new Date(shareInfo.getExpirationDate().getTime()));
-            psmt.setDate(7, new Date(shareInfo.getCreationDate().getTime()));
+            psmt.setDate(7, new Date(System.currentTimeMillis()));
             psmt.setString(8, shareInfo.getSharePassword());
 
             psmt.executeUpdate();
@@ -86,5 +86,22 @@ public class ShareService {
             logger.error("Error generating share ID: ", e);
         }
         return null;
+    }
+
+    public boolean checkPassword(String shareId, String password) {
+        logger.info("Checking password for share ID: " + shareId);
+        String query = "SELECT SharePassword FROM ShareInfo WHERE ShareID = ?";
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, shareId);
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    String storedPassword = rs.getString("SharePassword");
+                    return storedPassword.equals(password);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error checking password: ", e);
+        }
+        return false;
     }
 }

@@ -62,7 +62,6 @@ $('#DeleteBtn').on('click', async function (){
     const folderid = DeleteBtn.dataset.folderid;
 
     $('#clicked').hide();
-    console.log(userid, fileid, folderid);
 
     if (folderid === 'null') {
         await deleteFileDetail(userid, fileid);
@@ -72,6 +71,50 @@ $('#DeleteBtn').on('click', async function (){
 
 });
 
+$('#ShareBtn').on('click', function () {
+    $('#clicked').hide();
+    $('#shareForm')[0].reset();
+    $('#shareModal').modal('show');
+});
+
+$('#shareForm').on('submit', async function (e) {
+    e.preventDefault();
+
+    const shareBtn = document.getElementById('ShareBtn');
+
+    const userid = shareBtn.dataset.userid;
+    const id = shareBtn.dataset.id;
+    const type = shareBtn.dataset.type;
+    const password = document.getElementById('sharePassword').value;
+    const expirationDate = document.getElementById('shareExpiration').value;
+
+    try {
+        const response = await axios.post('/share/create', {
+            ownerID: userid,
+            itemID: id,
+            itemType: type,
+            permissionType: password ? 'protected' : 'open',
+            expirationDate: expirationDate,
+            sharePassword: password
+        });
+
+        if (response.status === 200) {
+            const shareLink = `${window.location.origin}/share/${response.data}`;
+            $('#shareLink').text(shareLink);
+            $('#shareLink').parent().on('click', (e) => {
+                e.preventDefault();
+                location.href = shareLink;
+            });
+            $('#shareForm').hide();
+            $('#shareLinkContainer').show();
+        } else {
+            alert("공유 생성에 실패했습니다.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("공유 생성 중 오류가 발생했습니다.");
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다운로드, 삭제기능 창 뜨기
     const clickdiv = document.getElementById('clicked');
@@ -107,7 +150,11 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
 
             document.getElementById('DeleteBtn').dataset.userid = userID;
             document.getElementById('DeleteBtn').dataset.fileid = fileID;
-            document.getElementById('DeleteBtn').dataset.folderid = folderID; //^^^^^^^
+            document.getElementById('DeleteBtn').dataset.folderid = folderID;
+
+            document.getElementById('ShareBtn').dataset.userid = userID;
+            document.getElementById('ShareBtn').dataset.id = fileID ? fileID : folderID;
+            document.getElementById('ShareBtn').dataset.type = fileID ? 'file' : 'folder';
 
             if(event.target.className === 'folder-area'){ //타겟이 폴더
                 dbtn.style.display = 'none';
