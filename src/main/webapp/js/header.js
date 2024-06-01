@@ -134,7 +134,7 @@ $(document).ready(function () {
     let announcementLink = $(".announcement-link");
     let announcementCloseBtn = $(".close")[0];
 
-    axios.get("notice/getList").then(res => {
+    axios.get("/notice/getList").then(res => {
         if(res.status === 200){
             console.log(res.data);
             initAnnounce(res.data);

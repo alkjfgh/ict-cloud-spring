@@ -95,6 +95,7 @@ public class ShareController {
 
     @PostMapping("/checkPassword")
     public ResponseEntity<?> checkPassword(@RequestBody Map<String, String> request) {
+        logger.info("Share Controller check password");
         String shareId = request.get("shareId");
         String password = request.get("password");
 
@@ -122,6 +123,7 @@ public class ShareController {
 
     @PostMapping("/download")
     public ResponseEntity<?> download(@RequestBody Map<String, String> request) {
+        logger.info("Share Controller download");
         String shareId = request.get("shareId");
         String password = request.get("password");
 
@@ -165,5 +167,26 @@ public class ShareController {
             return ResponseEntity.status(401).build(); // 401 Unauthorized 상태 코드
         }
         return ResponseEntity.status(401).build(); // 401 Unauthorized 상태 코드
+    }
+
+    @PostMapping("/existing")
+    public ResponseEntity<ShareInfo> checkExistingShare(@RequestBody Map<String, Object> request) {
+        logger.info("Share Controller create existing share");
+        int ownerId = Integer.parseInt((String) request.get("ownerId"));
+        int itemId = Integer.parseInt((String) request.get("itemId"));
+
+        Optional<ShareInfo> existingShare = shareService.getExistingShare(ownerId, itemId);
+        return existingShare.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/stop")
+    public ResponseEntity<?> stopShare(@RequestParam String shareId) {
+        logger.info("Share Controller stop share");
+        boolean deleted = shareService.deleteShare(shareId);
+        if (deleted) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(500).build();
+        }
     }
 }

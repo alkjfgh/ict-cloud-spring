@@ -104,4 +104,44 @@ public class ShareService {
         }
         return false;
     }
+
+
+    public Optional<ShareInfo> getExistingShare(int ownerId, int itemId) {
+        logger.info("Checking existing share link for owner: " + ownerId + ", item: " + itemId);
+        String query = "SELECT * FROM ShareInfo WHERE OwnerID = ? AND ItemID = ?";
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setInt(1, ownerId);
+            psmt.setInt(2, itemId);
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    ShareInfo shareInfo = new ShareInfo();
+                    shareInfo.setShareID(rs.getString("ShareID"));
+                    shareInfo.setOwnerID(rs.getInt("OwnerID"));
+                    shareInfo.setItemID(rs.getInt("ItemID"));
+                    shareInfo.setItemType(rs.getString("ItemType"));
+                    shareInfo.setPermissionType(rs.getString("PermissionType"));
+                    shareInfo.setExpirationDate(rs.getDate("ExpirationDate"));
+                    shareInfo.setCreationDate(rs.getDate("CreationDate"));
+                    shareInfo.setSharePassword(rs.getString("SharePassword"));
+                    return Optional.of(shareInfo);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error fetching existing share info: ", e);
+        }
+        return Optional.empty();
+    }
+
+    public boolean deleteShare(String shareId) {
+        logger.info("Deleting share link with ID: " + shareId);
+        String query = "DELETE FROM ShareInfo WHERE ShareID = ?";
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, shareId);
+            int rowsAffected = psmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            logger.error("Error deleting share info: ", e);
+        }
+        return false;
+    }
 }

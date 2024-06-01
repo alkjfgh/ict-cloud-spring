@@ -72,48 +72,83 @@ $('#DeleteBtn').on('click', async function (){
 });
 
 $('#ShareBtn').on('click', function () {
-    $('#clicked').hide();
-    $('#shareForm')[0].reset();
-    $('#shareModal').modal('show');
+    const ownerId = $('#userID').val();
+    const itemId = $('#folderID').val();
+
+    axios.post('/share/existing', { ownerId: ownerId, itemId: itemId})
+        .then(function(response) {
+            if (response.status === 200) {
+                const shareInfo = response.data;
+                $('#shareLink').text(window.location.origin + '/share/' + shareInfo.shareID);
+                $('#shareLinkContainer').show();
+                $('#shareSubmit').hide();
+                $('#stopShareBtn').show();
+            } else {
+                $('#shareLinkContainer').hide();
+                $('#shareSubmit').show();
+                $('#stopShareBtn').hide();
+                $('#shareModal').modal('show');
+            }
+        })
+        .catch(function(error) {
+            console.error('Error checking existing share:', error);
+        });
 });
 
-$('#shareForm').on('submit', async function (e) {
-    e.preventDefault();
+$('#stopShareBtn').click(function() {
+    const shareId = $('#shareLink').text().split('/').pop();
 
-    const shareBtn = document.getElementById('ShareBtn');
-
-    const userid = shareBtn.dataset.userid;
-    const id = shareBtn.dataset.id;
-    const type = shareBtn.dataset.type;
-    const password = document.getElementById('sharePassword').value;
-    const expirationDate = document.getElementById('shareExpiration').value;
-
-    try {
-        const response = await axios.post('/share/create', {
-            ownerID: userid,
-            itemID: id,
-            itemType: type,
-            permissionType: password ? 'protected' : 'open',
-            expirationDate: expirationDate,
-            sharePassword: password
+    axios.delete('/share/stop', { params: { shareId: shareId } })
+        .then(function(response) {
+            if (response.status === 200) {
+                alert('Share link stopped successfully.');
+                $('#shareLinkContainer').hide();
+                $('#shareSubmit').show();
+                $('#stopShareBtn').hide();
+            } else {
+                alert('Failed to stop share link.');
+            }
+        })
+        .catch(function(error) {
+            console.error('Error stopping share link:', error);
         });
+});
 
-        if (response.status === 200) {
-            const shareLink = `${window.location.origin}/share/${response.data}`;
-            $('#shareLink').text(shareLink);
-            $('#shareLink').parent().on('click', (e) => {
-                e.preventDefault();
-                location.href = shareLink;
-            });
-            $('#shareForm').hide();
-            $('#shareLinkContainer').show();
-        } else {
-            alert("공유 생성에 실패했습니다.");
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        alert("공유 생성 중 오류가 발생했습니다.");
-    }
+
+$("#file").on('change',function(){
+    const fileName = $("#file").val();
+    $(".upload-name").val(fileName);
+});
+
+$('#shareForm').submit(function(e) {
+    e.preventDefault();
+    const ownerId = $('#userID').val();
+    const itemId = $('#folderID').val();
+    const itemType = 'folder'; // 상황에 따라 'file' 또는 'folder'
+    const password = $('#sharePassword').val();
+    const expirationDate = $('#shareExpiration').val();
+
+    axios.post('/share/create', {
+        ownerId: ownerId,
+        itemId: itemId,
+        itemType: itemType,
+        password: password,
+        expirationDate: expirationDate
+    })
+        .then(function(response) {
+            if (response.status === 200) {
+                const shareId = response.data;
+                $('#shareLink').text(window.location.origin + '/share/' + shareId);
+                $('#shareLinkContainer').show();
+                $('#shareSubmit').hide();
+                $('#stopShareBtn').show();
+            } else {
+                alert('Failed to create share link.');
+            }
+        })
+        .catch(function(error) {
+            console.error('Error creating share link:', error);
+        });
 });
 
 document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다운로드, 삭제기능 창 뜨기
