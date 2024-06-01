@@ -1,10 +1,106 @@
+html{
+
+  ::-webkit-scrollbar{
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb{
+    background-color: #2f3542;
+    border-radius: 10px;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #868e96;
+  }
+}
+
+body{
+  ::-webkit-scrollbar{
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb{
+    background-color: #2f3542;
+    border-radius: 10px;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 10px;
+  }
+}
+
+.list-group{
+  cursor: pointer;
+}
+
+#col-md-3-1{
+  max-width: 250px;
+}
+
+#col-md-3-2{
+  max-width: 150px;
+}
+
+#col-md-3-3{
+  max-width: 150px;
+}
+
+#col-md-3-6{
+  max-width: 250px;
+}
+
+#search-button{
+  float: right;
+  margin-right: 30px;
+  height: 36px;
+}
+
+.form-control{
+  font-size: 13px;
+}
+
+#minFileSizeUnit,
+#maxFileSizeUnit{
+  max-width: 67px;
+}
+
+.container{
+  max-width: 1900px;
+
+  .mb-3{
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .mb-3 > .col-md-3{
+    display: flex;
+    max-width: 230px;
+  }
+
+  .list-group{
+    width: 270px;
+  }
+
+  #serverStatus{
+    margin-bottom: 40px;
+  }
+
+  .mt-4{
+    margin-bottom: 40px;
+  }
+}
+
 .chart-container {
   display: flex;
   flex-wrap: wrap;
 }
 
 .chart-item {
-  flex: 1 1 calc(33.333% - 20px); /* 3개씩 배치하고 간격을 고려한 너비 */
+  flex: 1 1 calc(20% - 20px); /* 3개씩 배치하고 간격을 고려한 너비 */
   margin: 10px; /* 각 차트 간의 간격 */
   box-sizing: border-box;
 }
@@ -19,15 +115,18 @@ canvas {
   overflow-y: auto; /* 세로 스크롤 설정 */
 }
 
- .log-info {
-   color: green;
- }
+.log-info {
+  color: green;
+}
+
 .log-error {
   color: red;
 }
+
 .log-warning {
   color: orange;
 }
+
 .log-debug {
   color: blue;
 }
