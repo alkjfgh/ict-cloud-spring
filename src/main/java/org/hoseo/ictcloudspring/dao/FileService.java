@@ -802,12 +802,16 @@ public class FileService {
         logger.info("FileService backup files");
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ZipOutputStream zipOut = new ZipOutputStream(byteArrayOutputStream);
+        try (ZipOutputStream zipOut = new ZipOutputStream(byteArrayOutputStream)) {
+            java.io.File folderToZip = new java.io.File(uploadFolderPath);
+            java.io.File[] contents = folderToZip.listFiles();
+            if (contents != null) {
+                for (java.io.File file : contents) {
+                    zipFile(file, file.getName(), zipOut);
+                }
+            }
+        }
 
-        java.io.File folderToZip = new java.io.File(uploadFolderPath);
-        zipFile(folderToZip, folderToZip.getName(), zipOut);
-
-        zipOut.close();
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 
@@ -845,6 +849,7 @@ public class FileService {
         logger.info("FileService restore files");
 
         java.io.File destDir = new java.io.File(uploadFolderPath);
+//        java.io.File destDir = new java.io.File("C:\\");
         byte[] buffer = new byte[1024];
         ZipInputStream zis = new ZipInputStream(file.getInputStream());
         ZipEntry zipEntry = zis.getNextEntry();
