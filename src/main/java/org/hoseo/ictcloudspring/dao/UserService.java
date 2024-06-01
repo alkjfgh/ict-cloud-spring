@@ -108,6 +108,7 @@ public class UserService {
                     loggedIn = true;
                     user.setUserID(rs.getInt("userID"));
                     user.setLevel(rs.getInt("level"));
+                    user.setName(rs.getString("name"));
                 }
             }
         } catch (SQLException e) {

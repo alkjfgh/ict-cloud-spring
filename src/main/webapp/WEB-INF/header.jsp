@@ -35,7 +35,7 @@
                         Log out
                     </a>
                 </li>
-                <li id="announcement-link">
+                <li class="announcement-link">
                     <a href="#">
                         Announcement
                     </a>
@@ -60,7 +60,7 @@
                         Sign up
                     </a>
                 </li>
-                <li>
+                <li class="announcement-link">
                     <a href="#">
                         Announcement
                     </a>

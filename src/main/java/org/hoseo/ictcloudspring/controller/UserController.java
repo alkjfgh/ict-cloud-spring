@@ -59,10 +59,11 @@ public class UserController {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
 
-        System.out.println("User: " + user);
-
         Map<String, Object> response = new HashMap<>();
-        if (user != null) response.put("check", true);
+        if (user != null){
+            response.put("check", true);
+            response.put("username", user.getName());
+        }
         else response.put("check", false);
 
         return ResponseEntity.ok(response);
