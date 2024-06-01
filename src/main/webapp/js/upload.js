@@ -315,6 +315,35 @@ const fileUploadHandler = async (event, formData = null) => {
         formData = new FormData(form);
     }
     const file = formData.get('file');
+    const filename = file.name;
+    const folderID = formData.get('folderID');
+
+    // 현재 폴더의 파일 목록을 가져와서 중복된 이름이 있는지 확인
+    try {
+        const response = await fetch(`/file/upload?p=${folderID}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        if (response.status === 200) {
+            const data = await response.json();
+            const fileList = data.fileList;
+            const isDuplicate = fileList.some(existingFile => existingFile.filename === filename);
+
+            if (isDuplicate) {
+                alert("같은 이름의 파일이 이미 존재합니다.");
+                return;
+            }
+        } else {
+            alert("파일 목록을 불러오는 데 실패했습니다.");
+            return;
+        }
+    } catch (error) {
+        console.error("Error fetching file list:", error);
+        alert("파일 목록을 불러오는 중 오류가 발생했습니다.");
+        return;
+    }
 
     const progressBarId = 'progressBar';
     const fileDetailsId = 'fileDetails';
@@ -396,11 +425,41 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
 };
 
 const addFolderHandler = async (userID, folderID, storagePath) => {
-    if($("#addFolderName").val().length === 0){
+    const newFolderName = $("#addFolderName").val();
+
+    if(newFolderName.length === 0){
         alert("Foldername cannot be empty");
         return false;
     }
 
+    // 현재 폴더의 폴더 목록을 가져와서 중복된 이름이 있는지 확인
+    try {
+        const response = await fetch(`/file/upload?p=${folderID}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        if (response.status === 200) {
+            const data = await response.json();
+            const folderList = data.subFolderList;
+            const isDuplicate = folderList.some(existingFolder => existingFolder.folderName === newFolderName);
+
+            if (isDuplicate) {
+                alert("같은 이름의 폴더가 이미 존재합니다.");
+                return false;
+            }
+        } else {
+            alert("폴더 목록을 불러오는 데 실패했습니다.");
+            return false;
+        }
+    } catch (error) {
+        console.error("Error fetching folder list:", error);
+        alert("폴더 목록을 불러오는 중 오류가 발생했습니다.");
+        return false;
+    }
+
+    // 중복된 이름이 없는 경우에만 폴더 생성 요청
     await fetch("/file/addFolder", {
         method: "POST",
         headers: {
@@ -410,11 +469,14 @@ const addFolderHandler = async (userID, folderID, storagePath) => {
             userID: userID,
             storagePath: storagePath,
             folderID: folderID,
-            addFolderName: $("#addFolderName").val()
+            addFolderName: newFolderName
         }),
     }).then((response) => {
-        if (response.status === 200) enterFolder(folderID);
-        else alert("add folder failed");
+        if (response.status === 200) {
+            enterFolder(folderID);
+        } else {
+            alert("폴더 생성에 실패했습니다.");
+        }
     });
 }
 
