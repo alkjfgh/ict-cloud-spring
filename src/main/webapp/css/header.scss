@@ -135,7 +135,7 @@
 }
 
 /* 모달 */
-.modal {
+#announcementModal {
   display: none;
   position: fixed;
   z-index: 1;
@@ -174,13 +174,13 @@
     margin: 10% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 500px;
+    width: 750px;
     overflow-y: auto;
-    max-height: 550px;
+    max-height: 650px;
   }
 
   .accordion-body {
-    max-height: 200px;
+    max-height: 300px;
     overflow-y: auto;
   }
 
@@ -200,6 +200,42 @@
   }
 
   .announcement-container {
+
+    span{
+      display: inline-block;
+    }
+
+    .accordion-name{
+      width: 450px;
+      height: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      position: relative;
+
+      &::after {
+        content: attr(data-title);
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #333;
+        color: #fff;
+        padding: 5px;
+        border-radius: 3px;
+        white-space: nowrap;
+        z-index: 10;
+      }
+
+      &.tooltip-visible::after {
+        display: block;
+      }
+    }
+
+    .accordion-date{
+      margin-left: 20px;
+    }
 
     .announcement-list {
 
