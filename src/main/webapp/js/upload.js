@@ -40,12 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-//const deletefile = (userID, fileID) =>{
-//    const deleteBtn = document.getElementById('deleteBtn');
-//    deleteBtn.onclick = () => fileDeleteHandler(userID, fileID);
-//}
-
-
 $('#fakeDownloadBtn').on('click', async function () {
     const fakeDownloadBtn = document.getElementById('fakeDownloadBtn');
 
@@ -65,16 +59,25 @@ $('#DeleteBtn').on('click', async function (){
 
     const userid = DeleteBtn.dataset.userid;
     const fileid = DeleteBtn.dataset.fileid;
+    const folderid = DeleteBtn.dataset.folderid;
 
     $('#clicked').hide();
 
-    await deleteFileDetail(userid, fileid)
+    // const targetClassName = $(this).attr('class');
+
+    // if (targetClassName === 'file-area') {
+    //     await deleteFileDetail(userid, fileid);
+    // } else if (targetClassName === 'folder-area') {
+        await folderDeleteHandler(userid, folderid);
+    // }
+
 });
 
 
 document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다운로드, 삭제기능 창 뜨기
     const clickdiv = document.getElementById('clicked');
     const target = document.getElementsByClassName('file-list-table')[0];
+    const dbtn = document.getElementById('fakeDownloadBtn');
 
     document.addEventListener('contextmenu', (event) => {
         event.preventDefault();
@@ -84,12 +87,14 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
 
 
         if(event.target.tagName === 'TD' && target.contains(event.target)){
+            dbtn.style.display = 'inline';
             const trElement = event.target.closest('tr');
             const userID = trElement ? trElement.getAttribute('data-user-id') : null;
             const fileID = trElement ? trElement.getAttribute('data-id') : null;
             const filename = trElement ? trElement.getAttribute('data-file-name') : null;
             const fileSize = trElement ? trElement.getAttribute('data-file-size') : null;
             const fileType = trElement ? trElement.getAttribute('data-file-type') : null;
+            const folderID = trElement ? trElement.getAttribute('data-folder-id') : null;
 
             clickdiv.style.left = `${clickX}px`;
             clickdiv.style.top = `${clickY}px`;
@@ -103,16 +108,16 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
 
             document.getElementById('DeleteBtn').dataset.userid = userID;
             document.getElementById('DeleteBtn').dataset.fileid = fileID;
+            document.getElementById('DeleteBtn').dataset.folderid = folderID; //^^^^^^^
 
+            if(event.target.className === 'folder-area'){ //타겟이 폴더
+                dbtn.style.display = 'none';
+            }
         }else{
             clickdiv.style.display = 'none';
         }
     });
     document.addEventListener('click', (event) => {  //클릭하면 div사라지기
-        //console.log(event.target)
-        //console.log(event.target.id !== 'downloadBtn')
-        //console.log(event.target.id !== 'clicked')
-        //console.log(event.target.id !== 'downloadBtn')
         if(event.target.id !== 'downloadBtn' && event.target.id !== 'clicked' && !document.getElementById('clicked').contains(event.target)){
             clickdiv.style.display = 'none';
         }
@@ -400,6 +405,8 @@ const updateFolderList = (folderList) => {
         let folderElement = document.createElement("tr");
         let folderInner = document.createElement("td");
 
+        folderElement.setAttribute('data-folder-id', folder.folderID); //^^^^^^^^^
+
         folderInner.className = "folder-area";
         folderInner.colSpan = 5;
         folderInner.onclick = () => enterFolder(folder.folderID);
@@ -511,8 +518,8 @@ const deleteFileDetail = async (userid, fileid) =>{
         <p>userID: ${userid}</p>
         <p>fileID: ${fileid}</p>
     `
-    // console.log(userid);
-    // console.log(fileid);
+    console.log(userid);
+    console.log(fileid);
 
     await fileDeleteHandler(userid, fileid);
 }
@@ -608,13 +615,49 @@ const fileDeleteHandler = async (userID, fileID) => {
                 // 추가적인 성공 처리 로직이 있으면 여기에 추가
                 //*************************************************************************
                 await enterFolder($('#folderID').val());
-                const row = document.querySelector('tr[data-file-id="${fileID"]');
+                const row = document.querySelector('tr[data-file-id="${fileID}"]'); //^^^^^^^^
                 console.log("success");
             } else {
                 alert(result.message); // 실패 메시지 표시
             }
         } else {
             alert("File deletion failed with status code: " + response.status);
+        }
+    } catch(error){
+        console.error("Error:", error);
+        alert("Error")
+    }
+};
+
+const folderDeleteHandler = async (userID, folderID) => { //^^^^^^^^^^^^
+    console.log("folderDeleteHandler");
+    try{
+        const response = await fetch("/file/deleteFolder", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                userID: userID,
+                folderID: folderID,
+            }),
+        });
+        if(response.status === 200) {
+            const result = await response.json();
+
+            if (result.status === "success") {
+                alert(result.message); // 성공 메시지 표시
+                // 추가적인 성공 처리 로직이 있으면 여기에 추가
+                await enterFolder($('#folderID').val());
+                const row = document.querySelector('tr[folder-area="${folderID}"]'); //^^^^^^^^^^^
+                console.log("success");
+            } else {
+                alert(result.message); // 실패 메시지 표시
+
+            }
+        } else {
+            console.log("bbbbbbb"); //^^^^^^에러
+            alert("Folder deletion failed with status code: " + response.status);
         }
     } catch(error){
         console.error("Error:", error);
