@@ -126,7 +126,7 @@
                     </form>
                     <div id="shareLinkContainer" class="mt-3" style="display: none;">
                         <h5>공유 링크:</h5>
-                        <a href=""><p id="shareLink"></p></a>
+                        <a id="shareLink" target="_blank"></a>
                         <button type="button" class="btn btn-danger" id="stopShareBtn" style="display: none;">공유 중지
                         </button>
                     </div>

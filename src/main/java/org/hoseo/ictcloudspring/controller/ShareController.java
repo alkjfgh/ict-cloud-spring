@@ -176,7 +176,13 @@ public class ShareController {
         int itemId = Integer.parseInt((String) request.get("itemId"));
 
         Optional<ShareInfo> existingShare = shareService.getExistingShare(ownerId, itemId);
-        return existingShare.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        if (existingShare.isPresent()) {
+            System.out.println("===================123=====================");
+            return ResponseEntity.ok(existingShare.get());
+        } else {
+            System.out.println("===================321=====================");
+            return ResponseEntity.status(201).build();
+        }
     }
 
     @DeleteMapping("/stop")

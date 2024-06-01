@@ -112,6 +112,7 @@ public class ShareService {
         try (PreparedStatement psmt = con.prepareStatement(query)) {
             psmt.setInt(1, ownerId);
             psmt.setInt(2, itemId);
+            logger.info("Executing query: " + psmt.toString()); // 추가된 로그
             try (ResultSet rs = psmt.executeQuery()) {
                 if (rs.next()) {
                     ShareInfo shareInfo = new ShareInfo();
@@ -123,7 +124,10 @@ public class ShareService {
                     shareInfo.setExpirationDate(rs.getDate("ExpirationDate"));
                     shareInfo.setCreationDate(rs.getDate("CreationDate"));
                     shareInfo.setSharePassword(rs.getString("SharePassword"));
+                    logger.info("ShareInfo found: " + shareInfo); // 추가된 로그
                     return Optional.of(shareInfo);
+                } else {
+                    logger.info("No ShareInfo found for owner: " + ownerId + ", item: " + itemId); // 추가된 로그
                 }
             }
         } catch (SQLException e) {
