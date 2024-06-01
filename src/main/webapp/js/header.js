@@ -35,6 +35,23 @@ $(document).ready(function () {
     });
 });
 
+function formmatDate(created_at) {
+    console.log(created_at);
+    const date = new Date(created_at);
+// DateTimeFormat 객체를 사용하여 원하는 형식으로 변환
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1);
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const hours = String(date.getUTCHours());
+    const minutes = String(date.getUTCMinutes());
+    const seconds = String(date.getUTCSeconds());
+
+    const formattedDate = `${year}년 ${month}월 ${day}일`;
+    const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+    return [formattedDate, formattedTime];
+}
+
 const initAnnounce = (announdata) => {
     let announcementContainer = $('.announcement-container');
     announcementContainer.empty();
@@ -47,11 +64,12 @@ const initAnnounce = (announdata) => {
     announdata.forEach((item, index) => {
         let uniqueId = `collapse${index}`;
         let announcement = document.createElement('div');
+        const formatedDate = formmatDate(item.created_at);
         announcement.className = 'accordion-item';
         announcement.innerHTML = `
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${uniqueId}" aria-expanded="false" aria-controls="${uniqueId}">
-                        <span class="accordion-name" title="${item.title}">${item.title}</span> <span class="accordion-date">${item.created_at}</span>
+                        <span class="accordion-name" title="${item.title}">${item.title}</span> <span class="accordion-date">${formatedDate[0]}<br>${formatedDate[1]}</span>
                     </button>
                 </h2>
                 <div id="${uniqueId}" class="accordion-collapse collapse" data-bs-parent="#${accordionId}">

@@ -40,6 +40,11 @@
                 <a class="nav-link" href="#">설정</a>
             </li>
         </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="logout-link" href="">Log out</a>
+            </li>
+        </ul>
     </div>
 </nav>
 

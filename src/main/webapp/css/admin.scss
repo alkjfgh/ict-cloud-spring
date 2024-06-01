@@ -63,6 +63,15 @@ body{
   font-size: 13px;
 }
 
+a.logout-link{
+  text-decoration-line: none;
+  color: white;
+}
+
+a.logout-link:hover{
+  color: #5a5a5a;
+}
+
 #minFileSizeUnit,
 #maxFileSizeUnit{
   max-width: 67px;
