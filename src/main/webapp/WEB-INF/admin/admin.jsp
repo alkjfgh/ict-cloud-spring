@@ -62,20 +62,24 @@
                     <p>Status: <span id="serverStatusText"></span></p>
                     <p>Uptime: <span id="serverUptime"></span></p>
                 </div>
+                    <hr>
                 <div id="databaseStatus" class="mt-4">
                     <h2>Database Status</h2>
                     <p>Status: <span id="databaseStatusText"></span></p>
                     <p>Database Size: <span id="databaseSize"></span></p>
                 </div>
+                    <hr>
                 <div id="storageUsage" class="mt-4">
                     <h2>Storage Usage</h2>
                     <p>Used Space: <span id="usedSpace"></span></p>
                     <p>Total Space: <span id="totalSpace"></span></p>
                 </div>
+                    <hr>
                 <div id="realTimeActivity" class="mt-4">
                     <h2>실시간 파일 활동</h2>
                     <ul id="activityLog" class="list-group"></ul>
                 </div>
+                    <hr>
                 <h2>로그 파일</h2>
                 <ul id="logFiles" class="list-group">
                 </ul>
@@ -87,6 +91,7 @@
 
             <div id="user-management" class="mt-4" style="display: none;">
                 <h2>사용자 관리</h2>
+                <br>
                 <table class="table table-bordered">
                     <thead>
                     <tr>
@@ -105,18 +110,20 @@
 
             <div id="file-management" class="mt-4" style="display: none;">
                 <h2>파일 검색</h2>
+                <br>
                 <form id="searchForm">
                     <div class="row mb-3">
-                        <div class="col-md-3">
+                        <div class="col-md-3" id="col-md-3-1">
                             <input type="text" id="filename" name="filename" class="form-control" placeholder="파일 이름">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3" id="col-md-3-2">
                             <input type="date" id="startDate" name="startDate" class="form-control" placeholder="시작 날짜">
                         </div>
-                        <div class="col-md-3">
+                        <span class="tilde">~</span>
+                        <div class="col-md-3" id="col-md-3-3">
                             <input type="date" id="endDate" name="endDate" class="form-control" placeholder="종료 날짜">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3" id="col-md-3-4">
                             <input type="number" id="minFileSize" name="minFileSize" class="form-control"
                                    placeholder="최소 파일 크기">
                             <select id="minFileSizeUnit" name="minFileSizeUnit" class="form-control">
@@ -126,7 +133,8 @@
                                 <option value="GB">GB</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <span class="tilde">~</span>
+                        <div class="col-md-3" id="col-md-3-5">
                             <input type="number" id="maxFileSize" name="maxFileSize" class="form-control"
                                    placeholder="최대 파일 크기">
                             <select id="maxFileSizeUnit" name="maxFileSizeUnit" class="form-control">
@@ -136,11 +144,12 @@
                                 <option value="GB">GB</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3" id="col-md-3-6">
                             <input type="text" id="userId" name="userId" class="form-control" placeholder="사용자 ID">
                         </div>
+                        <button class="btn btn-primary mb-3" id="search-button" type="submit">검색</button>
                     </div>
-                    <button class="btn btn-primary mb-3" type="submit">검색</button>
+
                 </form>
                 <div id="searchResults">
                     <!-- 검색 결과 표시 -->
@@ -149,15 +158,20 @@
 
             <div id="storage-usage" class="mt-4" style="display: none;">
                 <h2>스토리지 사용량</h2>
+                <br>
                 <div id="storageChart" class="chart-container"></div>
             </div>
 
             <div id="settings" class="mt-4" style="display: none;">
                 <h2>설정</h2>
+                <br>
                 <button class="btn btn-primary" id="backupButton">백업</button>
                 <input type="file" id="restoreFileInput" style="display: none;">
                 <button class="btn btn-secondary" id="restoreButton">복원</button>
-                <h3>공지사항 업로드</h3>
+                <br><br>
+                <hr>
+                <br><br>
+                <h3>공지사항 업로드</h3> <br>
                 <form id="noticeForm">
                     <div class="form-group">
                         <label for="noticeTitle">제목</label>
@@ -221,6 +235,11 @@
 <script src="<c:url value="/js/admin.js"/>"></script>
 </body>
 </html>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous">
+</script>
 
 <%--
 TODO
