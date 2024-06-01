@@ -80,10 +80,40 @@
         </div>
     </div>
 
+    <!-- Share Modal -->
+    <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shareModalLabel">파일 공유</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="shareForm">
+                        <div class="form-group">
+                            <label for="sharePassword">비밀번호 (선택 사항)</label>
+                            <input type="password" class="form-control" id="sharePassword" placeholder="비밀번호를 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="shareExpiration">공유 기한</label>
+                            <input type="date" class="form-control" id="shareExpiration" required>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="shareBtn">공유 시작</button>
+                    </form>
+                    <div id="shareLinkContainer" class="mt-3" style="display: none;">
+                        <h5>공유 링크:</h5>
+                        <p id="shareLink"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- clicked -->
     <div id="clicked"> <!--우클릭 시-->
         <button type="button" class="btn btn-primary" id="fakeDownloadBtn" onclick="">Download</button>
         <button type="button" class="btn btn-primary" id="DeleteBtn" onclick="">Delete</button>
+        <button type="button" class="btn btn-primary" id="ShareBtn" onclick="">Share</button>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

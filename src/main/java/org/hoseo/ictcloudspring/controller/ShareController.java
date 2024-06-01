@@ -46,6 +46,7 @@ public class ShareController {
     @PostMapping("/create")
     public ResponseEntity<String> createShare(@RequestBody ShareInfo shareInfo) {
         logger.info("Share Controller create share");
+        logger.info("shareInfo: " + shareInfo);
         String shareId = shareService.createShare(shareInfo);
         return ResponseEntity.ok("Share created with ID: " + shareId);
     }
