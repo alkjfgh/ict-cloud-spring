@@ -62,14 +62,13 @@ $('#DeleteBtn').on('click', async function (){
     const folderid = DeleteBtn.dataset.folderid;
 
     $('#clicked').hide();
+    console.log(userid, fileid, folderid);
 
-    // const targetClassName = $(this).attr('class');
-
-    // if (targetClassName === 'file-area') {
-    //     await deleteFileDetail(userid, fileid);
-    // } else if (targetClassName === 'folder-area') {
+    if (folderid === 'null') {
+        await deleteFileDetail(userid, fileid);
+    } else if (fileid === 'null') {
         await folderDeleteHandler(userid, folderid);
-    // }
+    }
 
 });
 
@@ -349,7 +348,6 @@ const enterFolder = async (p) => {
 
     if (response.ok) {
         const data = await response.json();
-        console.log(data);
 
         const testView = document.getElementsByClassName('test-view')[0];
         testView.innerHTML = '<div class="path">now path: ' + data.storagePath + '</div>\n' +
@@ -398,14 +396,14 @@ const enterFolder = async (p) => {
 }
 
 const updateFolderList = (folderList) => {
-    console.log(folderList);
     let tmpList = [];
 
     folderList.forEach(folder => {
         let folderElement = document.createElement("tr");
         let folderInner = document.createElement("td");
 
-        folderElement.setAttribute('data-folder-id', folder.folderID); //^^^^^^^^^
+        folderElement.setAttribute('data-user-id', folder.userID);
+        folderElement.setAttribute('data-folder-id', folder.folderID);
 
         folderInner.className = "folder-area";
         folderInner.colSpan = 5;
@@ -413,7 +411,8 @@ const updateFolderList = (folderList) => {
         folderInner.innerHTML = folder.folderName;
 
         folderElement.appendChild(folderInner);
-        folderElement.dataset.id = folder.folderID;
+        // folderElement.dataset.id = folder.userID;
+        // folderElement.dataset.id = folder.folderID;
 
         tmpList.push((folderElement));
     });
@@ -422,7 +421,6 @@ const updateFolderList = (folderList) => {
 }
 
 const updateFileList = (fileList, userID) => {
-    console.log(fileList);
     let tmpList = [];
 
     fileList.forEach(file => {
@@ -629,7 +627,7 @@ const fileDeleteHandler = async (userID, fileID) => {
     }
 };
 
-const folderDeleteHandler = async (userID, folderID) => { //^^^^^^^^^^^^
+const folderDeleteHandler = async (userID, folderID) => {
     console.log("folderDeleteHandler");
     try{
         const response = await fetch("/file/deleteFolder", {
@@ -637,27 +635,28 @@ const folderDeleteHandler = async (userID, folderID) => { //^^^^^^^^^^^^
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
+            body: JSON.stringify ({
                 userID: userID,
-                folderID: folderID,
-            }),
+                folderID: folderID
+            })
         });
         if(response.status === 200) {
             const result = await response.json();
+            console.log(result);
 
             if (result.status === "success") {
                 alert(result.message); // 성공 메시지 표시
                 // 추가적인 성공 처리 로직이 있으면 여기에 추가
                 await enterFolder($('#folderID').val());
-                const row = document.querySelector('tr[folder-area="${folderID}"]'); //^^^^^^^^^^^
+                const row = document.querySelector('tr[folder-area="${folderID}"]');
                 console.log("success");
             } else {
                 alert(result.message); // 실패 메시지 표시
-
+                console.log("failfail");
             }
         } else {
-            console.log("bbbbbbb"); //^^^^^^에러
             alert("Folder deletion failed with status code: " + response.status);
+
         }
     } catch(error){
         console.error("Error:", error);

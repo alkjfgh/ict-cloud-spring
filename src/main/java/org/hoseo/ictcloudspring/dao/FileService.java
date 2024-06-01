@@ -614,7 +614,7 @@ public class FileService {
         logger.info("File Service delete folder");
         logger.info("userID: " + userID + ", folderID: " + folderID);
 
-        int executed = 0;
+        int executed;
 
         // Get folder path to delete from filesystem
         String folderPath = null;
@@ -676,7 +676,7 @@ public class FileService {
                 psmt.setInt(2, userID);
                 executed = psmt.executeUpdate();
             } catch (SQLException e) {
-                logger.error(e.getLocalizedMessage());
+                logger.error("delete folder from db: " + e.getLocalizedMessage());
                 return 0;
             }
 
@@ -684,12 +684,17 @@ public class FileService {
             if (folderPath != null) {
                 Path path = Paths.get(uploadFolderPath, folderPath);
                 try {
-                    Files.walk(path)
-                            .sorted(Comparator.reverseOrder())
-                            .map(Path::toFile)
-                            .forEach(java.io.File::delete);
+                    if (Files.exists(path)) {
+                        Files.walk(path)
+                                .sorted(Comparator.reverseOrder())
+                                .map(Path::toFile)
+                                .forEach(java.io.File::delete);
+                    } else {
+                        logger.warn("폴더가 존재하지 않습니다: " + folderPath);
+                        return 1;
+                    }
                 } catch (IOException e) {
-                    logger.error(e.getLocalizedMessage());
+                    logger.error("delete folder from real storage: " + e);
                     return 0;
                 }
             }

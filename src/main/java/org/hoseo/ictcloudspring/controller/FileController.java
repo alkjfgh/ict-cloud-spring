@@ -42,7 +42,7 @@ import java.util.Objects;
 public class FileController {
 
     private final FileService fileService;
-    private static final Logger logger = LogManager.getLogger(UserController.class);
+    private static final Logger logger = LogManager.getLogger(FileController.class);
 
     private final SimpMessagingTemplate template;
 

@@ -137,7 +137,7 @@ $(document).ready(function () {
     const url = new URL(urlStr);
     const urlParams = url.searchParams;
     const c = urlParams.get('c');
-    if(c.length > 0 && c === '1'){
+    if (c != null && c.length > 0 && c === '1') {
         form.hide();
         $('.login-form').find('a').click();
         form.show();
