@@ -56,7 +56,7 @@
                 <div class="add"> <%--파일, 디렉토리 추가--%>
                     <div class="add_file">
                         <div class="filebox">
-                            <input class="upload-name" value="addFilename" placeholder="addFilename">
+                            <input class="upload-name" value="addFilename" placeholder="addFilename" readonly>
                             <label for="file">Add File</label>
                             <input type="file" name="file" id="file" required>
                         </div>
