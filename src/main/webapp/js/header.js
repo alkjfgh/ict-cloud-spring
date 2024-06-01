@@ -211,4 +211,14 @@ $(document).ready(function () {
             });
         }
     });
+
+    $('.logout-link').on('click', async (event) => {
+        event.preventDefault();
+
+        const response = await axios.get("/user/logout");
+        console.log(response);
+        if(response.status === 200){
+            location.href = "../main";
+        }
+    });
 });
