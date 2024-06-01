@@ -5,6 +5,12 @@ import java.util.Date;
 public class ShareInfo {
     private String shareID;
     private int ownerID;
+    private int itemID;
+    private String itemType;
+    private String permissionType;
+    private Date expirationDate;
+    private Date creationDate;
+    private String sharePassword;
 
     @Override
     public String toString() {
@@ -19,13 +25,6 @@ public class ShareInfo {
                 ", sharePassword='" + sharePassword + '\'' +
                 '}';
     }
-
-    private int itemID;
-    private String itemType;
-    private String permissionType;
-    private Date expirationDate;
-    private Date creationDate;
-    private String sharePassword;
 
     // Getters and Setters
     public String getShareID() {

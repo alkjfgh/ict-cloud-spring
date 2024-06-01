@@ -81,7 +81,7 @@
                 </ul>
                 <div id="logContent" style="display: none; margin-top: 20px;">
                     <h3>로그 내용</h3>
-                    <pre id="logText" style="height: 60vh; overflow-y: scroll"></pre>
+                    <pre id="logText" style="height: 60vh; overflow-y: scroll; white-space: pre-wrap"></pre>
                 </div>
             </div>
 

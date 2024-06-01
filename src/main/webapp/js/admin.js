@@ -193,7 +193,47 @@ const loadLogContent = (fileName) => {
     axios.get(`/api/logs/${fileName}`)
         .then(function (response) {
             $('#logContent').show();
-            $('#logText').text(response.data);
+            const logText = response.data;
+            const logLines = logText.split('\n');
+            let formattedLogLines = [];
+            let currentClass = '';
+            let currentLogEntry = '';
+
+            logLines.forEach(line => {
+                if (line.includes('[INFO')) {
+                    if (currentLogEntry) {
+                        formattedLogLines.push(`<span class="${currentClass}">${currentLogEntry}</span>`);
+                        currentLogEntry = '';
+                    }
+                    currentClass = 'log-info';
+                } else if (line.includes('[ERROR')) {
+                    if (currentLogEntry) {
+                        formattedLogLines.push(`<span class="${currentClass}">${currentLogEntry}</span>`);
+                        currentLogEntry = '';
+                    }
+                    currentClass = 'log-error';
+                } else if (line.includes('[WARN')) {
+                    if (currentLogEntry) {
+                        formattedLogLines.push(`<span class="${currentClass}">${currentLogEntry}</span>`);
+                        currentLogEntry = '';
+                    }
+                    currentClass = 'log-warning';
+                } else if (line.includes('[DEBUG')) {
+                    if (currentLogEntry) {
+                        formattedLogLines.push(`<span class="${currentClass}">${currentLogEntry}</span>`);
+                        currentLogEntry = '';
+                    }
+                    currentClass = 'log-debug';
+                }
+
+                currentLogEntry += `${line}\n`;
+            });
+
+            if (currentLogEntry) {
+                formattedLogLines.push(`<span class="${currentClass}">${currentLogEntry}</span>`);
+            }
+
+            $('#logText').html(formattedLogLines.join('<br>'));
         })
         .catch(function (error) {
             console.error('Error fetching log content:', error);
@@ -440,7 +480,6 @@ function formatUptime(uptime) {
     const seconds = uptime.getUTCSeconds();
     return `${hours}h ${minutes}m ${seconds}s`;
 }
-
 
 function fetchDatabaseStatus() {
     axios.get('/api/system-status/database')

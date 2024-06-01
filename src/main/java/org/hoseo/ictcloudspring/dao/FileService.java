@@ -3,9 +3,9 @@ package org.hoseo.ictcloudspring.dao;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hoseo.ictcloudspring.connection.DBConnectionPool;
-import org.hoseo.ictcloudspring.controller.UserController;
 import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
+import org.hoseo.ictcloudspring.dto.ShareInfo;
 import org.hoseo.ictcloudspring.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,10 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -28,8 +25,6 @@ import java.util.zip.ZipOutputStream;
 public class FileService {
     private final String uploadFolderPath = "C:\\uploads";
     private final Connection con;
-    private PreparedStatement psmt;
-    private ResultSet rs;
     private final String SEPARATOR = java.io.File.separator;
     private static final Logger logger = LogManager.getLogger(FileService.class);
 
@@ -43,6 +38,36 @@ public class FileService {
             logger.info("MKDIR UPLOAD PATH: " + f.mkdir());
         }
     }
+
+    public ShareInfo getShareInfo(String shareID) {
+        logger.info("File Service get share info");
+        logger.info("shareID: " + shareID);
+
+        String query = "SELECT * FROM ShareInfo WHERE ShareID = ?";
+        ShareInfo shareInfo = null;
+
+        try (PreparedStatement psmt = con.prepareStatement(query)) {
+            psmt.setString(1, shareID);
+            try (ResultSet rs = psmt.executeQuery()) {
+                if (rs.next()) {
+                    shareInfo = new ShareInfo();
+                    shareInfo.setShareID(rs.getString("ShareID"));
+                    shareInfo.setOwnerID(rs.getInt("OwnerID"));
+                    shareInfo.setItemID(rs.getInt("ItemID"));
+                    shareInfo.setItemType(rs.getString("ItemType"));
+                    shareInfo.setPermissionType(rs.getString("PermissionType"));
+                    shareInfo.setExpirationDate(rs.getDate("ExpirationDate"));
+                    shareInfo.setCreationDate(rs.getDate("CreationDate"));
+                    shareInfo.setSharePassword(rs.getString("SharePassword"));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Database error while retrieving share info: " + e.getLocalizedMessage());
+        }
+
+        return shareInfo;
+    }
+
 
     public int uploadFile(MultipartFile file, String userID, String storagePath, int folderID, String extension) {
         logger.info("File Service upload file");
