@@ -117,14 +117,6 @@ $(document).ready(function() {
     initAnnounce(announdata);
 });
 
-// <div className="announcement-title-container">
-//     <span className="announcement-title">${item.title}</span>
-//     <span className="announcement-uploaddate">${item.date}</span>
-// </div>
-// <div className="announcement-content-container">
-//     <div className="announcement-content hide">${item.content}</div>
-// </div>
-
 document.addEventListener('DOMContentLoaded', function () {
     let dropdownMenu = document.querySelector(".dropdown-menu");
     let dropdownButton = document.querySelector(".dropdown-button");
@@ -158,13 +150,13 @@ document.addEventListener('DOMContentLoaded', function () {
 // 모달
 $(document).ready(function () {
     // 모달 제어 코드
-    let modal = $("#announcementModal");
-    let btn = $(".dropdown-menu a[href='#']");
-    let span = $(".close")[0];
+    let announcementModal = $("#announcementModal");
+    let announcementLink = $("#announcement-link");
+    let announcementCloseBtn = $(".close")[0];
 
     initAnnounce(announdata);
 
-    btn.click(function (event) {
+    announcementLink.on('click', function (event) {
         event.preventDefault(); // 기본 이벤트 방지
 
         $(".accordion-collapse").each(function() {
@@ -178,11 +170,11 @@ $(document).ready(function () {
             }
         });
 
-        modal.css("display", "block");
+        announcementModal.css("display", "block");
     });
 
-    span.onclick = function () {
-        modal.css("display", "none");
+    announcementCloseBtn.onclick = function () {
+        announcementModal.css("display", "none");
         $(".accordion-collapse").each(function() {
             let collapseInstance = bootstrap.Collapse.getInstance(this);
             if (collapseInstance) {
@@ -196,8 +188,8 @@ $(document).ready(function () {
     }
 
     $(window).click(function (event) {
-        if (event.target === modal[0]) {
-            modal.css("display", "none");
+        if (event.target === announcementModal[0]) {
+            announcementModal.css("display", "none");
 
             $(".accordion-collapse").each(function() {
                 let collapseInstance = bootstrap.Collapse.getInstance(this);

@@ -35,7 +35,7 @@
                         Log out
                     </a>
                 </li>
-                <li>
+                <li id="announcement-link">
                     <a href="#">
                         Announcement
                     </a>
