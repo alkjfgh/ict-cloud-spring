@@ -67,27 +67,38 @@
                     <p>Status: <span id="serverStatusText"></span></p>
                     <p>Uptime: <span id="serverUptime"></span></p>
                 </div>
-                    <hr>
+                <hr>
                 <div id="databaseStatus" class="mt-4">
                     <h2>Database Status</h2>
                     <p>Status: <span id="databaseStatusText"></span></p>
                     <p>Database Size: <span id="databaseSize"></span></p>
                 </div>
-                    <hr>
+                <hr>
                 <div id="storageUsage" class="mt-4">
                     <h2>Storage Usage</h2>
                     <p>Used Space: <span id="usedSpace"></span></p>
                     <p>Total Space: <span id="totalSpace"></span></p>
                 </div>
-                    <hr>
+                <hr>
                 <div id="realTimeActivity" class="mt-4">
                     <h2>실시간 파일 활동</h2>
                     <ul id="activityLog" class="list-group"></ul>
                 </div>
-                    <hr>
+                <hr>
                 <h2>로그 파일</h2>
-                <ul id="logFiles" class="list-group">
-                </ul>
+                <div id="logCarousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner" id="logFilesCarouselInner">
+                        <!-- Carousel items will be injected here by JavaScript -->
+                    </div>
+                    <a class="carousel-control-prev" href="#logCarousel" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#logCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
                 <div id="logContent" style="display: none; margin-top: 20px;">
                     <h3>로그 내용</h3>
                     <pre id="logText" style="height: 60vh; overflow-y: scroll; white-space: pre-wrap"></pre>
@@ -154,11 +165,11 @@
                         </div>
                         <button class="btn btn-primary mb-3" id="search-button" type="submit">검색</button>
                     </div>
-
                 </form>
-                <div id="searchResults">
-                    <!-- 검색 결과 표시 -->
-                </div>
+                <div id="searchResults"></div>
+                <nav>
+                    <ul class="pagination" id="pagination"></ul>
+                </nav>
             </div>
 
             <div id="storage-usage" class="mt-4" style="display: none;">

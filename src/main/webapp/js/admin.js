@@ -1,4 +1,8 @@
 $(document).ready(function () {
+    let searchResults = []; // Array to store search results
+    let currentPage = 1;
+    const resultsPerPage = 10; // Number of results per page
+
     $('.nav-item, .list-group-item').on('click', function (e) {
         e.preventDefault();
         const target = $(this).data('target');
@@ -35,46 +39,78 @@ $(document).ready(function () {
                 userId: userId
             }
         }).then(function (response) {
-            const results = response.data;
-            const resultsContainer = document.getElementById('searchResults');
-            resultsContainer.innerHTML = '';
-
-            if (results.length === 0) {
-                resultsContainer.innerHTML = '<p>검색 결과가 없습니다.</p>';
-            } else {
-                const table = document.createElement('table');
-                table.classList.add('table', 'table-bordered');
-
-                const thead = document.createElement('thead');
-                const headerRow = document.createElement('tr');
-                const headers = ['파일 ID', '파일 이름', '파일 크기', '업로드 날짜', '사용자 ID'];
-                headers.forEach(header => {
-                    const th = document.createElement('th');
-                    th.innerText = header;
-                    headerRow.appendChild(th);
-                });
-                thead.appendChild(headerRow);
-                table.appendChild(thead);
-
-                const tbody = document.createElement('tbody');
-                results.forEach(file => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                            <td>${file.fileID}</td>
-                            <td>${file.filename}</td>
-                            <td>${formatBytes(file.fileSize)}</td>
-                            <td>${new Date(file.uploadDate).toLocaleDateString()}</td>
-                            <td>${file.userID}</td>
-                        `;
-                    tbody.appendChild(row);
-                });
-                table.appendChild(tbody);
-                resultsContainer.appendChild(table);
-            }
+            searchResults = response.data;
+            currentPage = 1;
+            renderPage();
+            renderPaginationControls();
         }).catch(function (error) {
             console.error('검색 중 오류 발생:', error);
         });
     });
+
+    function renderPage() {
+        const resultsContainer = document.getElementById('searchResults');
+        resultsContainer.innerHTML = '';
+
+        const start = (currentPage - 1) * resultsPerPage;
+        const end = start + resultsPerPage;
+        const pageResults = searchResults.slice(start, end);
+
+        if (pageResults.length === 0) {
+            resultsContainer.innerHTML = '<p>검색 결과가 없습니다.</p>';
+        } else {
+            const table = document.createElement('table');
+            table.classList.add('table', 'table-bordered');
+
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            const headers = ['파일 ID', '파일 이름', '파일 크기', '업로드 날짜', '사용자 ID'];
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.innerText = header;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            pageResults.forEach(file => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${file.fileID}</td>
+                    <td>${file.filename}</td>
+                    <td>${formatBytes(file.fileSize)}</td>
+                    <td>${new Date(file.uploadDate).toLocaleDateString()}</td>
+                    <td>${file.userID}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+            resultsContainer.appendChild(table);
+        }
+    }
+
+    function renderPaginationControls() {
+        const totalPages = Math.ceil(searchResults.length / resultsPerPage);
+        const paginationContainer = document.getElementById('pagination');
+        paginationContainer.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const pageItem = document.createElement('li');
+            pageItem.classList.add('page-item');
+            if (i === currentPage) {
+                pageItem.classList.add('active');
+            }
+            pageItem.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+            pageItem.addEventListener('click', function (e) {
+                e.preventDefault();
+                currentPage = i;
+                renderPage();
+                renderPaginationControls();
+            });
+            paginationContainer.appendChild(pageItem);
+        }
+    }
 
     document.getElementById('backupButton').addEventListener('click', function () {
         axios.post('/file/backup', {}, {responseType: 'blob'})
@@ -174,30 +210,42 @@ let serverStartTime = null; // Will store the initial server start time
 const loadLogFiles = () => {
     axios.get('/api/logs')
         .then(function (response) {
-            const logFiles = response.data;
-            const logFilesList = $('#logFiles');
+            const logFiles = response.data.reverse(); // Reverse the order of log files
+            const logFilesList = $('#logFilesCarouselInner');
             logFilesList.empty();
-            logFiles.forEach(function (file) {
-                const listItem = $('<li class="list-group-item">')
-                    .text(file)
-                    .click(function () {
-                        // 파일명이 현재 열린 파일과 같으면 내용을 숨김
-                        if (currentOpenFile === file) {
-                            $('#logContent').hide();
-                            currentOpenFile = ''; // 현재 열린 파일 변수를 초기화
-                        } else {
-                            loadLogContent(file);
-                            currentOpenFile = file; // 현재 열린 파일을 업데이트
-                        }
-                    });
-                if (file === 'ICT_CLOUD.log') logFilesList.prepend(listItem);
-                else logFilesList.append(listItem);
+            let carouselItem;
+            let row;
+            let col;
+            logFiles.forEach((file, index) => {
+                if (index % 9 === 0) { // Every 9 files, create a new carousel item
+                    carouselItem = $('<div class="carousel-item"></div>');
+                    if (index === 0) carouselItem.addClass('active');
+                    logFilesList.append(carouselItem);
+                    row = $('<div class="row text-center"></div>'); // Center-align text
+                    carouselItem.append(row);
+                }
+                if (index % 3 === 0) { // Every 3 files, create a new column
+                    col = $('<div class="col-md-4"></div>');
+                    row.append(col);
+                }
+                const listItem = $('<li class="list-group-item"></li>').text(file).click(function () {
+                    // 파일명이 현재 열린 파일과 같으면 내용을 숨김
+                    if (currentOpenFile === file) {
+                        $('#logContent').hide();
+                        currentOpenFile = ''; // 현재 열린 파일 변수를 초기화
+                    } else {
+                        loadLogContent(file);
+                        currentOpenFile = file; // 현재 열린 파일을 업데이트
+                    }
+                });
+                col.append(listItem);
             });
         })
         .catch(function (error) {
             console.error('Error fetching log files:', error);
         });
 }
+
 
 const loadLogContent = (fileName) => {
     axios.get(`/api/logs/${fileName}`)
