@@ -447,6 +447,8 @@ const addFolderHandler = async (userID, folderID, storagePath) => {
         return false;
     }
 
+    $("#addFolderName").val("");
+
     // 현재 폴더의 폴더 목록을 가져와서 중복된 이름이 있는지 확인
     try {
         const response = await fetch(`/file/upload?p=${folderID}`, {
@@ -770,9 +772,8 @@ const fileDeleteHandler = async (userID, fileID) => {
             if (result.status === "success") {
                 alert(result.message); // 성공 메시지 표시
                 // 추가적인 성공 처리 로직이 있으면 여기에 추가
-                //*************************************************************************
                 await enterFolder($('#folderID').val());
-                const row = document.querySelector('tr[data-file-id="${fileID}"]'); //^^^^^^^^
+                const row = document.querySelector('tr[data-file-id="${fileID}"]');
                 console.log("success");
             } else {
                 alert(result.message); // 실패 메시지 표시
@@ -811,7 +812,7 @@ const folderDeleteHandler = async (userID, folderID) => {
                 console.log("success");
             } else {
                 alert(result.message); // 실패 메시지 표시
-                console.log("failfail");
+                console.log("빈폴더 삭제오류");
             }
         } else {
             alert("Folder deletion failed with status code: " + response.status);
