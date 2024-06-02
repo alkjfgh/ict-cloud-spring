@@ -653,11 +653,11 @@ public class FileService {
                                 .forEach(java.io.File::delete);
                     } else {
                         logger.warn("폴더가 존재하지 않습니다: " + folderPath);
-                        return 2;
+                        return 1;
                     }
                 } catch (IOException e) {
                     logger.error("delete folder from real storage: " + e);
-                    return 0;
+                    return 1;
                 }
             }
         } else {
