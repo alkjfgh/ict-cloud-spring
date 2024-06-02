@@ -1,9 +1,8 @@
-
-$(document).ready(function() {
+$(document).ready(function () {
     const shareId = window.location.pathname.split('/').pop();
 
     axios.get(`/share/info/${shareId}`)
-        .then(function(response) {
+        .then(function (response) {
             const shareInfo = response.data;
             if (shareInfo.permissionType === 'protected') {
                 $('#passwordModal').modal('show');
@@ -12,44 +11,57 @@ $(document).ready(function() {
                 showFileInfo(shareInfo);
             }
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.error('Error fetching share info:', error);
             $('#downloadError').show();
         });
 
-    $('#passwordForm').submit(function(e) {
+    $('#passwordForm').submit(function (e) {
         e.preventDefault();
         const password = $('#password').val();
 
-        axios.post('/share/checkPassword', { shareId: shareId, password: password })
-            .then(function(response) {
+        axios.post('/share/checkPassword', {shareId: shareId, password: password})
+            .then(function (response) {
                 if (response.status === 200) {
                     $('#passwordModal').modal('hide');
                     showFileInfo(response.data);
                 }
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error('Error checking password:', error);
                 $('#passwordError').show();
             });
     });
 
-    $('#downloadForm').submit(function(e) {
+    $('#downloadForm').submit(function (e) {
         e.preventDefault();
         const password = $('#password').val();
 
-        axios.post('/share/download', { shareId: shareId, password: password }, { responseType: 'blob' })
-            .then(function(response) {
+        axios.post('/share/download', {shareId: shareId, password: password}, {responseType: 'blob'})
+            .then(function (response) {
                 const contentDisposition = response.headers['content-disposition'];
-                const filename = contentDisposition.split('filename=')[1].replace(/"/g, '');
+                console.log(contentDisposition)
+                let filename = "downloaded_file";
+                if (contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
+                    const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                    const matches = filenameRegex.exec(contentDisposition);
+                    if (matches != null && matches[1]) {
+                        filename = decodeURIComponent(matches[1].replace(/['"]/g, ''));
+                        if (filename.startsWith("UTF-8")) {
+                            filename = filename.slice(5,);
+                        }
+                    }
+                }
+
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
                 link.setAttribute('download', filename);
                 document.body.appendChild(link);
                 link.click();
+                window.URL.revokeObjectURL(url);
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error('Error downloading file:', error);
                 $('#downloadError').show();
             });

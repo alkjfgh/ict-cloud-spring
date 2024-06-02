@@ -24,6 +24,8 @@ public class LoginFilter implements Filter {
         logger.info("check user session filter");
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
+        req.setCharacterEncoding("UTF-8");
+        res.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession(false);
 
         // 로그인 페이지와 리소스 요청을 제외한 나머지 요청에 대해 세션 체크

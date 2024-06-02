@@ -19,6 +19,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Map;
@@ -139,8 +141,10 @@ public class ShareController {
                         java.io.File realFile = new java.io.File("C://uploads/" + fileService.getStoragePath(info.getOwnerID(), file.getFolderID()) + java.io.File.separator + file.getFilename());
                         InputStreamResource resource = new InputStreamResource(new FileInputStream(realFile));
 
+                        String encodedFilename = URLEncoder.encode(file.getFilename(), StandardCharsets.UTF_8.toString()).replaceAll("\\+", "%20");
+
                         return ResponseEntity.ok()
-                                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"" + file.getFilename() + "\"")
+                                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFilename)
                                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                                 .contentLength(realFile.length())
                                 .body(resource);
@@ -150,8 +154,10 @@ public class ShareController {
                         fileService.zipFolder(folder, byteArrayOutputStream);
                         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
 
+                        String encodedFolderName = URLEncoder.encode(folder.getName() + ".zip", StandardCharsets.UTF_8.toString()).replaceAll("\\+", "%20");
+
                         return ResponseEntity.ok()
-                                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"" + folder.getName() + ".zip\"")
+                                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFolderName)
                                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                                 .contentLength(byteArrayOutputStream.size())
                                 .body(resource);
