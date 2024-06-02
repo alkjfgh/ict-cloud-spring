@@ -61,7 +61,8 @@ const initAnnounce = (announdata) => {
     accordion.className = 'accordion';
     accordion.id = accordionId;
 
-    announdata.forEach((item, index) => {
+    for (let index = announdata.length - 1; index >= 0; index--) {
+        let item = announdata[index];
         let uniqueId = `collapse${index}`;
         let announcement = document.createElement('div');
         const formatedDate = formmatDate(item.created_at);
@@ -80,7 +81,7 @@ const initAnnounce = (announdata) => {
                 </div>`;
 
         accordion.appendChild(announcement);
-    });
+    }
     announcementContainer.append(accordion);
 
     //accordion-name이 text-overflow 될때 만 마우스 오버 체크

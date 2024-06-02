@@ -128,20 +128,19 @@
                     <h2>파일 검색</h2>
                     <br>
                     <form id="searchForm">
-                        <div class="row mb-3">
-                            <div class="col-md-3" id="col-md-3-1">
+                        <div class="search-row mb-3">
+                            <div class="search-col">
                                 <input type="text" id="filename" name="filename" class="form-control" placeholder="파일 이름">
                             </div>
-                            <div class="col-md-3" id="col-md-3-2">
+                            <div class="search-col">
                                 <input type="date" id="startDate" name="startDate" class="form-control" placeholder="시작 날짜">
                             </div>
                             <span class="tilde">~</span>
-                            <div class="col-md-3" id="col-md-3-3">
+                            <div class="search-col">
                                 <input type="date" id="endDate" name="endDate" class="form-control" placeholder="종료 날짜">
                             </div>
-                            <div class="col-md-3" id="col-md-3-4">
-                                <input type="number" id="minFileSize" name="minFileSize" class="form-control"
-                                       placeholder="최소 파일 크기">
+                            <div class="search-col">
+                                <input type="number" id="minFileSize" name="minFileSize" class="form-control" placeholder="최소 파일 크기">
                                 <select id="minFileSizeUnit" name="minFileSizeUnit" class="form-control">
                                     <option value="B">B</option>
                                     <option value="KB">KB</option>
@@ -150,9 +149,8 @@
                                 </select>
                             </div>
                             <span class="tilde">~</span>
-                            <div class="col-md-3" id="col-md-3-5">
-                                <input type="number" id="maxFileSize" name="maxFileSize" class="form-control"
-                                       placeholder="최대 파일 크기">
+                            <div class="search-col">
+                                <input type="number" id="maxFileSize" name="maxFileSize" class="form-control" placeholder="최대 파일 크기">
                                 <select id="maxFileSizeUnit" name="maxFileSizeUnit" class="form-control">
                                     <option value="B">B</option>
                                     <option value="KB">KB</option>
@@ -160,12 +158,14 @@
                                     <option value="GB">GB</option>
                                 </select>
                             </div>
-                            <div class="col-md-3" id="col-md-3-6">
+                            <div class="search-col">
                                 <input type="text" id="userId" name="userId" class="form-control" placeholder="사용자 ID">
                             </div>
-                            <button class="btn btn-primary mb-3" id="search-button" type="submit">검색</button>
+                            <button class="btn btn-primary" id="search-button" type="submit">검색</button>
                         </div>
                     </form>
+
+
                     <div id="searchResults"></div>
                     <nav>
                         <ul class="pagination" id="pagination"></ul>
