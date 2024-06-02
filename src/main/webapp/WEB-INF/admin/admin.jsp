@@ -140,7 +140,7 @@
                                 <input type="date" id="endDate" name="endDate" class="form-control" placeholder="종료 날짜">
                             </div>
                             <div class="search-col">
-                                <input type="number" id="minFileSize" name="minFileSize" class="form-control" placeholder="최소 파일 크기">
+                                <input type="number" id="minFileSize" name="minFileSize" class="form-control" placeholder="최소파일크기">
                                 <select id="minFileSizeUnit" name="minFileSizeUnit" class="form-control">
                                     <option value="B">B</option>
                                     <option value="KB">KB</option>
@@ -150,7 +150,7 @@
                             </div>
                             <span class="tilde">~</span>
                             <div class="search-col">
-                                <input type="number" id="maxFileSize" name="maxFileSize" class="form-control" placeholder="최대 파일 크기">
+                                <input type="number" id="maxFileSize" name="maxFileSize" class="form-control" placeholder="최대파일크기">
                                 <select id="maxFileSizeUnit" name="maxFileSizeUnit" class="form-control">
                                     <option value="B">B</option>
                                     <option value="KB">KB</option>

@@ -40,7 +40,7 @@
     width: 100%;
     border: 0;
     padding: 15px;
-    color: #FFFFFF;
+    color: #090b0e;
     font-size: 14px;
     -webkit-transition: all 0.3s ease;
     transition: all 0.3s ease;
@@ -50,11 +50,13 @@
 .login-login-button:active,
 .login-login-button:focus {
     background: #5a5a5a;
+    color: #e5e6e8;
 }
 .login-signup-button:hover,
 .login-signup-button:active,
 .login-signup-button:focus {
     background: #5a5a5a;
+    color: #e5e6e8;
 }
 .form .message {
     margin: 15px 0 0;

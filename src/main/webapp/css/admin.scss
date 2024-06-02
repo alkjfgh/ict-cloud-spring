@@ -240,9 +240,14 @@ a.logout-link:hover {
   color: #5a5a5a;
 }
 
+#maxFileSize, #minFileSize{
+  width: 8rem;
+}
+
 #minFileSizeUnit,
 #maxFileSizeUnit {
   max-width: 100px;  // 선택 박스 너비를 키움
+  width: 5rem;
 }
 
 .container {
@@ -361,4 +366,8 @@ canvas {
 
 .row {
   margin-right: 45px;
+}
+
+#file-management{
+  margin-right: 0;
 }
