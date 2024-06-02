@@ -554,7 +554,11 @@ const enterFolder = async (p) => {
             li.classList.add('breadcrumb-item');
             const ae = document.createElement('a');
             ae.text = folder.folderName;
-            ae.href = `upload?p=${folder.folderID}`;
+            // ae.href = `upload?p=${folder.folderID}`;
+            ae.onclick = (e) => {
+                e.preventDefault();
+                enterFolder(folder.folderID);
+            }
             li.appendChild(ae);
 
             if (index === folderPathList.length - 1) {
