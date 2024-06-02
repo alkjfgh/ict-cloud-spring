@@ -125,7 +125,7 @@ $('#stopShareBtn').click(function () {
 
 $("#file").on('change', function () {
     const fileName = $("#file").val();
-    $(".upload-name").val(fzileName);
+    $(".upload-name").val(fileName);
 });
 
 $('#shareForm').submit(function (e) {
