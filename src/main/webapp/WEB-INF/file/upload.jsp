@@ -31,26 +31,6 @@
             </div>
         </div>
         <div class="enter">
-            <%--            <form id="uploadForm" action="upload" method="post" enctype="multipart/form-data"--%>
-            <%--                  onsubmit="return fileUploadHandler(event)">--%>
-            <%--                <div class="add"> &lt;%&ndash;파일, 디렉토리 추가&ndash;%&gt;--%>
-            <%--                    <div class="add_file">--%>
-            <%--                        <input type="file" name="file" id="file" required/> &lt;%&ndash; 버튼속성 &ndash;%&gt;--%>
-            <%--                        <input type="text" name="userID" value="" id="userID" readonly>--%>
-            <%--                        <input type="text" name="storagePath" value="" id="storagePath" readonly>--%>
-            <%--                        <input type="number" name="folderID" value="" id="folderID" hidden readonly>--%>
-            <%--                    </div>--%>
-            <%--                    <div class="add_folder">--%>
-            <%--                        <input type="text" id="addFolderName" name="addFolderName" placeholder="addFolderName">--%>
-            <%--                        <button type="button" id="addFolder" onclick='addFolderHandler(0, 0, "")'>add folder</button>--%>
-            <%--                    </div>--%>
-            <%--                </div>--%>
-            <%--                <div class="upload"> &lt;%&ndash;업로드&ndash;%&gt;--%>
-            <%--                    <input type="submit" value="Upload"/>--%>
-            <%--                </div>--%>
-
-            <%--            </form>--%>
-
             <form id="uploadForm" action="upload" method="post" enctype="multipart/form-data"
                   onsubmit="return fileUploadHandler(event)">
                 <div class="add"> <%--파일, 디렉토리 추가--%>

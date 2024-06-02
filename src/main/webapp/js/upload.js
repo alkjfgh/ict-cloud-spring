@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 $('#fakeDownloadBtn').on('click', async function () {
+    $('#clicked').hide();
     const fakeDownloadBtn = document.getElementById('fakeDownloadBtn');
 
     const userid = fakeDownloadBtn.dataset.userid;
@@ -55,13 +56,13 @@ $('#fakeDownloadBtn').on('click', async function () {
 });
 
 $('#DeleteBtn').on('click', async function () {
+    $('#clicked').hide();
     const DeleteBtn = document.getElementById('DeleteBtn');
 
     const userid = DeleteBtn.dataset.userid;
     const fileid = DeleteBtn.dataset.fileid;
     const folderid = DeleteBtn.dataset.folderid;
 
-    $('#clicked').hide();
 
     if (folderid === 'null') {
         await deleteFileDetail(userid, fileid);
@@ -122,11 +123,6 @@ $('#stopShareBtn').click(function () {
         .catch(function (error) {
             console.error('Error stopping share link:', error);
         });
-});
-
-$("#file").on('change', function () {
-    const fileName = $("#file").val();
-    $(".upload-name").val(fileName);
 });
 
 $('#shareForm').submit(function (e) {
@@ -446,6 +442,8 @@ const addFolderHandler = async (userID, folderID, storagePath) => {
         alert("Foldername cannot be empty");
         return false;
     }
+
+    $("#addFolderName").val("");
 
     // 현재 폴더의 폴더 목록을 가져와서 중복된 이름이 있는지 확인
     try {
@@ -770,9 +768,8 @@ const fileDeleteHandler = async (userID, fileID) => {
             if (result.status === "success") {
                 alert(result.message); // 성공 메시지 표시
                 // 추가적인 성공 처리 로직이 있으면 여기에 추가
-                //*************************************************************************
                 await enterFolder($('#folderID').val());
-                const row = document.querySelector('tr[data-file-id="${fileID}"]'); //^^^^^^^^
+                const row = document.querySelector('tr[data-file-id="${fileID}"]');
                 console.log("success");
             } else {
                 alert(result.message); // 실패 메시지 표시
@@ -811,7 +808,7 @@ const folderDeleteHandler = async (userID, folderID) => {
                 console.log("success");
             } else {
                 alert(result.message); // 실패 메시지 표시
-                console.log("failfail");
+                console.log("빈폴더 삭제오류");
             }
         } else {
             alert("Folder deletion failed with status code: " + response.status);
@@ -822,5 +819,16 @@ const folderDeleteHandler = async (userID, folderID) => {
         alert("Error")
     }
 };
+
+$(document).ready(function() {
+    $("#file").on('change', function () {
+        const filePath = $("#file").val();
+        const fileName = filePath.split('\\').pop(); // 경로에서 파일 이름만 추출
+        $(".upload-name").val(fileName);
+    });
+    $("#uploadbtn").on('click', function () {
+        $(".upload-name").val("");
+    });
+});
 
 //TODO 파일 다운로드 및 업로드 중에 모달창 안꺼지게. 끈다면 작업이 중단 되도록 하게.
