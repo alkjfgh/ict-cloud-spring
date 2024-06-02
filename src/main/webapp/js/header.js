@@ -5,7 +5,6 @@ $(document).ready(function () {
     const notlogin = $('.notlogin');
 
     $('.sidebar-open').on('click', function () {
-        // $('.sidebar').show();
         $('.sidebar').css('left', '0'); // 사이드바를 오른쪽으로 이동
         isSidebarOpen = true;
     });
@@ -15,7 +14,6 @@ $(document).ready(function () {
             const sidebar = $(".sidebar");
             const sidebar_open = $(".sidebar-open");
             if (!sidebar_open.is(event.target) && !sidebar_open.has(event.target).length && !sidebar.is(event.target) && !sidebar.has(event.target).length) {
-                // sidebar.hide();
                 sidebar.css('left', '-250px'); // 사이드바를 왼쪽으로 이동
             }
         }
@@ -36,15 +34,13 @@ $(document).ready(function () {
 });
 
 function formmatDate(created_at) {
-    console.log(created_at);
     const date = new Date(created_at);
-// DateTimeFormat 객체를 사용하여 원하는 형식으로 변환
     const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1);
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     const day = String(date.getUTCDate()).padStart(2, '0');
-    const hours = String(date.getUTCHours());
-    const minutes = String(date.getUTCMinutes());
-    const seconds = String(date.getUTCSeconds());
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
 
     const formattedDate = `${year}년 ${month}월 ${day}일`;
     const formattedTime = `${hours}:${minutes}:${seconds}`;
@@ -95,6 +91,15 @@ const initAnnounce = (announdata) => {
         } else {
             $(this).removeAttr('data-title');
         }
+    });
+
+    // 아코디언이 펼쳐질 때 높이 애니메이션 적용
+    $('.accordion-collapse').on('show.bs.collapse', function () {
+        $(this).find('.accordion-body').css('max-height', '400px');
+    });
+
+    $('.accordion-collapse').on('hide.bs.collapse', function () {
+        $(this).find('.accordion-body').css('max-height', '0');
     });
 }
 
