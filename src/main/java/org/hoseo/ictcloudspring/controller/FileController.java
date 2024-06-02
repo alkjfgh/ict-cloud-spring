@@ -304,6 +304,12 @@ public class FileController {
         if (deleteFolderSuccesses == 1) {
             response.put("status", "success");
             response.put("message", "delete Folder 성공");
+        } else if(deleteFolderSuccesses == 2) {
+            response.put("status", "fail");
+            response.put("message", "폴더가 존재하지 않습니다");
+        } else if(deleteFolderSuccesses == 3) {
+            response.put("status", "fail");
+            response.put("message", "하위 폴더가 존재하여 폴더 삭제를 할 수 없습니다");
         } else {
             response.put("status", "fail");
             response.put("message", "delete Folder 실패");

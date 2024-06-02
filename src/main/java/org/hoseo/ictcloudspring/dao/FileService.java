@@ -400,7 +400,7 @@ public class FileService {
     }
 
     public int initFileAndFolder(int userID) {
-        logger.info("File Service Get Storage Size");
+        logger.info("File Service init file and folder");
         logger.info("userID: " + userID);
 
         int executed;
@@ -426,7 +426,6 @@ public class FileService {
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
             psmt.setInt(1, userID);
-
             executed = psmt.executeUpdate();
         } catch (SQLException e) {
             logger.error(e.getLocalizedMessage());
@@ -453,6 +452,7 @@ public class FileService {
 
         // Get all folder paths to delete from filesystem
         List<String> folderPaths = new ArrayList<>();
+        List<Integer> folderIds = new ArrayList<>();
         query = "WITH RECURSIVE FolderHierarchy AS (" +
                 "    SELECT FolderID, ParentFolderID, storagePath " +
                 "    FROM Folders " +
@@ -462,13 +462,14 @@ public class FileService {
                 "    FROM Folders f " +
                 "    INNER JOIN FolderHierarchy fh ON f.ParentFolderID = fh.FolderID " +
                 ") " +
-                "SELECT storagePath FROM FolderHierarchy";
+                "SELECT distinct storagePath, folderID FROM FolderHierarchy ORDER BY LENGTH(storagePath) DESC";
 
         try (PreparedStatement psmt = con.prepareStatement(query)) {
             psmt.setInt(1, userID);
             try (ResultSet rs = psmt.executeQuery()) {
                 while (rs.next()) {
                     folderPaths.add(rs.getString("storagePath"));
+                    folderIds.add(rs.getInt("folderID"));
                 }
             }
         } catch (SQLException e) {
@@ -477,47 +478,38 @@ public class FileService {
         }
 
         // Delete all folders from database
-        query = "WITH RECURSIVE FolderHierarchy AS (" +
-                "    SELECT FolderID, ParentFolderID " +
-                "    FROM Folders " +
-                "    WHERE UserID = ? " +
-                "    UNION ALL " +
-                "    SELECT f.FolderID, f.ParentFolderID " +
-                "    FROM Folders f " +
-                "    INNER JOIN FolderHierarchy fh ON f.ParentFolderID = fh.FolderID " +
-                ") " +
-                "DELETE FROM Folders " +
-                "WHERE FolderID IN (SELECT FolderID FROM FolderHierarchy) " +
-                "  AND ParentFolderID IS NOT NULL";
+        query = "DELETE FROM Folders WHERE UserID = ? AND FolderID = ? AND ParentFolderID is not null";
 
-        try (PreparedStatement psmt = con.prepareStatement(query)) {
-            psmt.setInt(1, userID);
-
-            executed = psmt.executeUpdate();
-        } catch (SQLException e) {
-            logger.error(e.getLocalizedMessage());
-            return 0;
+        for (int folderID : folderIds) {
+            try (PreparedStatement psmt = con.prepareStatement(query)) {
+                psmt.setInt(1, userID);
+                psmt.setInt(2, folderID);
+                executed = psmt.executeUpdate();
+            } catch (SQLException e) {
+                logger.error("init folder: " + e);
+                return 0;
+            }
         }
 
-        // Delete all file paths from filesystem
-        for (String path : filePaths) {
-            Path filePath = Paths.get(uploadFolderPath, path);
+        // Delete all folder paths from filesystem
+        for (String path : folderPaths) {
+            Path folderPath = Paths.get(uploadFolderPath, path);
             try {
-                if (Files.exists(filePath)) { // Check if file or directory exists
-                    if (Files.isDirectory(filePath)) {
+                if (Files.exists(folderPath)) { // Check if file or directory exists
+                    if (Files.isDirectory(folderPath)) {
                         // Recursively delete directory contents
-                        Files.walk(filePath)
+                        Files.walk(folderPath)
                                 .sorted(Comparator.reverseOrder())
                                 .map(Path::toFile)
                                 .forEach(java.io.File::delete);
 
                         // Once the directory is empty, delete it
-                        Files.deleteIfExists(filePath);
+                        Files.deleteIfExists(folderPath);
                     } else {
-                        Files.deleteIfExists(filePath); // Delete file
+                        Files.deleteIfExists(folderPath); // Delete file
                     }
                 } else {
-                    logger.info("File or directory does not exist: " + filePath);
+                    logger.info("File or directory does not exist: " + folderPath);
                 }
             } catch (IOException e) {
                 logger.error(e.getLocalizedMessage());
@@ -661,7 +653,7 @@ public class FileService {
                                 .forEach(java.io.File::delete);
                     } else {
                         logger.warn("폴더가 존재하지 않습니다: " + folderPath);
-                        return 1;
+                        return 2;
                     }
                 } catch (IOException e) {
                     logger.error("delete folder from real storage: " + e);
@@ -671,7 +663,7 @@ public class FileService {
         } else {
             // 하위 폴더가 있는 경우 폴더 삭제 실패 메시지 반환
             logger.warn("하위 폴더가 존재하여 폴더 삭제를 할 수 없습니다.");
-            return 0;
+            return 3;
         }
 
         return executed;
@@ -942,6 +934,7 @@ public class FileService {
 
         return folder;
     }
+
     public void zipFolder(java.io.File folder, OutputStream outputStream) throws IOException {
         try (ZipOutputStream zipOut = new ZipOutputStream(outputStream)) {
             zipFileInternal(folder, folder.getName(), zipOut);

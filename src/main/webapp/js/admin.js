@@ -228,7 +228,7 @@ const loadLogFiles = () => {
                     col = $('<div class="col-md-4"></div>');
                     row.append(col);
                 }
-                const listItem = $('<li class="list-group-item"></li>').text(file).click(function () {
+                const listItem = $('<li class="list-group-item logfile"></li>').text(file).click(function () {
                     // 파일명이 현재 열린 파일과 같으면 내용을 숨김
                     if (currentOpenFile === file) {
                         $('#logContent').hide();
@@ -245,7 +245,6 @@ const loadLogFiles = () => {
             console.error('Error fetching log files:', error);
         });
 }
-
 
 const loadLogContent = (fileName) => {
     axios.get(`/api/logs/${fileName}`)
@@ -376,8 +375,12 @@ const initUser = async (userID, userName) => {
         const data = response.data;
         if (data.status === 'success') {
             alert(`${userName} successfully initialized`);
+            getUserStorageSizeList().then(users => {
+                populateUserTable(users);
+                renderChart(users);
+            });
         } else {
-            console.error('Failed to init user:', data.message);
+            alert('Failed to init user: ' + data.message);
         }
     } catch (error) {
         console.error('Error initializing user:', error);
@@ -391,8 +394,11 @@ const deleteUser = async (userID, userName) => {
         const data = response.data;
         if (data.status === 'success') {
             alert(`${userName} successfully deleted`);
-            getUserStorageSizeList();
-            loadLogFiles();
+            getUserStorageSizeList().then(users => {
+                populateUserTable(users);
+                renderChart(users);
+            });
+            // loadLogFiles();
         } else {
             console.error('Failed to delete user:', data.message);
         }
@@ -423,8 +429,11 @@ $('#saveEditUser').on('click', async function () {
         if (data.status === 'success') {
             alert(`${userName} successfully edited`);
             $('#editUserModal').modal('hide');
-            getUserStorageSizeList();
-            loadLogFiles();
+            getUserStorageSizeList().then(users => {
+                populateUserTable(users);
+                renderChart(users);
+            });
+            // loadLogFiles();
         } else {
             console.error('Failed to edit user:', data.message);
         }
