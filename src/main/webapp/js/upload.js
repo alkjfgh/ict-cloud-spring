@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 $('#fakeDownloadBtn').on('click', async function () {
+    $('#clicked').hide();
     const fakeDownloadBtn = document.getElementById('fakeDownloadBtn');
 
     const userid = fakeDownloadBtn.dataset.userid;
@@ -55,13 +56,13 @@ $('#fakeDownloadBtn').on('click', async function () {
 });
 
 $('#DeleteBtn').on('click', async function () {
+    $('#clicked').hide();
     const DeleteBtn = document.getElementById('DeleteBtn');
 
     const userid = DeleteBtn.dataset.userid;
     const fileid = DeleteBtn.dataset.fileid;
     const folderid = DeleteBtn.dataset.folderid;
 
-    $('#clicked').hide();
 
     if (folderid === 'null') {
         await deleteFileDetail(userid, fileid);
