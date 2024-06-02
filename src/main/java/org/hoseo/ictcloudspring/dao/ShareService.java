@@ -106,12 +106,13 @@ public class ShareService {
     }
 
 
-    public Optional<ShareInfo> getExistingShare(int ownerId, int itemId) {
+    public Optional<ShareInfo> getExistingShare(int ownerId, int itemId, String itemType) {
         logger.info("Checking existing share link for owner: " + ownerId + ", item: " + itemId);
-        String query = "SELECT * FROM ShareInfo WHERE OwnerID = ? AND ItemID = ?";
+        String query = "SELECT * FROM ShareInfo WHERE OwnerID = ? AND ItemID = ? AND itemType = ?";
         try (PreparedStatement psmt = con.prepareStatement(query)) {
             psmt.setInt(1, ownerId);
             psmt.setInt(2, itemId);
+            psmt.setString(3, itemType);
             logger.info("Executing query: " + psmt.toString()); // 추가된 로그
             try (ResultSet rs = psmt.executeQuery()) {
                 if (rs.next()) {

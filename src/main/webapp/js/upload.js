@@ -77,8 +77,9 @@ $('#ShareBtn').on('click', function () {
 
     const userid = shareBtn.dataset.userid;
     const id = shareBtn.dataset.id;
+    const type = shareBtn.dataset.type;
 
-    axios.post('/share/existing', {ownerId: userid, itemId: id})
+    axios.post('/share/existing', {ownerId: userid, itemId: id, itemType: type})
         .then(function (response) {
             if (response.status === 200) {
                 const shareId = response.data.shareID;

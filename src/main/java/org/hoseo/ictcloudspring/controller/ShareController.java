@@ -180,8 +180,9 @@ public class ShareController {
         logger.info("Share Controller create existing share");
         int ownerId = Integer.parseInt((String) request.get("ownerId"));
         int itemId = Integer.parseInt((String) request.get("itemId"));
+        String itemType = (String) request.get("itemType");
 
-        Optional<ShareInfo> existingShare = shareService.getExistingShare(ownerId, itemId);
+        Optional<ShareInfo> existingShare = shareService.getExistingShare(ownerId, itemId, itemType);
         if (existingShare.isPresent()) {
             System.out.println("===================123=====================");
             return ResponseEntity.ok(existingShare.get());
