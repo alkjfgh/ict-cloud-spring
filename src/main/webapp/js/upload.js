@@ -124,11 +124,6 @@ $('#stopShareBtn').click(function () {
         });
 });
 
-$("#file").on('change', function () {
-    const fileName = $("#file").val();
-    $(".upload-name").val(fileName);
-});
-
 $('#shareForm').submit(function (e) {
     e.preventDefault();
 
@@ -823,5 +818,16 @@ const folderDeleteHandler = async (userID, folderID) => {
         alert("Error")
     }
 };
+
+$(document).ready(function() {
+    $("#file").on('change', function () {
+        const filePath = $("#file").val();
+        const fileName = filePath.split('\\').pop(); // 경로에서 파일 이름만 추출
+        $(".upload-name").val(fileName);
+    });
+    $("#uploadbtn").on('click', function () {
+        $(".upload-name").val("");
+    });
+});
 
 //TODO 파일 다운로드 및 업로드 중에 모달창 안꺼지게. 끈다면 작업이 중단 되도록 하게.
