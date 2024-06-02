@@ -546,6 +546,25 @@ const enterFolder = async (p) => {
             fileListElement.appendChild(element)
         });
 
+        let folderPathList = data.folderPathList;
+        $("#path-view").empty();
+
+        folderPathList.reverse().forEach((folder, index) => {
+            const li = document.createElement('li');
+            li.classList.add('breadcrumb-item');
+            const ae = document.createElement('a');
+            ae.text = folder.folderName;
+            ae.href = `upload?p=${folder.folderID}`;
+            li.appendChild(ae);
+
+            if (index === folderPathList.length - 1) {
+                li.classList.add('active');
+                li.setAttribute('aria-current', 'page');
+            }
+
+            $("#path-view").append(li);
+        });
+
         // fileListElement.load(location.href + ' .file-list-table');
     } else {
         alert("Failed to load folder data.");

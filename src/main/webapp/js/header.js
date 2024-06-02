@@ -21,12 +21,11 @@ $(document).ready(function () {
 
     axios.get('/user/checkSession').then(res => {
         if (res.status === 200) {
-            if (res.data.check){
+            if (res.data.check) {
                 console.log(res.data);
                 $('.islogin .username').text(res.data.username);
                 islogin.show();
-            }
-            else notlogin.show();
+            } else notlogin.show();
         } else {
             notlogin.show();
         }
@@ -81,7 +80,7 @@ const initAnnounce = (announdata) => {
     announcementContainer.append(accordion);
 
     //accordion-name이 text-overflow 될때 만 마우스 오버 체크
-    $('.accordion-name').each(function() {
+    $('.accordion-name').each(function () {
         if (this.offsetWidth < this.scrollWidth) {
             $(this).addClass('tooltip-visible');
         }
@@ -123,8 +122,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        dropdownMenu.addEventListener('click', function (event){
-            if(event.target.tagName === 'A'){
+        dropdownMenu.addEventListener('click', function (event) {
+            if (event.target.tagName === 'A') {
                 dropdownMenu.classList.remove("active");
             }
         })
@@ -138,10 +137,10 @@ $(document).ready(function () {
     // 모달 제어 코드
     let announcementModal = $("#announcementModal");
     let announcementLink = $(".announcement-link");
-    let announcementCloseBtn = $(".close")[0];
+    let announcementCloseBtn = $("#announcementModal .close")[0];
 
     axios.get("/notice/getList").then(res => {
-        if(res.status === 200){
+        if (res.status === 200) {
             console.log(res.data);
             initAnnounce(res.data);
         }
@@ -149,8 +148,8 @@ $(document).ready(function () {
 
     announcementLink.on('click', function (event) {
         event.preventDefault(); // 기본 이벤트 방지
-
-        $(".accordion-collapse").each(function() {
+        console.log(1111111111);
+        $(".announcement-container .accordion-collapse").each(function () {
             let collapseInstance = bootstrap.Collapse.getInstance(this);
             if (collapseInstance) {
                 collapseInstance.hide();
@@ -165,8 +164,9 @@ $(document).ready(function () {
     });
 
     announcementCloseBtn.onclick = function () {
+        console.log(222222222222);
         announcementModal.css("display", "none");
-        $(".accordion-collapse").each(function() {
+        $(".accordion-collapse").each(function () {
             let collapseInstance = bootstrap.Collapse.getInstance(this);
             if (collapseInstance) {
                 collapseInstance.hide();
@@ -181,8 +181,9 @@ $(document).ready(function () {
     $(window).click(function (event) {
         if (event.target === announcementModal[0]) {
             announcementModal.css("display", "none");
+            console.log(333333333333);
 
-            $(".accordion-collapse").each(function() {
+            $(".accordion-collapse").each(function () {
                 let collapseInstance = bootstrap.Collapse.getInstance(this);
                 if (collapseInstance) {
                     collapseInstance.hide();
@@ -199,7 +200,7 @@ $(document).ready(function () {
         event.preventDefault();
 
         const response = await axios.get("/user/logout");
-        if(response.status === 200){
+        if (response.status === 200) {
             location.href = "../main";
         }
     });

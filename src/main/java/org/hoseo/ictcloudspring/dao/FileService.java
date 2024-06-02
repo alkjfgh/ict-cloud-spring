@@ -969,4 +969,35 @@ public class FileService {
             }
         }
     }
+
+    public List<Folder> getFolderPath(int p) {
+        logger.info("File Service get folder path");
+        List<Folder> result = new ArrayList<Folder>();
+
+        int folderID = p;
+        String query = "SELECT * FROM Folders WHERE FolderID = ?";
+        while(true){
+            Folder folder = new Folder();
+            try(PreparedStatement psmt = con.prepareStatement(query)){
+                psmt.setInt(1, p);
+                try(ResultSet rs = psmt.executeQuery()){
+                    if(rs.next()){
+                        folder.setFolderID(rs.getInt("folderID"));
+                        folder.setFolderName(rs.getString("folderName"));
+                        folder.setParentFolderID(rs.getInt("parentFolderID"));
+                    }
+                }
+            } catch (SQLException e){
+                logger.error("get folder path: " + e);
+            }
+            result.add(folder);
+            System.out.println("result: " + folder);
+            if(!(folder.getParentFolderID() > 0)){
+                break;
+            }
+            p = folder.getParentFolderID();
+        }
+
+        return result;
+    }
 }

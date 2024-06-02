@@ -25,6 +25,7 @@
                 parentFolderID: <span id="parentFolderID"></span>
             </div>
             <div class="file-list-container drag-drop-area">
+                <div id="path-view" class="breadcrumb"></div>
                 <table class="file-list-table">
                     <tbody></tbody>
                 </table>

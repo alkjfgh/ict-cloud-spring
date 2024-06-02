@@ -39,7 +39,7 @@ body {
       bottom: 0;
       width: 99%;
 
-      .add_file, .add_folder{
+      .add_file, .add_folder {
         height: 3.5rem;
       }
 
@@ -206,9 +206,38 @@ body {
 
   .drag-drop-area {
     border: 20px dashed black;
-
   }
 
+  #path-view {
+    height: 1.5rem;
+    text-align: center;
+  }
+
+  .breadcrumb {
+    justify-content: center;
+  }
+
+  .breadcrumb-item a {
+    text-decoration: none;
+    color: #dfe8f5;
+    margin-right: 5px;
+    font-weight: 800;
+    font-size: 1.2rem; /* 글자 크기 설정 */
+  }
+
+  .breadcrumb-item::before {
+    color: #dfe8f5;
+    font-weight: 900;
+    font-size: 1.2rem; /* 글자 크기 설정 */
+  }
+
+  .breadcrumb-item a:hover {
+    color: #575b5d;
+  }
+
+  .breadcrumb-item.active a {
+    color: #575b5d;
+  }
 
   .file-list-table {
     width: 100%;
