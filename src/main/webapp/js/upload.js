@@ -39,7 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-
 $('#fakeDownloadBtn').on('click', async function () {
     $('#clicked').hide();
     const fakeDownloadBtn = document.getElementById('fakeDownloadBtn');
