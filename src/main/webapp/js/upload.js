@@ -376,7 +376,7 @@ const fileUploadHandler = async (event, formData = null) => {
 
         if (response.status === 200) {
             // 성공적으로 업로드 완료 시 처리
-            // alert("File uploaded successfully");
+            updateProgress(progressBarId, fileDetailsId, startTime, formData.get('file').size, formData.get('file').size);
             await enterFolder(formData.get("folderID"));
         } else {
             // 업로드 실패 시 처리
@@ -423,6 +423,9 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
             a.click();
             window.URL.revokeObjectURL(downloadUrl);
             document.body.removeChild(a);
+
+            // 다운로드 완료 후 진행률을 100%로 설정
+            updateProgress(progressBarId, fileDetailsId, startTime, fileSize, fileSize);
         } else {
             alert("파일을 다운로드하는 데 실패했습니다.");
         }
