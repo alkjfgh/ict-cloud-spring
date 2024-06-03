@@ -299,6 +299,7 @@ a.logout-link:hover {
   flex: 1 1 calc(20% - 20px); // 5개씩 배치하고 간격을 고려한 너비
   margin: 10px; // 각 차트 간의 간격
   box-sizing: border-box;
+  max-width: 162px;
 }
 
 canvas {
