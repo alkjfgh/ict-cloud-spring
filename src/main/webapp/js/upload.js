@@ -227,14 +227,17 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
     });
 });
 
+let cancelTokenSource;
+let modal;
+
 const showModal = () => {
-    const modal = new bootstrap.Modal(document.getElementById('fileModal'),{backdrop: 'static', keyboard: false});
+    modal = new bootstrap.Modal(document.getElementById('fileModal'),{backdrop: 'static', keyboard: false});
     $('#complete-btn').hide();
     modal.show();
 };
 
 const hideModal = () => {
-    const modal = new bootstrap.Modal(document.getElementById('fileModal'));
+    // const modal = new bootstrap.Modal(document.getElementById('fileModal'));
     modal.hide();
 };
 
@@ -329,6 +332,7 @@ const updateProgress = (progressBarId, fileDetailsId, startTime, loaded, total) 
 };
 
 const fileUploadHandler = async (event, formData = null) => {
+    $('#cancel-btn').show();
     isProcessing = true;
     $('#file-modal-close').attr('disabled', 'disabled');
     event.preventDefault(); // 폼의 기본 제출 동작 방지
@@ -378,13 +382,16 @@ const fileUploadHandler = async (event, formData = null) => {
     let startTime = new Date().getTime();
 
     try {
+        cancelTokenSource = axios.CancelToken.source();
+
         const response = await axios.post('/file/upload', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             },
             onUploadProgress: (progressEvent) => {
                 updateProgress(progressBarId, fileDetailsId, startTime, progressEvent.loaded, progressEvent.total);
-            }
+            },
+            cancelToken: cancelTokenSource.token
         });
 
         if (response.status === 200) {
@@ -394,6 +401,7 @@ const fileUploadHandler = async (event, formData = null) => {
             await enterFolder(formData.get("folderID"));
             $('#file-modal-close').removeAttr('disabled');
             isProcessing = false;
+            $('#cancel-btn').hide();
         }else if(response.status === 201) {
             alert('Can not upload empty file')
         } else {
@@ -401,8 +409,12 @@ const fileUploadHandler = async (event, formData = null) => {
             alert("File upload failed");
         }
     } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred during the file upload");
+        if (axios.isCancel(error)) {
+            console.log('File upload canceled');
+        } else {
+            console.error("Error:", error);
+            alert("An error occurred during the file upload");
+        }
     } finally {
         // resetModal();
         // hideModal();
@@ -410,6 +422,7 @@ const fileUploadHandler = async (event, formData = null) => {
 };
 
 const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
+    $('#cancel-btn').show();
     isProcessing = true;
     $('#file-modal-close').attr('disabled', 'disabled');
 
@@ -422,6 +435,7 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
     let startTime = new Date().getTime();
 
     try {
+        cancelTokenSource = axios.CancelToken.source();
         const response = await axios({
             url: `/file/download?userID=${encodeURIComponent(userID)}&fileID=${encodeURIComponent(fileID)}&filename=${encodeURIComponent(filename)}`,
             method: 'GET',
@@ -429,7 +443,8 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
             timeout: 600000, // 10 minutes
             onDownloadProgress: (progressEvent) => {
                 updateProgress(progressBarId, fileDetailsId, startTime, progressEvent.loaded, fileSize /*progressEvent.total*/);
-            }
+            },
+            cancelToken: cancelTokenSource.token
         });
 
         if (response.status === 200) {
@@ -448,15 +463,30 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
             isProcessing = false;
             $('#file-modal-close').removeAttr('disabled');
             $('#complete-btn').show();
+            $('#cancel-btn').hide();
         } else {
             alert("파일을 다운로드하는 데 실패했습니다.");
         }
     } catch (error) {
-        console.error('Error:', error);
-        alert('파일을 다운로드하는 중 오류가 발생했습니다.');
+        if (axios.isCancel(error)) {
+            console.log('File upload canceled');
+        } else {
+            console.error("Error:", error);
+            alert("An error occurred during the file download");
+        }
     } finally {
         // resetModal();
         // hideModal();
+    }
+};
+
+const cancelOperation = () => {
+    if (cancelTokenSource) {
+        cancelTokenSource.cancel('Operation canceled by the user.');
+        $('#file-modal-close').removeAttr('disabled');
+        isProcessing = false;
+        resetModal();
+        hideModal();
     }
 };
 

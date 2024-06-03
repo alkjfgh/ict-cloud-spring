@@ -84,6 +84,7 @@
                     </div>
                     <button type="button" class="btn btn-primary d-none" id="downloadBtn" onclick="" hidden>Download
                     </button>
+                    <button type="button" class="btn btn-danger" id="cancel-btn" onclick="cancelOperation()">Cancel</button>
                 </div>
             </div>
         </div>
