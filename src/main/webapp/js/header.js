@@ -22,7 +22,6 @@ $(document).ready(function () {
     axios.get('/user/checkSession').then(res => {
         if (res.status === 200) {
             if (res.data.check) {
-                console.log(res.data);
                 $('.islogin .username').text(res.data.username);
                 islogin.show();
             } else notlogin.show();
@@ -70,7 +69,8 @@ const initAnnounce = (announdata) => {
                 </h2>
                 <div id="${uniqueId}" class="accordion-collapse collapse" data-bs-parent="#${accordionId}">
                     <div class="accordion-body">
-                        <strong>${item.title}</strong> <br><br>
+                        <strong>${item.title}</strong>
+                        <hr>
                         ${item.content}
                     </div>
                 </div>`;
@@ -141,14 +141,12 @@ $(document).ready(function () {
 
     axios.get("/notice/getList").then(res => {
         if (res.status === 200) {
-            console.log(res.data);
             initAnnounce(res.data);
         }
     });
 
     announcementLink.on('click', function (event) {
         event.preventDefault(); // 기본 이벤트 방지
-        console.log(1111111111);
         $(".announcement-container .accordion-collapse").each(function () {
             let collapseInstance = bootstrap.Collapse.getInstance(this);
             if (collapseInstance) {
@@ -164,7 +162,6 @@ $(document).ready(function () {
     });
 
     announcementCloseBtn.onclick = function () {
-        console.log(222222222222);
         announcementModal.css("display", "none");
         $(".accordion-collapse").each(function () {
             let collapseInstance = bootstrap.Collapse.getInstance(this);
@@ -181,7 +178,6 @@ $(document).ready(function () {
     $(window).click(function (event) {
         if (event.target === announcementModal[0]) {
             announcementModal.css("display", "none");
-            console.log(333333333333);
 
             $(".accordion-collapse").each(function () {
                 let collapseInstance = bootstrap.Collapse.getInstance(this);

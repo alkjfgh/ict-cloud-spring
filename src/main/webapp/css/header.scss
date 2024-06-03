@@ -239,6 +239,15 @@
       margin-left: 20px;
     }
 
+    .accordion-body{
+      strong{
+        width: 100%;
+        font-size: 24px;
+        display: inline-block;
+        text-align: center;
+      }
+    }
+
     .announcement-list {
       .announcement-title-container {
         cursor: pointer;
