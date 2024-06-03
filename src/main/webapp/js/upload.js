@@ -600,6 +600,18 @@ const enterFolder = async (p) => {
 
     if (response.ok) {
         const data = await response.json();
+        const userStorageSize = data.userStorageSize;
+        const usedSize = userStorageSize[1]; // 사용 중인 크기 (GB)
+        const totalSize = userStorageSize[0]; // 전체 크기 (GB)
+        const usedSizeElement = document.getElementById('used-size');
+        const totalSizeElement = document.getElementById('total-size');
+        const progressBar = document.getElementById('storage-percent');
+
+        const percentageUsed = (usedSize / totalSize) * 100;
+
+        usedSizeElement.textContent = `${formatSize(usedSize)}`;
+        totalSizeElement.textContent = `${formatSize(totalSize)}`;
+        progressBar.textContent = `${percentageUsed.toFixed(2)}%`;
 
         const testView = document.getElementsByClassName('test-view')[0];
         testView.innerHTML = '<div class="path">now path: ' + data.storagePath + '</div>\n' +

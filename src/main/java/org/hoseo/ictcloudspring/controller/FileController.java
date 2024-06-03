@@ -75,6 +75,7 @@ public class FileController {
             List<File> fileList = fileService.getFilesByUserIdAndFolderId(userID, p);
             List<Folder> subFolderList = fileService.getSubFoldersByFolderId(p);
             List<Folder> folderPathList = fileService.getFolderPath(p);
+            long[] userStorageSize = fileService.getStorageSize(userID);
 
             Map<String, Object> responseMap = new HashMap<>();
             responseMap.put("fileList", fileList);
@@ -86,6 +87,7 @@ public class FileController {
             responseMap.put("removeUserIdPath", storagePath.replace(userID + java.io.File.separator, ""));
             responseMap.put("storagePathJS", storagePath);
             responseMap.put("folderPathList", folderPathList);
+            responseMap.put("userStorageSize", userStorageSize);
 
             // AJAX 요청인 경우 JSON 형태로 데이터를 반환합니다.
             if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {

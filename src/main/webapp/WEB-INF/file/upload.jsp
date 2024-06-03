@@ -32,6 +32,15 @@
             </div>
         </div>
         <div class="enter">
+            <div class="container mt-5">
+                <div id="user-storage-size-view" class="mb-3">
+                    <div class="storage-text">
+                        Used Size: <span id="used-size"></span><br>
+                        Total Size: <span id="total-size"></span><br>
+                        Percent: <span id="storage-percent"></span><br>
+                    </div>
+                </div>
+            </div>
             <form id="uploadForm" action="upload" method="post" enctype="multipart/form-data"
                   onsubmit="return fileUploadHandler(event)">
                 <div class="add"> <%--파일, 디렉토리 추가--%>
@@ -63,7 +72,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="fileModalLabel">Processing...</h5>
-                    <button id="file-modal-close" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button id="file-modal-close" type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div id="videoContainer" class="d-none">
@@ -80,11 +90,14 @@
                              aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                     <div class="d-flex justify-content-center">
-                        <button id="complete-btn" type="button" class="btn btn-secondary mt-3" data-bs-dismiss="modal" style="display: none">확인</button>
+                        <button id="complete-btn" type="button" class="btn btn-secondary mt-3" data-bs-dismiss="modal"
+                                style="display: none">확인
+                        </button>
                     </div>
                     <button type="button" class="btn btn-primary d-none" id="downloadBtn" onclick="" hidden>Download
                     </button>
-                    <button type="button" class="btn btn-danger" id="cancel-btn" onclick="cancelOperation()">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="cancel-btn" onclick="cancelOperation()">Cancel
+                    </button>
                 </div>
             </div>
         </div>
