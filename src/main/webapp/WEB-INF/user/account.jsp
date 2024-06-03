@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link href='https://fonts.googleapis.com/css?family=Nunito:600,700&display=swap' rel='stylesheet'>
     <link rel="stylesheet" href="<c:url value="/css/account.css?ver=1"/>">
+<%--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">--%>
     <script src="<c:url value="/js/account.js?ver=1"/>"></script>
 </head>
 <body>
@@ -26,8 +27,7 @@
             </div>
             <div class="email-verification" style="display: none">
                 <input type="text" name="token" class="email-token">
-                <button type="button" onclick="
-                validateEmail()">verification</button>
+                <button type="button" class="btn btn-primary validate-email-btn" onclick="validateEmail()">verification</button>
             </div>
             <p class="message">Already registered? <a href="#">Sign In</a></p>
         </form>
