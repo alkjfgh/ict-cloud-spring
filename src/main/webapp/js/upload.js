@@ -900,5 +900,3 @@ $(document).ready(function() {
         $(".upload-name").val("");
     });
 });
-
-//TODO 파일 다운로드 및 업로드 중에 모달창 안꺼지게. 끈다면 작업이 중단 되도록 하게.
