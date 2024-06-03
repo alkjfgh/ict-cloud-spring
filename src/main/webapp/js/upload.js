@@ -1,3 +1,5 @@
+let isProcessing = false;
+
 document.addEventListener("DOMContentLoaded", function () {
     const dragDropArea = document.getElementsByClassName('drag-drop-area')[0];
 
@@ -37,6 +39,17 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     });
+
+    document.getElementById('fileModal').addEventListener('hidden.bs.modal', function (e) {
+        // if(isProcessing){}
+        // else{
+            const modalBackdrop = document.querySelector('.modal-backdrop');
+            if (modalBackdrop) {
+                modalBackdrop.parentNode.removeChild(modalBackdrop);
+            }
+            resetModal();
+        // }
+    });
 });
 
 $('#fakeDownloadBtn').on('click', async function () {
@@ -61,7 +74,6 @@ $('#DeleteBtn').on('click', async function () {
     const userid = DeleteBtn.dataset.userid;
     const fileid = DeleteBtn.dataset.fileid;
     const folderid = DeleteBtn.dataset.folderid;
-
 
     if (folderid === 'null') {
         await deleteFileDetail(userid, fileid);
@@ -215,9 +227,8 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
     });
 });
 
-
 const showModal = () => {
-    const modal = new bootstrap.Modal(document.getElementById('fileModal'));
+    const modal = new bootstrap.Modal(document.getElementById('fileModal'),{backdrop: 'static', keyboard: false});
     $('#complete-btn').hide();
     modal.show();
 };
@@ -318,6 +329,8 @@ const updateProgress = (progressBarId, fileDetailsId, startTime, loaded, total) 
 };
 
 const fileUploadHandler = async (event, formData = null) => {
+    isProcessing = true;
+    $('#file-modal-close').attr('disabled', 'disabled');
     event.preventDefault(); // 폼의 기본 제출 동작 방지
 
     // formData가 직접 전달되지 않은 경우, 폼에서 FormData 객체를 생성
@@ -379,6 +392,8 @@ const fileUploadHandler = async (event, formData = null) => {
             updateProgress(progressBarId, fileDetailsId, startTime, formData.get('file').size, formData.get('file').size);
             $('#complete-btn').show();
             await enterFolder(formData.get("folderID"));
+            $('#file-modal-close').removeAttr('disabled');
+            isProcessing = false;
         }else if(response.status === 201) {
             alert('Can not upload empty file')
         } else {
@@ -395,7 +410,8 @@ const fileUploadHandler = async (event, formData = null) => {
 };
 
 const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
-    console.log('download file');
+    isProcessing = true;
+    $('#file-modal-close').attr('disabled', 'disabled');
 
     const progressBarId = 'progressBar';
     const fileDetailsId = 'fileDetails';
@@ -429,6 +445,8 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
 
             // 다운로드 완료 후 진행률을 100%로 설정
             updateProgress(progressBarId, fileDetailsId, startTime, fileSize, fileSize);
+            isProcessing = false;
+            $('#file-modal-close').removeAttr('disabled');
             $('#complete-btn').show();
         } else {
             alert("파일을 다운로드하는 데 실패했습니다.");
@@ -770,14 +788,6 @@ const resetVideoPlayer = () => {
     //     videoPlayer.innerHTML = '<source id="videoSource" src="" type="video/mp4">';
     // }
 };
-
-document.getElementById('fileModal').addEventListener('hidden.bs.modal', function () {
-    const modalBackdrop = document.querySelector('.modal-backdrop');
-    if (modalBackdrop) {
-        modalBackdrop.parentNode.removeChild(modalBackdrop);
-    }
-    resetModal();
-});
 
 const fileDeleteHandler = async (userID, fileID) => {
     console.log("fileDeleteHandler");
