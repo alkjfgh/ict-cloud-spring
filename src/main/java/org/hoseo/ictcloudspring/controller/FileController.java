@@ -84,7 +84,7 @@ public class FileController {
             responseMap.put("p", p);
             responseMap.put("parentFolderID", parentFolderID);
             responseMap.put("removeUserIdPath", storagePath.replace(userID + java.io.File.separator, ""));
-            responseMap.put("storagePathJS", storagePathJS);
+            responseMap.put("storagePathJS", storagePath);
             responseMap.put("folderPathList", folderPathList);
 
             // AJAX 요청인 경우 JSON 형태로 데이터를 반환합니다.
