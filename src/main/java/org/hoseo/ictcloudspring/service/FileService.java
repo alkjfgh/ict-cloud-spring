@@ -43,7 +43,7 @@ public class FileService {
 
         if (file.isEmpty()) {
             logger.warn("파일이 비어있습니다.");
-            return 0;
+            return 2;
         }
 
         String fileName = file.getOriginalFilename();

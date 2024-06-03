@@ -114,6 +114,8 @@ public class FileController {
         if (uploadFileSuccesses == 1) {
             template.convertAndSend("/topic/fileActivity", Timestamp.valueOf(LocalDateTime.now()) + " => UserID: " + userID + ", File uploaded: " + file.getOriginalFilename());
             return ResponseEntity.ok("File uploaded successfully");
+        } else if (uploadFileSuccesses == 2) {
+            return ResponseEntity.status(HttpStatus.valueOf(201)).body("empty file");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed");
         }
@@ -301,10 +303,10 @@ public class FileController {
         if (deleteFolderSuccesses == 1) {
             response.put("status", "success");
             response.put("message", "delete Folder 성공");
-        } else if(deleteFolderSuccesses == 2) {
+        } else if (deleteFolderSuccesses == 2) {
             response.put("status", "fail");
             response.put("message", "폴더가 존재하지 않습니다");
-        } else if(deleteFolderSuccesses == 3) {
+        } else if (deleteFolderSuccesses == 3) {
             response.put("status", "fail");
             response.put("message", "하위 폴더가 존재하여 폴더 삭제를 할 수 없습니다");
         } else {

@@ -379,6 +379,8 @@ const fileUploadHandler = async (event, formData = null) => {
             updateProgress(progressBarId, fileDetailsId, startTime, formData.get('file').size, formData.get('file').size);
             $('#complete-btn').show();
             await enterFolder(formData.get("folderID"));
+        }else if(response.status === 201) {
+            alert('Can not upload empty file')
         } else {
             // 업로드 실패 시 처리
             alert("File upload failed");
