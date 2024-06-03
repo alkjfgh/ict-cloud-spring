@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    let password;
     getUserInfo().then(data => {
         if (data !== null) {
             const user = data.user;
@@ -7,6 +8,7 @@ $(document).ready(function () {
             containers.item(0).innerHTML = user.name;
             containers.item(1).innerHTML = user.email;
             containers.item(2).innerHTML = user.registrationDate;
+            password = user.password;
         }
     });
 
@@ -26,6 +28,11 @@ $(document).ready(function () {
 
         if(!isValidPassword(passwordArray[2])){
             alert('check password is current format');
+            return false;
+        }
+
+        if(password !== passwordArray[0]){
+            alert('check existing password')
             return false;
         }
 
