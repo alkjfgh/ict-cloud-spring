@@ -43,11 +43,11 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('fileModal').addEventListener('hidden.bs.modal', function (e) {
         // if(isProcessing){}
         // else{
-            const modalBackdrop = document.querySelector('.modal-backdrop');
-            if (modalBackdrop) {
-                modalBackdrop.parentNode.removeChild(modalBackdrop);
-            }
-            resetModal();
+        const modalBackdrop = document.querySelector('.modal-backdrop');
+        if (modalBackdrop) {
+            modalBackdrop.parentNode.removeChild(modalBackdrop);
+        }
+        resetModal();
         // }
     });
 });
@@ -231,7 +231,7 @@ let cancelTokenSource;
 let modal;
 
 const showModal = () => {
-    modal = new bootstrap.Modal(document.getElementById('fileModal'),{backdrop: 'static', keyboard: false});
+    modal = new bootstrap.Modal(document.getElementById('fileModal'), {backdrop: 'static', keyboard: false});
     $('#complete-btn').hide();
     modal.show();
 };
@@ -396,13 +396,8 @@ const fileUploadHandler = async (event, formData = null) => {
 
         if (response.status === 200) {
             // 성공적으로 업로드 완료 시 처리
-            updateProgress(progressBarId, fileDetailsId, startTime, formData.get('file').size, formData.get('file').size);
-            $('#complete-btn').show();
-            await enterFolder(formData.get("folderID"));
-            $('#file-modal-close').removeAttr('disabled');
-            isProcessing = false;
-            $('#cancel-btn').hide();
-        }else if(response.status === 201) {
+            // updateProgress(progressBarId, fileDetailsId, startTime, formData.get('file').size, formData.get('file').size);
+        } else if (response.status === 201) {
             alert('Can not upload empty file')
         } else {
             // 업로드 실패 시 처리
@@ -418,6 +413,31 @@ const fileUploadHandler = async (event, formData = null) => {
     } finally {
         // resetModal();
         // hideModal();
+        // updateProgress(progressBarId, fileDetailsId, startTime, formData.get('file').size, formData.get('file').size);
+        setTimeout(function () {
+            const progressBar = document.getElementById(progressBarId);
+            const fileDetails = document.getElementById(fileDetailsId);
+            const elapsedTime = (new Date().getTime() - startTime) / 1000; // seconds
+            const elapsedHours = Math.floor(elapsedTime / 3600);
+            const elapsedMinutes = Math.floor((elapsedTime % 3600) / 60);
+            const elapsedSeconds = Math.floor(elapsedTime % 60);
+
+            progressBar.style.width = 100 + '%';
+            progressBar.setAttribute('aria-valuenow', 100);
+            progressBar.innerText = 100 + '%';
+
+            fileDetails.innerText = `
+        Speed: ${0} /s
+        Loaded: ${formatSize(formData.get('file').size)} / ${formatSize(formData.get('file').size)}
+        Remaining: ${formatSize(0)}
+        Elapsed Time: ${elapsedHours}h ${elapsedMinutes}m ${elapsedSeconds}s
+        Estimated Remaining Time: ${0}h ${0}m ${0}s`;
+            $('#file-modal-close').removeAttr('disabled');
+            isProcessing = false;
+            $('#cancel-btn').hide();
+            $('#complete-btn').show();
+            enterFolder(formData.get("folderID"));
+        }, 300);
     }
 };
 
@@ -459,11 +479,7 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
             document.body.removeChild(a);
 
             // 다운로드 완료 후 진행률을 100%로 설정
-            updateProgress(progressBarId, fileDetailsId, startTime, fileSize, fileSize);
-            isProcessing = false;
-            $('#file-modal-close').removeAttr('disabled');
-            $('#complete-btn').show();
-            $('#cancel-btn').hide();
+            // updateProgress(progressBarId, fileDetailsId, startTime, fileSize, fileSize);
         } else {
             alert("파일을 다운로드하는 데 실패했습니다.");
         }
@@ -477,6 +493,30 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
     } finally {
         // resetModal();
         // hideModal();
+        setTimeout(function () {
+            const progressBar = document.getElementById(progressBarId);
+            const fileDetails = document.getElementById(fileDetailsId);
+            const elapsedTime = (new Date().getTime() - startTime) / 1000; // seconds
+            const elapsedHours = Math.floor(elapsedTime / 3600);
+            const elapsedMinutes = Math.floor((elapsedTime % 3600) / 60);
+            const elapsedSeconds = Math.floor(elapsedTime % 60);
+
+            progressBar.style.width = 100 + '%';
+            progressBar.setAttribute('aria-valuenow', 100);
+            progressBar.innerText = 100 + '%';
+
+            fileDetails.innerText = `
+        Speed: ${0} /s
+        Loaded: ${formatSize(fileSize)} / ${formatSize(fileSize)}
+        Remaining: ${formatSize(0)}
+        Elapsed Time: ${elapsedHours}h ${elapsedMinutes}m ${elapsedSeconds}s
+        Estimated Remaining Time: ${0}h ${0}m ${0}s`;
+
+            isProcessing = false;
+            $('#file-modal-close').removeAttr('disabled');
+            $('#cancel-btn').hide();
+            $('#complete-btn').show();
+        }, 300);
     }
 };
 
@@ -735,11 +775,11 @@ const showFileDetails = async (userID, fileID, filename, fileSize, fileType) => 
 
     resetVideoPlayer();
 
-    if (isVideoFile(fileType)) {
-        const videoUrl = `/file/stream?userID=${encodeURIComponent(userID)}&fileID=${encodeURIComponent(fileID)}`;
-        // const videoUrl = `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4`;
-        showVideo(videoUrl);
-    }
+    // if (isVideoFile(fileType)) {
+    //     const videoUrl = `/file/stream?userID=${encodeURIComponent(userID)}&fileID=${encodeURIComponent(fileID)}`;
+    //     const videoUrl = `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4`;
+        // showVideo(videoUrl);
+    // }
 
     showModal();
 }
@@ -890,7 +930,7 @@ const folderDeleteHandler = async (userID, folderID) => {
     }
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
     $("#file").on('change', function () {
         const filePath = $("#file").val();
         const fileName = filePath.split('\\').pop(); // 경로에서 파일 이름만 추출
