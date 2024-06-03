@@ -613,7 +613,8 @@ const activitySocket = () => {
     function showActivity(message) {
         const activityLog = document.getElementById('activityLog');
         const newItem = document.createElement('li');
-        newItem.className = 'list-group-item';
+        newItem.classList.add('list-group-item');
+        newItem.classList.add('real-activity-log');
         newItem.textContent = message;
         activityLog.insertBefore(newItem, activityLog.firstChild);
 
