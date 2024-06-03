@@ -184,7 +184,7 @@
     overflow-y: auto; /* 아코디언 내용이 넘칠 경우 내부에서 스크롤되도록 */
     transition: max-height 0.3s ease;
     word-wrap: break-word; /* 긴 단어나 URL을 줄바꿈 */
-    white-space: pre-wrap; /* 줄바꿈을 허용하고, 공백을 유지 */
+    white-space: pre-line; /* 줄바꿈을 허용하고, 공백을 유지 */
   }
 
   .close {

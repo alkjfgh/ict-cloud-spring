@@ -524,8 +524,6 @@ const enterFolder = async (p) => {
         addFile.children.item(3).value = data.p;
 
         const addFolder = document.getElementById('addFolder');
-        console.log(storagePath)
-        console.log(String.raw`${data.storagePath}`)
         addFolder.onclick = () => addFolderHandler(data.userID, data.p, String.raw`${data.storagePath}`);
 
         const fileListElement = document.getElementsByClassName('file-list-table')[0];
