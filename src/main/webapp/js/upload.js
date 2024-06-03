@@ -219,6 +219,7 @@ document.addEventListener('DOMContentLoaded', () => { //오른쪽 클릭 시 다
 
 const showModal = () => {
     const modal = new bootstrap.Modal(document.getElementById('fileModal'));
+    $('#complete-btn').hide();
     modal.show();
 };
 
@@ -377,6 +378,7 @@ const fileUploadHandler = async (event, formData = null) => {
         if (response.status === 200) {
             // 성공적으로 업로드 완료 시 처리
             updateProgress(progressBarId, fileDetailsId, startTime, formData.get('file').size, formData.get('file').size);
+            $('#complete-btn').show();
             await enterFolder(formData.get("folderID"));
         } else {
             // 업로드 실패 시 처리
@@ -426,6 +428,7 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
 
             // 다운로드 완료 후 진행률을 100%로 설정
             updateProgress(progressBarId, fileDetailsId, startTime, fileSize, fileSize);
+            $('#complete-btn').show();
         } else {
             alert("파일을 다운로드하는 데 실패했습니다.");
         }

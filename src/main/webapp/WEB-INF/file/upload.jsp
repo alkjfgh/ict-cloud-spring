@@ -74,9 +74,13 @@
                     <div id="fileDetails">
                         <!-- File details will be dynamically inserted here -->
                     </div>
+                    <br>
                     <div class="progress mb-3">
                         <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;"
                              aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button id="complete-btn" type="button" class="btn btn-secondary mt-3" data-bs-dismiss="modal" style="display: none">확인</button>
                     </div>
                     <button type="button" class="btn btn-primary d-none" id="downloadBtn" onclick="" hidden>Download
                     </button>
