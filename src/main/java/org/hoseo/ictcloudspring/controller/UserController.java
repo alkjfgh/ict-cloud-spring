@@ -5,8 +5,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hoseo.ictcloudspring.dao.FileService;
-import org.hoseo.ictcloudspring.dao.UserService;
+import org.hoseo.ictcloudspring.service.FileService;
+import org.hoseo.ictcloudspring.service.UserService;
 import org.hoseo.ictcloudspring.dto.User;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,14 +2,12 @@ package org.hoseo.ictcloudspring.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hoseo.ictcloudspring.dao.FileService;
+import org.hoseo.ictcloudspring.service.FileService;
 import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
-import org.hoseo.ictcloudspring.dto.ShareInfo;
 import org.hoseo.ictcloudspring.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -29,14 +27,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Controller
 public class FileController {

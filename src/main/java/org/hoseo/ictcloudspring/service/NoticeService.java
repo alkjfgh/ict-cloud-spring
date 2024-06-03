@@ -1,8 +1,7 @@
-package org.hoseo.ictcloudspring.dao;
+package org.hoseo.ictcloudspring.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.annotations.processing.SQL;
 import org.hoseo.ictcloudspring.connection.DBConnectionPool;
 import org.hoseo.ictcloudspring.dto.Notice;
 import org.springframework.beans.factory.annotation.Autowired;

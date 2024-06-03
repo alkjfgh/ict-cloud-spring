@@ -1,11 +1,10 @@
-package org.hoseo.ictcloudspring.dao;
+package org.hoseo.ictcloudspring.service;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hoseo.ictcloudspring.connection.DBConnectionPool;
 import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
-import org.hoseo.ictcloudspring.dto.ShareInfo;
 import org.hoseo.ictcloudspring.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -2,8 +2,8 @@ package org.hoseo.ictcloudspring.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hoseo.ictcloudspring.dao.FileService;
-import org.hoseo.ictcloudspring.dao.ShareService;
+import org.hoseo.ictcloudspring.service.FileService;
+import org.hoseo.ictcloudspring.service.ShareService;
 import org.hoseo.ictcloudspring.dto.File;
 import org.hoseo.ictcloudspring.dto.Folder;
 import org.hoseo.ictcloudspring.dto.ShareInfo;
