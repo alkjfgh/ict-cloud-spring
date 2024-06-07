@@ -376,7 +376,7 @@ const fileUploadHandler = async (event, formData = null) => {
 
         if (response.status === 200) {
             // 성공적으로 업로드 완료 시 처리
-            updateProgress(progressBarId, fileDetailsId, startTime, formData.get('file').size, formData.get('file').size);
+            setTimeout(() => updateProgress(progressBarId, fileDetailsId, startTime, formData.get('file').size, formData.get('file').size), 300);
             $('#complete-btn').show();
             await enterFolder(formData.get("folderID"));
         } else {
@@ -426,7 +426,6 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
             document.body.removeChild(a);
 
             // 다운로드 완료 후 진행률을 100%로 설정
-            updateProgress(progressBarId, fileDetailsId, startTime, fileSize, fileSize);
             $('#complete-btn').show();
         } else {
             alert("파일을 다운로드하는 데 실패했습니다.");
@@ -437,6 +436,7 @@ const fileDownloadHandler = async (userID, fileID, filename, fileSize) => {
     } finally {
         // resetModal();
         // hideModal();
+        setTimeout(() => updateProgress(progressBarId, fileDetailsId, startTime, fileSize, fileSize), 300);
     }
 };
 
