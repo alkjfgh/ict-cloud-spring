@@ -1,0 +1,96 @@
+//plugins {
+//    id 'java'
+//    id 'war'
+//    id 'org.springframework.boot' version '3.2.5'
+//    id 'io.spring.dependency-management' version '1.1.4'
+//}
+//
+//group = 'org.hoseo'
+//version = '0.0.1-SNAPSHOT'
+//
+//java {
+//    sourceCompatibility = '17'
+//}
+//
+//repositories {
+//    mavenCentral()
+//}
+//
+//dependencies {
+//    implementation 'org.springframework.boot:spring-boot-starter-web'
+//    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+//    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+//    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//    runtimeOnly 'com.mysql:mysql-connector-j'
+//    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+//    implementation 'commons-fileupload:commons-fileupload:1.4'
+//    implementation 'commons-io:commons-io:2.6'
+//    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+//    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api'
+//    implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
+//    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+//    implementation("org.springframework.boot:spring-boot-starter-log4j2")
+////    implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
+////    implementation 'org.apache.logging.log4j:log4j-core:2.17.0'
+////    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.0'
+//}
+//
+//tasks.named('test') {
+//    useJUnitPlatform()
+//}
+//
+//configurations {
+//    configureEach {
+//        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+//    }
+//}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'org.hoseo'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'commons-fileupload:commons-fileupload:1.4'
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api'
+    implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+    implementation("org.springframework.boot:spring-boot-starter-log4j2")
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+configurations {
+    configureEach {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+}

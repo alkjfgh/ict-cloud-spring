@@ -1,0 +1,374 @@
+//html{
+//
+//  ::-webkit-scrollbar{
+//    width: 10px;
+//  }
+//
+//  ::-webkit-scrollbar-thumb{
+//    background-color: #2f3542;
+//    border-radius: 10px;
+//    background-clip: padding-box;
+//    border: 2px solid transparent;
+//  }
+//
+//  ::-webkit-scrollbar-track {
+//    background-color: #868e96;
+//  }
+//}
+//
+//body{
+//  ::-webkit-scrollbar{
+//    width: 10px;
+//  }
+//
+//  ::-webkit-scrollbar-thumb{
+//    background-color: #2f3542;
+//    border-radius: 10px;
+//    background-clip: padding-box;
+//    border: 2px solid transparent;
+//  }
+//
+//  ::-webkit-scrollbar-track {
+//    border-radius: 10px;
+//  }
+//}
+//
+//.list-group{
+//  cursor: pointer;
+//}
+//
+//#col-md-3-1{
+//  max-width: 250px;
+//}
+//
+//#col-md-3-2{
+//  max-width: 150px;
+//}
+//
+//#col-md-3-3{
+//  max-width: 150px;
+//}
+//
+//#col-md-3-6{
+//  max-width: 250px;
+//}
+//
+//#search-button{
+//  margin-left: 10px;
+//  height: 36px;
+//}
+//
+//.form-control{
+//  font-size: 13px;
+//}
+//
+//a.logout-link{
+//  text-decoration-line: none;
+//  color: white;
+//}
+//
+//a.logout-link:hover{
+//  color: #5a5a5a;
+//}
+//
+//#minFileSizeUnit,
+//#maxFileSizeUnit{
+//  max-width: 67px;
+//}
+//
+//.container{
+//  max-width: 1900px;
+//
+//  .mb-3{
+//    display: flex;
+//    flex-wrap: wrap;
+//    gap: 10px;
+//  }
+//
+//  .mb-3 > .col-md-3{
+//    display: flex;
+//    max-width: 230px;
+//  }
+//
+//  .list-group{
+//    width: 270px;
+//  }
+//
+//  #serverStatus{
+//    margin-bottom: 40px;
+//  }
+//
+//  .mt-4{
+//    margin-bottom: 40px;
+//    margin-right: 292px;
+//  }
+//}
+//
+//.chart-container {
+//  display: flex;
+//  flex-wrap: wrap;
+//}
+//
+//#logText{
+//  border: 1px solid red;
+//  border-radius: 7px;
+//}
+//
+//.chart-item {
+//  flex: 1 1 calc(20% - 20px); /* 5개씩 배치하고 간격을 고려한 너비 */
+//  margin: 10px; /* 각 차트 간의 간격 */
+//  box-sizing: border-box;
+//}
+//
+//canvas {
+//  width: 100% !important; /* 차트가 컨테이너의 너비를 채우도록 설정 */
+//  height: auto !important;
+//}
+//
+//#activityLog {
+//  max-height: 300px; /* 최대 높이 설정 */
+//  overflow-y: auto; /* 세로 스크롤 설정 */
+//}
+//
+//.log-info {
+//  color: green;
+//}
+//
+//.log-error {
+//  color: red;
+//}
+//
+//.log-warning {
+//  color: orange;
+//}
+//
+//.log-debug {
+//  color: blue;
+//}
+//
+//#logCarousel{
+//  position: relative;
+//
+//  .list-group-item{
+//    border-radius: 2em;
+//    margin-bottom: 10px;
+//  }
+//  .list-group-item:hover{
+//    background-color: #5189bd;
+//    cursor: pointer;
+//    border-radius: 2em;
+//  }
+//}
+//.carousel-control-prev-icon,
+//.carousel-control-next-icon {
+//  background-color: #343a40; /* Dark color */
+//  border-radius: 50%;
+//}
+//
+//.carousel-control-prev,
+//.carousel-control-next {
+//  position: absolute;
+//  top: 50%;
+//  transform: translateY(-50%);
+//  width: 5%;
+//}
+//.carousel-control-prev {
+//  left: -5%;
+//}
+//.carousel-control-next {
+//  right: -5%;
+//}
+//
+//.row{
+//  margin-right: 45px;
+//}
+
+html {
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #2f3542;
+    border-radius: 10px;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #868e96;
+  }
+}
+
+body {
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #2f3542;
+    border-radius: 10px;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+  }
+
+  ::-webkit-scrollbar-track {
+    border-radius: 10px;
+  }
+}
+
+#search-button {
+  height: 40px;  // 버튼 높이를 키움
+  width: 100px;  // 버튼 너비를 키움
+  margin-left: 10px;
+}
+
+.form-control {
+  font-size: 13px;
+}
+
+a.logout-link {
+  text-decoration-line: none;
+  color: white;
+}
+
+a.logout-link:hover {
+  color: #5a5a5a;
+}
+
+#maxFileSize, #minFileSize{
+  width: 8rem;
+}
+
+#minFileSizeUnit,
+#maxFileSizeUnit {
+  max-width: 100px;  // 선택 박스 너비를 키움
+  width: 5rem;
+}
+
+.container {
+  max-width: 1900px;
+
+  .search-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px; // 요소 간의 간격 추가
+    align-items: center; // 요소들이 수직으로 가운데 정렬되도록 설정
+    justify-content: space-between; // 요소들이 수평으로 골고루 배치되도록 설정
+  }
+
+  .search-col {
+    display: flex;
+    align-items: center;
+    gap: 5px; // 입력 요소와 selectbox 사이의 간격 추가
+  }
+
+  .search-col input.form-control {
+    min-width: 100px;  // 입력 필드 최소 너비를 줄임
+  }
+
+  .list-group {
+    width: 270px;
+  }
+
+  #serverStatus {
+    margin-bottom: 40px;
+  }
+
+  .mt-4 {
+    margin-bottom: 40px;
+    margin-right: 292px;
+  }
+}
+
+.chart-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#logText {
+  border: 1px solid red;
+  border-radius: 7px;
+}
+
+.chart-item {
+  flex: 1 1 calc(20% - 20px); // 5개씩 배치하고 간격을 고려한 너비
+  margin: 10px; // 각 차트 간의 간격
+  box-sizing: border-box;
+  max-width: 162px;
+}
+
+canvas {
+  width: 100% !important; // 차트가 컨테이너의 너비를 채우도록 설정
+  height: auto !important;
+}
+
+#activityLog {
+  max-height: 300px; // 최대 높이 설정
+  overflow-y: auto; // 세로 스크롤 설정
+  width: 100%;
+  .list-group-item{
+    width:100% !important;
+  }
+}
+
+.log-info {
+  color: green;
+}
+
+.log-error {
+  color: red;
+}
+
+.log-warning {
+  color: orange;
+}
+
+.log-debug {
+  color: blue;
+}
+
+#logCarousel {
+  position: relative;
+
+  .list-group-item {
+    border-radius: 2em;
+    margin-bottom: 10px;
+  }
+
+  .list-group-item:hover {
+    background-color: #5189bd;
+    cursor: pointer;
+    border-radius: 2em;
+  }
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #343a40; // Dark color
+  border-radius: 50%;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5%;
+}
+
+.carousel-control-prev {
+  left: -5%;
+}
+
+.carousel-control-next {
+  right: -5%;
+}
+
+.row {
+  margin-right: 45px;
+}
+
+#file-management{
+  margin-right: 0;
+}

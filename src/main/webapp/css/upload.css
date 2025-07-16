@@ -1,0 +1,177 @@
+@charset "UTF-8";
+body {
+  background-color: rgb(31, 31, 31);
+  color: white;
+}
+
+.test-view {
+  display: none;
+}
+
+.body1 {
+  height: calc(100% - 4rem);
+}
+.body1 .show {
+  position: relative;
+  border-radius: 8px;
+  margin: 10px 10px 0 10px;
+  padding: 5px;
+  background-color: rgb(40, 40, 40);
+  float: left;
+  width: 70%;
+  height: calc(100% - 15px);
+}
+.body1 .enter {
+  display: inline-block;
+  border-radius: 8px;
+  margin-top: 10px;
+  padding: 5px;
+  background-color: rgb(40, 40, 40);
+  width: 28%;
+  height: calc(100% - 15px);
+}
+
+#file {
+  margin: 4px;
+}
+
+#storagePath {
+  display: none;
+}
+
+#userID {
+  display: none;
+}
+
+#addFolder {
+  margin: 4px;
+}
+
+#addFolderName {
+  margin: 20px 0 0 4px;
+}
+
+.upload {
+  margin: 20px 4px 0 4px;
+}
+
+.modal {
+  color: black;
+}
+
+#clicked {
+  display: none;
+  border-radius: 5px;
+  position: absolute;
+  background-color: white;
+  color: black;
+  z-index: 9999;
+  margin: 10px;
+}
+
+.btn {
+  margin: 15px 10px 15px 10px;
+}
+
+.drag {
+  font: initial;
+  color: #505050;
+  font-size: 13px;
+  font-weight: 600;
+  float: right;
+}
+
+.file-list-container {
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  min-height: 100%;
+  border: #494949 dotted 3px;
+  border-radius: 3px;
+}
+.file-list-container .drag-drop-area {
+  border: 20px dashed black;
+}
+.file-list-container .file-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  /* Example for specific file types */
+}
+.file-list-container .file-list-table .file-area:hover {
+  cursor: pointer;
+  background-color: gray;
+}
+.file-list-container .file-list-table tr {
+  height: 4em;
+}
+.file-list-container .file-list-table tr td {
+  text-align: left;
+}
+.file-list-container .file-list-table tr td:nth-of-type(1) {
+  text-align: left;
+}
+.file-list-container .file-list-table tr th:nth-child(n+1) {
+  border-top: 0;
+}
+.file-list-container .file-list-table tr th, .file-list-container .file-list-table tr td {
+  border: 5px solid black;
+  border-left: 0;
+  border-right: 0;
+  padding: 0.6em;
+}
+.file-list-container .file-list-table tr .folder-area:hover {
+  cursor: pointer;
+  background-color: gray;
+}
+.file-list-container .file-list-table tr .folder-area::before {
+  content: "\f07b"; /* Font Awesome folder icon */
+  font-family: "Font Awesome 5 Free", serif;
+  font-weight: 900;
+  padding-right: 0.5em;
+}
+.file-list-container .file-list-table .file-area td:nth-of-type(1)::before {
+  content: "\f15b"; /* Font Awesome file icon */
+  font-family: "Font Awesome 5 Free", serif;
+  font-weight: 900;
+  padding-right: 0.5em;
+}
+.file-list-container .file-list-table .file-area.pdf td:nth-of-type(1)::before {
+  content: "\f1c1"; /* Font Awesome file-pdf icon */
+}
+.file-list-container .file-list-table .file-area.doc td:nth-of-type(1)::before {
+  content: "\f1c2"; /* Font Awesome file-word icon */
+}
+.file-list-container .file-list-table .file-area.xls td:nth-of-type(1)::before {
+  content: "\f1c3"; /* Font Awesome file-excel icon */
+}
+.file-list-container .file-list-table .file-area.img td:nth-of-type(1)::before {
+  content: "\f1c5"; /* Font Awesome file-image icon */
+}
+.file-list-container .file-list-table .file-area.zip td:nth-of-type(1)::before {
+  content: "\f1c6"; /* Font Awesome file-image icon */
+}
+.file-list-container .file-list-table .file-area.video td:nth-of-type(1)::before {
+  content: "\f1c8"; /* Font Awesome file-video icon */
+}
+
+#videoContainer {
+  width: 100%;
+  margin-top: 15px; /* 비디오와 위의 요소 사이에 약간의 여백을 추가 */
+}
+
+#videoPlayer {
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 종횡비를 유지하기 위한 패딩 */
+  position: relative;
+}
+
+#videoPlayer video {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/*# sourceMappingURL=upload.css.map */
